@@ -1,0 +1,67 @@
+%
+% --- inline annotations
+%
+\usepackage[dvipsnames]{xcolor}
+\newcommand{\red}[1]{{\color{red}#1}}
+% \newcommand{\todo}[1]{{\color{red}#1}}
+\newcommand{\TODO}[1]{\textbf{\color{red}[TODO: #1]}}
+% --- disable by uncommenting  
+% \renewcommand{\TODO}[1]{}
+% \renewcommand{\todo}[1]{#1}
+
+\usepackage{booktabs} % For formal tables
+\setlength {\marginparwidth }{2cm} 
+\usepackage{todonotes}
+\usepackage{soul}
+\newcommand{\tnote}[2]{\todo[inline,color=#1!40]{#2 (Tiago)}}
+
+\newcommand{\lnote}[2]{{\textbf{\color{red}[#1:]} {\color{red} #2} (Luiz)}}
+
+% LV
+\usepackage{pbalance}
+\usepackage{comment}
+
+\usepackage[ruled]{algorithm2e} % For algorithms
+\renewcommand{\algorithmcfname}{ALGORITHM}
+\SetAlFnt{\small}
+\SetAlCapFnt{\small}
+\SetAlCapNameFnt{\small}
+\SetAlCapHSkip{0pt}
+
+% Metadata Information
+\usepackage{xcolor}
+
+\usepackage{mathrsfs}
+\usepackage[scr=boondoxo]{mathalfa}
+\newcommand{\gt}[1]{\mathscr{#1}}
+
+%    Absolute value notation
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\T}{\mathbb{T}}
+\newcommand{\N}{\mathbb{N}}
+
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand\norm[1]{\lVert#1\rVert}
+% \newcommand\norm[1]{\left|#1\right|}
+
+\renewcommand{\dot}[2]{\left\langle#1,#2\right\rangle}
+
+%deep implicits notation---------
+\renewcommand{\div}[1]{\mbox{div}\,#1}
+% \newcommand{\grad}[1]{\mbox{grad}\,#1}
+\newcommand{\grad}[1]{\nabla#1}
+\newcommand{\hess}[1]{\mbox{\textbf{H}} #1}% \newcommand{\hess}[1]{\nabla^2\,#1}
+\newcommand{\jac}[1]{\mbox{\textbf{J}}\left(#1\right)}
+\newcommand{\domain}{\mathcal{Q}}
+\renewcommand{\L}{\mathcal{L}}
+\newcommand{\x}{p}
+\newcommand{\f}{f}
+\newcommand{\gtf}{\hat{f}}
+\newcommand{\fsin}[1]{\sin\left(#1\right)}
+\newcommand{\fcos}[1]{\cos\left(#1\right)}
+
+\newcommand{\myhl}[1]{{#1}}
+
+\newcommand{\sline}{\vspace{12pt}\hline\vspace{12pt}}
