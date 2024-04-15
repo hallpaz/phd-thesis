@@ -1,0 +1,18 @@
+\section{Representational Neural Networks}
+
+- Analysis x generative models x representational models. 
+    - Multiple generations of representational models (https://hallpaz.github.io/MLforNewMedia/)
+- Graphical Object (the visual Computer article)
+- Media Objects
+
+
+Discrete representations introduce potential challenges in sampling and interpolation for operations. This is particularly important for achieving seamless transitions.
+
+
+Previous works such as \cite{park2019deepsdf, occupancy_networks, sitzmann2019siren, novello2022differential, 
+novello2023neural,
+silva2022mip-plicits,
+yariv2020multiview} demonstrated how to represent and render surfaces as level sets of neural networks. 
+Due to the spectral bias inherent in \textit{multilayer perceptrons} (MLPs) \cite{Rahaman2018O}, coordinate-based architectures often employ techniques like Fourier Feature Mapping \cite{tancik2020fourfeat} to map inputs to higher-dimensional spaces. Sinusoidal networks offer an alternative solution by utilizing periodic activation functions and operating on the spectral representation of the signal. However, the composition of sinusoidal layers can introduce new frequencies, making it challenging to train deep sinusoidal neural networks \cite{taming2017} and understand their behavior. 
+
+For sinusoidal MLPs, \citet{sitzmann2019siren} proposed an initialization scheme for stable training and convergence. Additionally, \citet{paz2022} developed a multiresolution framework that controls the frequencies learned through initialization and data~filtering.

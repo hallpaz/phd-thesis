@@ -1,0 +1,46 @@
+In recent years, the computer science community has seen an explosion in research in neural networks, motivated mainly by advances in Deep Learning~\cite{lecun2015deep,goodfellow2016deep}.
+For visual computing, this was spurred by the creation of Convolutional Neural Networks~(CNNs)~\cite{cnn98}, which had a significant impact both for the research community and the society at large~\cite{li2021survey,shamsaldin2019study}.
+The effectiveness of CNNs comes from the translation invariant properties of the convolution operator, which makes it a proper architecture for the analysis of visual imagery.
+
+Deep neural networks such as CNNs, employ an array-based discrete representation of the underlying signal. In this case, the network input consists of a vector of pixel values (in RGB) representing the image \emph{directly} by data samples. We call this kind of network a \textit{data-based} network.
+
+
+Moreover, the revolution in the media industry caused by deep neural networks motivated the development of new image representations using neural networks. While the data-based network is appropriate for analysis tasks, relying on a discretization of the image, another kind of network called \textit{coordinate-based~network} is suitable for synthesis, and provides a continuous and compact representation. For its characteristics, there is a growing interest in using these networks in imaging applications~\cite{xie2022neural}.
+For instance, coordinate-based networks have been successfully applied in image compression~\cite{dupont2021coin} and super-resolution~\cite{czerkawski2021neural}.
+
+
+A coordinate-based network represents the image \emph{indirectly} using a fully connected \textit{multi-layer perceptron} (MLP) that takes as input a pixel coordinate and outputs a RGB color. These~networks provide a continuous implicit representation for images~\cite{chen2021learning}, and allow for various applications, from Neural Signed Distance Functions~(NeuralSDFs)~\cite{park2019deepsdf} to Neural Radiance Fields~(NeRFs)~\cite{mildenhall2021nerf}. Since the coordinates are continuous, images can be presented in arbitrary resolution.
+
+
+Imaging applications benefit greatly from multiresolution representations, as they allow us to represent an image hierarchically at different levels of details. This hierarchical model is aligned with some classical image and human visual perception models~\cite{marr82}, and it is instrumental for many tasks in computer vision and graphics, such as compression, analysis and rendering. 
+
+For example, in image compression, we can use a multiresolution representation to identify and discard details that are not perceptually important, while preserving important features of the image. This can significantly reduce the amount of data needed to represent the image, while still maintaining its overall quality~\cite{burt1987laplacian}.
+ Additionally, in rendering, multiresolution representations have built-in support for antialiasing, which traditionally is implemented using image pyramids~\cite{mipmap83}. Another important applications of imaging in Graphics is texture synthesis. In that realm, besides antialiasing, the creation of visual patterns from examples has great relevance~\cite{thies19}.
+
+Traditionally, multiresolution representations for images have been based on signal processing techniques derived from Fourier theory~\cite{bracewell1986fourier}. Such operators were primarily motivated by image compression~\cite{bhaskaran1997image} and played an important role in the development of JPEG-2000~\cite{marcellin2000overview}. For instance, the Discrete Cosine Transform \cite{dct-og} have been  used as an efficient way to get a frequency content of the image, and estimate the importance of certain coefficients to the image quality perception. 
+Although Fourier transforms were initially popular for decomposing signals into multiple frequencies, the wavelet transform, introduced by \citet{mallat1989theory}, soon gained popularity as it enabled representing a signal in levels of detail and scale, and was widely applied to a first generation of wavelet-based image codecs~\cite{antonini1992image}. Subsequently, wavelet analysis of multiscale edges led to a second generation of image coding methods, with higher compression rates~\cite{mallat-2gen}. Nevertheless, understanding and controlling the frequencies present in a signal has been critical on interpreting its details and avoiding artifacts such as aliasing. In this sense, sinusoidal  functions have been instrumental in the development of the multiresolution theory.
+
+
+% Sinusoidal neural networks are particularly suited to model stationary or quasi-stationary signals due to the periodic nature of its activation function~\cite{chen2022}.
+
+Sinusoidal neural networks are examples of coordinate-based networks in which their activation function is the sine function. As such, they bridge the gap between the spatial and spectral domains, given the close relationship of the sine function with the Fourier~basis. However, these sinusoidal neural networks have been regarded as difficult to train~\cite{taming2017}. To overcome this problem, \citet{sitzmann2019siren} proposed a sinusoidal network for signal representation called SIREN. One of the key contributions of this work is the initialization scheme that guarantees stability and good convergence. Furthermore, it also allows modeling fine details in accordance with the signal’s frequency content.
+
+A \textit{multiplicative filter network} (MFN) is a sinusoidal network simpler than SIREN which is equivalent to a shallow sinusoidal network~\cite{fathony2020multiplicative}. \citet{bacon2021} presented \textit{band-limited coordinate network }(BACON), an MFN that produces intermediate outputs with an analytical spectral bandwidth (specified at initialization) and achieves multiresolution of the underlying signal. While its structure allows BACON to be expressed as a linear combinations of sines, avoiding the composition of sines present in sinusoidal MLPs, it creates multiresolution representations by truncating the frequency spectra of the signals. This approach produces ringing artifacts  in some levels of detail, and becomes evident when we look at the Fourier transform of the images.
+
+The control of frequency bands in the representation is closely related with the capability of adaptive reconstruction of the signal in multiple levels of detail.
+In that context, \citet{mueller2022instant} developed a multiresolution neural network architecture based on hash encoding. Also, \citet{martel2021acorn} designed an adaptive coordinate network for neural signals.
+
+In this context, we introduce \textit{multiresolution sinusoidal neural networks}~(MR-Net) based on classical signal multiresolution representations. 
+Our results, presented in Section~\ref{sub:spectra-eval}, indicate that using MR-Net produces better results compared to the previous state-of-the-art technique, BACON, while employing a smaller number of parameters.
+We describe three MR-Net subclasses: S-Net, L-Net and M-Net.
+Finally, we present applications on antialiasing and level-of-detail reconstruction.
+
+In summary, we make the following contributions:
+\begin{itemize}
+  \item We extend the sinusoidal neural networks and introduce a family of multiresolution coordinate-based networks, with unified architecture, that provides a continuous representation spatially and in scale. For this, we show how the initialization proposed for SIREN \cite{sitzmann2019siren} can be better explored to control the frequencies learned by the model, and how we can decompose a network in multiple stages, inspired by the multiresolution analysis.
+  \item We develop a framework for imaging applications based on this architecture, leveraging classical multiresolution concepts such as pyramids. Also, we show that this approach can more faithfully represent the frequency spectra of multiresolution signals, avoiding artifacts present in BACON \cite{bacon2021} representation.
+  \item We show that our architecture can represent images with good visual quality, being competitive with related methods in PSNR and number of parameters; we also demonstrate its use in applications of texture magnification and minification, and antialiasing. 
+\end{itemize}
+
+
+This paper is an extension of our previous work~\cite{paz2022}, where we introduced a class of neural networks called \textit{Multiresolution Neural Networks}~(MR-Net). In this work, we  present a complete description of this class of networks along with the motivations and a detailed mathematical model~(see Sec.~\ref{sec:mr_snn}). We added Section~\ref{sec:mrnet_detail}, which explains our framework in detail and should help the construction of an independent implementation. We expanded the comparisons to include an analysis of the frequency spectra of the representations provided by MR-Net and BACON (see Sec. \ref{sub:spectra-eval}). We also present a broader set of experiments (see Sec.~\ref{sub:kodak}), using the Kodak dataset~\cite{KodakDataset}, for comparison of the MR-Net with other network architectures. Finally, we added Section~\ref{sec:considerations}, which compares the different MR-Net subclasses~(S-Net, L-Net, and M-Net) in both qualitative and quantitative aspects.

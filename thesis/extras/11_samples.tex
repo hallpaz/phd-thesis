@@ -1,0 +1,117 @@
+\section{Introduction}
+Our goal is to design a new architecture of neural networks capable of encoding a signal in multiple scales. This way, we aim for a continuous and compact representation of scalar fields that can be used to model images, shapes and other complex objects as level sets of implicit functions.
+\section{Encoding Scalar Fields}
+We want to model functions that map a low dimensionality space such as 3D Euclidean coordinates to a value. \textbf{[explain the low frequency bias of MLP...].} We build upon SIREN [1], Sinusoidal Representation Networks, as it's able to learn high frequency details of a signal quickly and it's also suitable for modelling the signal derivatives as the derivative of the network preserves its properties.
+We start by running experiments over unidimensional signals as in 1D we can have better control over the signal frequencies, easily visualize it plotting its Fast Fourier Transform and also validate the results in terms of the classical sampling theory. We started encoding signals created by summing individual frequencies using sinusoidal functions. After validating our ideia in these simple examples, we started using the Perlin Noise algorithm \textbf{[cite]} to generate signals with a stochastic nature and a broad distribution of frequencies. 
+The figure \textit{below} shows the result of fitting a SIREN to a Perlin Noise generated with 16 octaves. Although the signal has many variations and fine details, we were able to represent it well by training the network for only 200 epochs.
+
+\begin{figure}[!htb]
+\minipage{0.49\textwidth}
+\includegraphics[width=\linewidth]{charts/Section-8-Panel-0-z4g8njbpz}
+\caption{}
+\endminipage\hfill
+\minipage{0.49\textwidth}
+\includegraphics[width=\linewidth]{charts/Section-8-Panel-1-6vzyf3265}
+\caption{}
+\endminipage
+\end{figure}
+
+\subsection{Influence of \omega_0 initialization
+A SIREN must be initialized so that for a uniform input in [-1, 1] the outputs of each layer before the sine nonlinearity are standard normal distributed.  
+The authors of SIREN propose to apply a hyperparameter \omega_0 in the first layer of the network so that the sine function \sin(\omega_0 · \bold{W}x + b) spans multiple periods over[-1, 1]. This same hyperparameter is also applied on the initialization of the hidden layers as the authors argue it boosts the gradients during the training and accelerates the convergence. For the examples presentend in their work, they used a fixed \omega_0=30 and found it to work well. Here, we show how the choice of \omega_0  impacts the frequencies learned by the network, the speed of the training and even if it will converge to a reasonable result or collapse into a noise. 
+We generated Perlin Noise with the sampling rate of 1/1024, so by the Shannon-Nyquist sampling theorem, we are limited to frequencies in the interval [0, 512]. To achieve the result shown in the first figure, where the signal is perfectly fitted, we used \omega_0 =200. We found that a value between 100 and 200 converges to a good approximation quickly (around 200 epochs). If we use a low \omega_0 such as 20, our result looks like a smoothed version of the signal as if we were reconstructing only its low frequencies. We plotted the Fast Fourier Transform of both the original signal and its reconstruction in order to verify that the low frequencies match. 
+
+\begin{figure}[!htb]
+\minipage{0.49\textwidth}
+\includegraphics[width=\linewidth]{charts/Section-13-Panel-0-3m5nbgtlh}
+\caption{}
+\endminipage\hfill
+\minipage{0.49\textwidth}
+\includegraphics[width=\linewidth]{charts/Section-13-Panel-1-9dkanxgav}
+\caption{}
+\endminipage
+\end{figure}
+
+\begin{figure}[!htb]
+\minipage{0.49\textwidth}
+\includegraphics[width=\linewidth]{charts/Section-13-Panel-2-hbc6vfs3t}
+\caption{}
+\endminipage
+\end{figure}
+
+On the other hand, if \omega_0 is too high it may cause the training to diverge. In the next figure, we show the evolution of the training loss and the result after 200 epochs when we initialized the SIREN with \omega_0=600. Note that after about 50 epochs, the loss starts to increase and our final result bears no resemblance to the original signal.
+
+\begin{figure}[!htb]
+\minipage{0.49\textwidth}
+\includegraphics[width=\linewidth]{charts/Section-15-Panel-0-rpuua88ix}
+\caption{}
+\endminipage\hfill
+\minipage{0.49\textwidth}
+\includegraphics[width=\linewidth]{charts/Section-15-Panel-1-z4g8njbpz}
+\caption{}
+\endminipage
+\end{figure}
+
+\subsection{Gaussian Pyramid Training
+After exploring the impact of different values of initialization frequencies, we investigated if we could fit multiple scales of the same signal by building a Gaussian pyramid of it. We filtered the signal using a box filter of dimension 5, decimated it by a factor of 2 and used this subsampled version to train our network. Then, we used the trained network to predict the values over all originally sampled points, so we could verify its behaviour on unsupervised points. As we are filtering the higher frequencies of the signal, we expect to be able to represent it exactly by using fewer samples, acconding to the classical sampling theory.  
+We compared our result to a smoothed but not decimated version of the signal where we doubled the size of the filter as we walked to coarse scales. The panel of figures below shows the result of fitting a signal in 7 different scales, starting with \omega_0=256 and dividing it by 2 as we walk to coarse scales.
+We trained the network using less points at each scale.
+
+\begin{figure}[!htb]
+\minipage{0.49\textwidth}
+\includegraphics[width=\linewidth]{charts/Section-20-Panel-0-ulotlhctz}
+\caption{}
+\endminipage\hfill
+\minipage{0.49\textwidth}
+\includegraphics[width=\linewidth]{charts/Section-20-Panel-1-twwld6gku}
+\caption{}
+\endminipage
+\end{figure}
+
+For all the experiments until now, we used a SIREN with 3 hidden layers and 128 perceptrons in each layer, which seemed to be more than necessary to fit all signals we experimented. However, if we initialize the network with frequencies that are unsuitable for the signal, it will reflect on the quality of the regression. For instance, the figure below shows the difference between fitting a signal in the 6th scale using \omega_0=8 or \omega_0=16.
+
+\begin{figure}[!htb]
+\minipage{0.49\textwidth}
+\includegraphics[width=\linewidth]{charts/Section-22-Panel-0-ulotlhctz}
+\caption{}
+\endminipage\hfill
+\minipage{0.49\textwidth}
+\includegraphics[width=\linewidth]{charts/Section-22-Panel-1-twwld6gku}
+\caption{}
+\endminipage
+\end{figure}
+
+\section{Minimal Module}
+dsdsdsd
+
+\begin{figure}[!htb]
+\minipage{0.49\textwidth}
+\includegraphics[width=\linewidth]{charts/Section-26-Panel-0-rpuua88ix}
+\caption{}
+\endminipage\hfill
+\minipage{0.49\textwidth}
+\includegraphics[width=\linewidth]{charts/Section-26-Panel-1-z4g8njbpz}
+\caption{}
+\endminipage
+\end{figure}
+
+If we train for more epochs, it approximates better
+$\omega_0$ = 32
+1 hidden layer; 16 hidden features
+Trained for 8 thousands epochs
+
+\begin{figure}[!htb]
+\minipage{0.49\textwidth}
+\includegraphics[width=\linewidth]{charts/Section-30-Panel-0-rpuua88ix}
+\caption{}
+\endminipage\hfill
+\minipage{0.49\textwidth}
+\includegraphics[width=\linewidth]{charts/Section-30-Panel-1-z4g8njbpz}
+\caption{}
+\endminipage
+\end{figure}
+
+\section{Visualizing the basis functions}
+dsdsdsdsdsdsdss
+\section{To be investigated}
+How should we connect the modules to train our network?
