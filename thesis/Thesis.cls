@@ -376,5 +376,19 @@
   \btypeout{\bibname}
   \@mainmatterfalse}
 \endinput
+
+%%%%%%% CUSTOM
+
+\usepackage[dvipsnames]{xcolor}
+\newcommand{\red}[1]{{\color{red}#1}}
+\newcommand{\todo}[1]{{\color{red}#1}}
+\newcommand{\TODO}[1]{\textbf{\color{red}[TODO: #1]}}
+
+%    Absolute value notation
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\T}{\mathbb{T}}
+\newcommand{\N}{\mathbb{N}}
 %%
 %% End of file `Thesis.cls'.

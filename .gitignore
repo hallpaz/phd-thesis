@@ -13,3 +13,4 @@ thesis/*.gdb_latexmk
 thesis/*.fdb_latexmk
 thesis/*.toc
 .DS_Store
+thesis/Bibliography2.bib
