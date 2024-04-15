@@ -1,0 +1,15 @@
+runs/*
+thesis/*.aux
+thesis/*.bbl
+thesis/*.cls
+thesis/*.gz
+thesis/*.log
+thesis/*.lof
+thesis/*.lot
+thesis/*.out
+thesis/*.pdf
+thesis/*.fls
+thesis/*.gdb_latexmk
+thesis/*.fdb_latexmk
+thesis/*.toc
+.DS_Store

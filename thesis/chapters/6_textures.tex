@@ -1,40 +1,29 @@
-\section{Spectral Neural Representation of Seamless Textures}
+\chapter{Spectral Neural Representation of Seamless Textures}
 
-Textures play a fundamental role in computer graphics, enabling the creation of visually appealing and realistic virtual environments. They provide essential information about the materials, surfaces, and spatial variations present in the virtual scene, enriching the visual experience with intricate details, patterns, and micro-scale level characteristics that would be very difficult to model otherwise
+Textures play a fundamental role in computer graphics, enabling the creation of visually appealing and realistic virtual environments. They provide essential information about the materials, surfaces, and spatial variations present in the virtual scene, enriching the visual experience with intricate details, patterns, and micro-scale level characteristics that would be very difficult to model otherwise.
 
-Within this scope, \textit{periodic textures} stand out as an important example that models repeating patterns with regularity along one or more dimensions. They are used to represent materials found in domains such as architecture, textiles, and industrial design. Capturing the essence of such textures is an important task to bridge the gap between virtual scenes and their real-world counterparts.
-
-
-Traditionally, texture tiles are depicted as discrete digital images. We propose to use our multiresolution INR to represent seamless periodic textures in a continuous, compact and fast to evaluate representation. 
+Within this scope, \textit{periodic textures} stand out as an important example that models repeating patterns with regularity along one or more dimensions. Periodic textures are specially useful to represent materials found in domains such as architecture, textiles, and industrial design. Capturing the essence of such textures is an important task to bridge the gap between virtual scenes and their real-world counterparts.
 
 
-Training a sinusoidal INR to fit a given texture sample has the drawback of its image possibly being non-tileable. To avoid this, we introduce a condition for an INR to be \textit{periodic} and propose a regularization term based on the \textit{Poisson equation}. 
+Traditionally, texture tiles are depicted as discrete digital images. We propose to use our multiresolution INR to represent seamless periodic textures in a continuous, compact and fast to evaluate representation. In this chapter we extend deep sinusoidal neural networks to \textit{periodic neural networks}. We prove that if we initialize the first layer of a sinusoidal INR with frquencies that are integer multiples of a period $P$, then the entire INR will be periodic with period $P$.  This is due to the fact that the composition of sinusoidal layers expands as a sum of sines with frequencies given by integer combinations of the input layer, and the result is similarly periodic~\cite{novello2022understanding, yuce2022structured}. We leverage this property to fit periodic signals such as image and texture representations.
 
-Regarding the periodicity of an INR, we observe that if one takes the first layer of a {sinusoidal} INR and initializes it with integer frequencies with a period $P$, the entire INR will be periodic with period $P$. This is due to the fact that the composition of sinusoidal layers expands as a sum of sines with frequencies given by integer combinations of the input layer, and the result is similarly periodic~\cite{novello2022understanding, yuce2022structured}. We leverage this property to fit periodic signals such as image and texture representations.
 
-The next step in our method involves defining a regularization term to \myhl{ensure that the image produced by a periodic INR forms a seamless, tileable texture -- meaning it should tile across the plane without displaying noticeable seams or discontinuities at the tile boundary}.
-To achieve this, we employ the Poisson equation which enforces the INR gradient matches the original gradient within the domain (Poisson equation) and asks the INR to be equal to an image average on the domain border (periodic boundary values)~\cite{perez2023poisson}.
-It is important to note that for this problem to be well-posed, the boundary must be closed. \myhl{However, since our network is periodic, we are solving the Poisson problem on the torus which allows us to also require gradient matching on the domain boundary (see the results in Section \ref{s:poisson-regularization} ).}
+Periodic networks allows us to represent a periodic texture in a infinite domain by training it only in a small tile. When the data is not tileable, we introduce a regularization term based on the \textit{Poisson equation} to enforce that the image produced by a periodic INR forms a seamless, tileable texture -- meaning it should tile across the plane without displaying noticeable seams or discontinuities at the tile boundary. The key idea is to enforce the INR gradient of the network to match the original gradient within the domain (Poisson equation) and to ask the INR to be equal to an image average on the domain border (periodic boundary values)~\cite{perez2023poisson}. It is important to note that for this problem to be well-posed, the boundary must be closed. \myhl{However, since our network is periodic, we are solving the Poisson problem on the torus which allows us to also require gradient matching on the domain boundary (see the results in Section \ref{s:poisson-regularization} ).}
+
+% Training a sinusoidal INR to fit a given texture sample has the drawback of its image possibly being non-tileable. To avoid this, we introduce a condition for an INR to be \textit{periodic} and propose a regularization term based on the \textit{Poisson equation}. 
+
+% The next step in our method involves defining a regularization term to \myhl{ensure that the image produced by a periodic INR forms a seamless, tileable texture -- meaning it should tile across the plane without displaying noticeable seams or discontinuities at the tile boundary}.
+% To achieve this, we employ the Poisson equation which enforces the INR gradient matches the original gradient within the domain (Poisson equation) and asks the INR to be equal to an image average on the domain border (periodic boundary values)~\cite{perez2023poisson}.
+
 
 Besides the periodic representation, our method leads to better representation quality of images with fewer parameters in the architecture. Additionally, based on Fourier series, we design a frequency initialization that greatly decreases the amount of possible choices for frequencies. 
 Our experiments demonstrate that this representation is suitable for representing periodic textures, and making them seamless, and can be easily integrated to the graphics pipeline for texture mapping.
 
 
-% In summary, our contributions are:
-% \begin{itemize}
-% \item We propose an initialization scheme for sinusoidal INRs that uses integer multiples of a period $P$ with reduced redundancy. We prove that this approach yields periodic INRs by demonstrating that the composition of periodic sinusoidal layers with period $P$ preserves periodicity.
-% \item \myhl{To ensure seamlessness at the boundary domain, we introduce a regularization term based on the Poisson equation.} 
-% We show that the resulting loss function can train a periodic INR to represent high-resolution textures with good quality and a reduced number of parameters. Moreover, these networks capture \textit{sharp} details in the data.
-% \item The proposed periodic INR framework showcases the ability to learn from specific segments of the ground-truth pattern without compromising information integrity.
-% \item We apply our method in texture mapping, showcasing its versatility across texture representation tasks, such as multiresolution~\cite{paz2023mr}.
-% \end{itemize}
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Background and related methods}
 
-The scope of this work is to represent seamless material textures using \textit{implicit neural representations} (INRs). 
-Thus, it aims to encode the material texture of a surface through a periodic neural network $f:\R^2\to \mathcal{C}$, where $\mathcal{C}$ is the \texttt{RGB} color space, that can be trained based on data samples. More generally, it could be extended to the other channels of a material definition.
+The scope of this work is to represent seamless material textures using \textit{implicit neural representations} (INRs). Thus, it aims to encode the material texture of a surface through a periodic neural network $f:\R^2\to \mathcal{C}$, where $\mathcal{C}$ is the \texttt{RGB} color space, that can be trained based on data samples. More generally, it could be extended to the other channels of a material definition.
 
 In this sense, the context is texture creation methods (procedural-based, capture-based, AI-based, and manual) with the purpose of being applied to a 3D surface by a rendering system.
 
