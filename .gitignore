@@ -1,7 +1,7 @@
 runs/*
 thesis/*.aux
 thesis/*.bbl
-thesis/*.cls
+thesis/*.blg
 thesis/*.gz
 thesis/*.log
 thesis/*.lof
