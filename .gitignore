@@ -12,4 +12,5 @@ thesis/*.fls
 thesis/*.gdb_latexmk
 thesis/*.fdb_latexmk
 thesis/*.toc
+wandb/*
 .DS_Store
