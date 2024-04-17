@@ -384,6 +384,10 @@
 \newcommand{\todo}[1]{{\color{red}#1}}
 \newcommand{\TODO}[1]{\textbf{\color{red}[TODO: #1]}}
 
+\usepackage{mathrsfs}
+\usepackage[scr=boondoxo]{mathalfa}
+\newcommand{\gt}[1]{\mathscr{#1}}
+
 %    Absolute value notation
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\Z}{\mathbb{Z}}

@@ -1,4 +1,23 @@
+@inproceedings{bacon2021,
+author = {D. Lindell and D. Van Veen and J. Park and G. Wetzstein},
+title = {{BACON}: Band-limited coordinate networks for multiscale scene representation},
+booktitle = {Proceedings of CVPR},
+year={2022}
+}
 
+@article{BAJAJ-2000,
+title = {Compression-Based 3D Texture Mapping for Real-Time Rendering},
+journal = {Graphical Models},
+volume = {62},
+number = {6},
+pages = {391-410},
+year = {2000},
+issn = {1524-0703},
+doi = {https://doi.org/10.1006/gmod.2000.0532},
+url = {https://www.sciencedirect.com/science/article/pii/S1524070300905320},
+author = {Chandrajit Bajaj and Insung Ihm and Sanghun Park},
+abstract = {While 2D texture mapping is one of the most effective of the rendering techniques that make 3D objects appear visually interesting, it often suffers from visual artifacts produced when 2D image patterns are wrapped onto the surfaces of objects with arbitrary shapes. On the other hand, 3D texture mapping generates highly natural visual effects in which objects appear carved from lumps of materials rather than laminated with thin sheets as in 2D texture mapping. Storing 3D texture images in a table for fast mapping computations, instead of evaluating procedures on the fly, however, has been considered impractical due to the extremely high memory requirement. In this paper, we present a new effective method for 3D texture mapping designed for real-time rendering of polygonal models. Our scheme attempts to resolve the potential texture memory problem by compressing 3D textures using a wavelet-based encoding method. The experimental results on various nontrivial 3D textures and polygonal models show that high compression rates are achieved with few visual artifacts in the rendered images and a small impact on rendering time. The simplicity of our compression-based scheme will make it easy to implement practical 3D texture mapping in software/hardware rendering systems including real-time 3D graphics APIs such as OpenGL and Direct3D.}
+}
 
 @article{blinn76,
 author = {Blinn, James F. and Newell, Martin E.},
@@ -16,6 +35,22 @@ journal = {Commun. ACM},
 month = {oct},
 pages = {542–547},
 numpages = {6} 
+}
+
+@inproceedings{deeptile,
+author = {Toulatzis, Vasilis and Fudos, Ioannis},
+title = {Deep Tiling: Texture Tile Synthesis Using a Constant Space Deep Learning Approach},
+year = {2021},
+isbn = {978-3-030-90438-8},
+publisher = {Springer-Verlag},
+address = {Berlin, Heidelberg},
+url = {https://doi.org/10.1007/978-3-030-90439-5_33},
+doi = {10.1007/978-3-030-90439-5_33},
+abstract = {Texturing is a fundamental process in computer graphics. Texture is leveraged to enhance the visualization outcome for a 3D scene. In many cases a texture image cannot cover a large 3D model surface because of its small resolution. Conventional techniques like repeating, mirroring or clamping to edge do not yield visually acceptable results. Deep learning based texture synthesis has proven to be very effective in such cases. All deep texture synthesis methods that attempt to create larger resolution textures are limited in terms of GPU memory resources. In this paper, we propose a novel approach to example-based texture synthesis by using a robust deep learning process for creating tiles of arbitrary resolutions that resemble the structural components of an input texture. In this manner, our method is firstly much less memory limited owing to the fact that a new texture tile of small size is synthesized and merged with the existing texture and secondly can easily produce missing parts of a large texture.},
+booktitle = {Advances in Visual Computing: 16th International Symposium, ISVC 2021, Virtual Event, October 4-6, 2021, Proceedings, Part I},
+pages = {414–426},
+numpages = {13},
+keywords = {Deep learning, Texture synthesis}
 }
 
 @article{dorsey-2004,
@@ -65,6 +100,27 @@ abstract = {Abstract Procedural noise functions are widely used in computer grap
 year = {2010}
 }
 
+@inproceedings{fathony2020multiplicative,
+  title={Multiplicative filter networks},
+  author={Fathony, Rizal and Sahu, Anit Kumar and Willmott, Devin and Kolter, J Zico},
+  booktitle={International Conference on Learning Representations},
+  year={2020}
+}
+
+@article{Gutierrez-2019,
+	year = 2019,
+	month = {nov},
+	publisher = {Wiley},
+	volume = {39},
+	number = {1},
+	pages = {511--530},
+	author = {J. Gutierrez and J. Rabin and B. Galerne and T. Hurtut},
+	title = {On Demand Solid Texture Synthesis Using Deep 3D Networks},
+abstract = {This paper describes a novel approach for on demand volumetric texture synthesis based on a deep learning framework that allows for the generation of high quality 3D data at interactive rates. Based on a few example images of textures, a generative network is trained to synthesize coherent portions of solid textures of arbitrary sizes that reproduce the visual characteristics of the examples along some directions. To cope with memory limitations and computation complexity that are inherent to both high resolution and 3D processing on the GPU, only 2D textures referred to as “slices” are generated during the training stage. These synthetic textures are compared to exemplar images via a perceptual loss function based on a pre-trained deep network. The proposed network is very light (less than 100k parameters), therefore it only requires sustainable training (i.e. few hours) and is capable of very fast generation (around a second for 2563 voxels) on a single GPU. Integrated with a spatially seeded PRNG the proposed generator network directly returns an RGB value given a set of 3D coordinates. The synthesized volumes have good visual results that are at least equivalent to the state-of-the-art patch based approaches. They are naturally seamlessly tileable and can be fully generated in parallel.},
+	journal = {Computer Graphics Forum}
+}
+
+
 
 @inproceedings{haeberli90,
 author = {Haeberli, Paul},
@@ -83,6 +139,30 @@ location = {Dallas, TX, USA},
 series = {SIGGRAPH '90}
 }
 
+@inproceedings{schardong2024neural,
+author = {Schardong, Guilherme 
+            and Novello, Tiago 
+            and Paz, Hallison 
+            and Medvedev, Iurii 
+            and Silva, Vin\'icius da 
+            and Velho, Luiz and Gon\calves, Nuno},
+title = {Neural Implicit Morphing of Face Images},
+booktitle={Proceedings of the IEEE / CVF Computer Vision and Pattern Recognition Conference},
+year = {2024}
+}
+
+@inproceedings{sitzmann2019siren,
+    author = {Sitzmann, Vincent
+                and Martel, Julien N.P.
+                and Bergman, Alexander W.
+                and Lindell, David B.
+                and Wetzstein, Gordon},
+    title = {Implicit Neural Representations
+                with Periodic Activation Functions},
+    booktitle = {Proc. NeurIPS},
+    year={2020}
+}
+
 @inproceedings{tileinteractive,
 author = {Lagae, Ares and Kaplan, Craig S. and Fu, Chi-Wing and Ostromoukhov, Victor and Deussen, Oliver},
 title = {Tile-Based Methods for Interactive Applications},
@@ -98,6 +178,26 @@ articleno = {93},
 numpages = {267},
 location = {Los Angeles, California},
 series = {SIGGRAPH '08}
+}
+
+@article{match,
+author = {Shi, Liang and Li, Beichen and Ha\v{s}an, Milo\v{s} and Sunkavalli, Kalyan and Boubekeur, Tamy and Mech, Radomir and Matusik, Wojciech},
+title = {Match: Differentiable Material Graphs for Procedural Material Capture},
+year = {2020},
+issue_date = {December 2020},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {39},
+number = {6},
+issn = {0730-0301},
+url = {https://doi.org/10.1145/3414685.3417781},
+doi = {10.1145/3414685.3417781},
+abstract = {We present MATch, a method to automatically convert photographs of material samples into production-grade procedural material models. At the core of MATch is a new library DiffMat that provides differentiable building blocks for constructing procedural materials, and automatic translation of large-scale procedural models, with hundreds to thousands of node parameters, into differentiable node graphs. Combining these translated node graphs with a rendering layer yields an end-to-end differentiable pipeline that maps node graph parameters to rendered images. This facilitates the use of gradient-based optimization to estimate the parameters such that the resulting material, when rendered, matches the target image appearance, as quantified by a style transfer loss. In addition, we propose a deep neural feature-based graph selection and parameter initialization method that efficiently scales to a large number of procedural graphs. We evaluate our method on both rendered synthetic materials and real materials captured as flash photographs. We demonstrate that MATch can reconstruct more accurate, general, and complex procedural materials compared to the state-of-the-art. Moreover, by producing a procedural output, we unlock capabilities such as constructing arbitrary-resolution material maps and parametrically editing the material appearance.},
+journal = {ACM Trans. Graph.},
+month = {nov},
+articleno = {196},
+numpages = {15},
+keywords = {material acquisition, procedural materials}
 }
 
 @article{Moritz2017Texture,
@@ -121,6 +221,13 @@ series = {SIGGRAPH '08}
   year={2022}
 }
 
+@inproceedings{ntc2023,
+    author = {Vaidyanathan, Karthik and Salvi, Marco and Wronski, Bartlomiej and Akenine-Möller, Tomas and Ebelin, Pontus and Lefohn, Aaron},
+    title = "{Random-Access Neural Compression of Material Textures}",
+    year = {2023},
+    booktitle = {Proceedings of SIGGRAPH},
+}
+
 @inproceedings {pauly-2009,
 booktitle = {Eurographics 2009 - State of the Art Reports},
 editor = {M. Pauly and G. Greiner},
@@ -128,6 +235,18 @@ title = {{State of the Art in Example-based Texture Synthesis}},
 author = {Wie, Li-Yi and Lefebvre, Sylvain and Kwatra, Vivek and Turk, Greg},
 year = {2009},
 publisher = {The Eurographics Association},
+}
+
+@INPROCEEDINGS{paz2022,  author={Paz, Hallison and Novello, Tiago and Silva, Vinicius and Schardong, Guilherme and Schirmer, Luiz and Chagas, Fabio and Lopes, Helio and Velho, Luiz},  booktitle={2022 35th SIBGRAPI Conference on Graphics, Patterns and Images (SIBGRAPI)},   title={Multiresolution Neural Networks for Imaging},   year={2022},  volume={1},  number={},  pages={174-179},  doi={10.1109/SIBGRAPI55357.2022.9991765}
+}
+
+
+@article{paz2023mr,
+  title={MR-Net: Multiresolution sinusoidal neural networks},
+  author={Paz, Hallison and Perazzo, Daniel and Novello, Tiago and Schardong, Guilherme and Schirmer, Luiz and da Silva, Vinicius and Yukimura, Daniel and Chagas, Fabio and Lopes, Helio and Velho, Luiz},
+  journal={Computers \& Graphics},
+  year={2023},
+  publisher={Elsevier}
 }
 
 @inproceedings{perez2003,
@@ -168,6 +287,12 @@ numpages = {10},
 keywords = {interactive, functional composition, solid texture, fire, space function, turbulence, pixel stream editor, waves, stochastic modelling, algorithm development}
 }
 
+@inproceedings{taming2017,
+  author={G. Parascandolo and H. Huttunen and T. Virtanen},
+  title={Taming the waves: sine as activation function in deep neural networks},
+  year={2017}
+}
+
 @inproceedings{yuce2022structured,
   title={A structured dictionary perspective on implicit neural representations},
   author={Y{\"u}ce, Gizem and Ortiz-Jim{\'e}nez, Guillermo and Besbinar, Beril and Frossard, Pascal},
@@ -187,6 +312,15 @@ DOI = {10.1111/cgf.13656}
 }
 
 @inproceedings{tilehard, author = {Wei, Li-Yi}, title = {Tile-Based Texture Mapping on Graphics Hardware}, year = {2004}, isbn = {3905673150}, publisher = {Association for Computing Machinery}, address = {New York, NY, USA}, url = {https://doi.org/10.1145/1058129.1058138}, doi = {10.1145/1058129.1058138}, abstract = {Texture mapping has been a fundamental feature for commodity graphics hardware. However, a key challenge for texture mapping is how to store and manage large textures on graphics processors. In this paper, we present a tile-based texture mapping algorithm by which we only have to physically store a small set of texture tiles instead of a large texture. Our algorithm generates an arbitrarily large and non-periodic virtual texture map fr\`{o}m the small set of stored texture tiles. Because we only have to store a small set of tiles, it minimizes the storage requirement to a small constant, regardless of the size of the virtual texture. In addition, the tiles are generated and packed into a single texture map, so that the hardware filtering of this packed texture map corresponds directly to the filtering of the virtual texture. We implement our algorithm as a fragment program, and demonstrate performance on latest graphics processors.}, booktitle = {Proceedings of the ACM SIGGRAPH/EUROGRAPHICS Conference on Graphics Hardware}, pages = {55–63}, numpages = {9}, keywords = {graphics hardware, texture mapping, texture synthesis}, location = {Grenoble, France}, series = {HWWS '04} }
+
+@misc{zhou2022tilegen,
+      title={TileGen: Tileable, Controllable Material Generation and Capture}, 
+      author={Xilong Zhou and Miloš Hašan and Valentin Deschaintre and Paul Guerrero and Kalyan Sunkavalli and Nima Kalantari},
+      year={2022},
+      eprint={2206.05649},
+      archivePrefix={arXiv},
+      primaryClass={cs.GR}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SOFTWARES  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

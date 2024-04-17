@@ -16,6 +16,44 @@
 \usepackage{vector}  % Allows "\bvec{}" and "\buvec{}" for "blackboard" style bold vectors in maths
 \hypersetup{urlcolor=blue, colorlinks=true}  % Colours hyperlinks in blue, but this can be distracting if there are many links.
 
+%%%%%%%%% CUSTOM %%%%%%%%% 
+\usepackage[dvipsnames]{xcolor}
+\newcommand{\red}[1]{{\color{red}#1}}
+\newcommand{\todo}[1]{{\color{red}#1}}
+\newcommand{\TODO}[1]{\textbf{\color{red}[TODO: #1]}}
+
+\usepackage{mathrsfs}
+\usepackage[scr=boondoxo]{mathalfa}
+\newcommand{\gt}[1]{\mathscr{#1}}
+
+%    Absolute value notation
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\T}{\mathbb{T}}
+\newcommand{\N}{\mathbb{N}}
+
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand\norm[1]{\lVert#1\rVert}
+% \newcommand\norm[1]{\left|#1\right|}
+
+\renewcommand{\dot}[2]{\left\langle#1,#2\right\rangle}
+
+%deep implicits notation---------
+\renewcommand{\div}[1]{\mbox{div}\,#1}
+% \newcommand{\grad}[1]{\mbox{grad}\,#1}
+\newcommand{\grad}[1]{\nabla#1}
+\newcommand{\hess}[1]{\mbox{\textbf{H}} #1}% \newcommand{\hess}[1]{\nabla^2\,#1}
+\newcommand{\jac}[1]{\mbox{\textbf{J}}\left(#1\right)}
+\newcommand{\domain}{\mathcal{Q}}
+\renewcommand{\L}{\mathcal{L}}
+\newcommand{\x}{p}
+\newcommand{\f}{f}
+\newcommand{\gtf}{\hat{f}}
+\newcommand{\fsin}[1]{\sin\left(#1\right)}
+\newcommand{\fcos}[1]{\cos\left(#1\right)}
+%%%%%%%%%%%%%%%%%%%%%%
+
 %% ----------------------------------------------------------------
 \begin{document}
 \frontmatter      % Begin Roman style (i, ii, iii, iv...) page numbering
