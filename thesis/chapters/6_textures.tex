@@ -16,14 +16,13 @@ Periodic networks allows us to represent a periodic texture in a infinite domain
 % To achieve this, we employ the Poisson equation which enforces the INR gradient matches the original gradient within the domain (Poisson equation) and asks the INR to be equal to an image average on the domain border (periodic boundary values)~\cite{perez2023poisson}.
 
 
-Besides the periodic representation, our method leads to better representation quality of images with fewer parameters in the architecture. Additionally, based on Fourier series, we design a frequency initialization that greatly decreases the amount of possible choices for frequencies. 
-Our experiments demonstrate that this representation is suitable for representing periodic textures, and making them seamless, and can be easily integrated to the graphics pipeline for texture mapping.
+Besides the periodic representation, our method leads to better representation quality of images with fewer parameters in the architecture. Additionally, based on Fourier series, we design a frequency initialization that greatly decreases the amount of possible choices for frequencies. Our experiments demonstrate that this representation is suitable for representing periodic textures, and making them seamless, and can be easily integrated to the graphics pipeline for texture mapping.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Background and related methods}
 
-The scope of this work is to represent seamless material textures using \textit{implicit neural representations} (INRs). Thus, it aims to encode the material texture of a surface through a periodic neural network $f:\mathbb{R}^2\to \mathcal{C}$, where $\mathcal{C}$ is the \texttt{RGB} color space, that can be trained based on data samples. More generally, it could be extended to the other channels of a material definition.
+The scope of this chapter is to represent seamless material textures using \textit{implicit neural representations} (INRs). Thus, it aims to encode the material texture of a surface through a periodic neural network $f_\theta:\mathbb{R}^2\to \mathcal{C}$, where $\mathcal{C}$ is a color space such as grayscale or \texttt{RGB}, and $\theta$ is the set of parameters of the netowrk. that can be trained based on data samples. More generally, this representation could be extended to the other channels of a material definition such as the specular or normal channels.
 
 In this sense, the context is texture creation methods (procedural-based, capture-based, AI-based, and manual) with the purpose of being applied to a 3D surface by a rendering system.
 
