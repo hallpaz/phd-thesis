@@ -89,6 +89,7 @@
 \theoremstyle{remark}
 \newtheorem{remark}[theorem]{Remark}
 \usepackage[centerlast,small,sc]{caption}
+\usepackage{subcaption}
 \setlength{\captionmargin}{20pt}
 \newcommand{\fref}[1]{Figure~\ref{#1}}
 \newcommand{\tref}[1]{Table~\ref{#1}}
@@ -108,7 +109,7 @@
 \setcounter{dbltopnumber}{9}
 \usepackage{graphicx}
 \usepackage{epstopdf}
-\usepackage[scriptsize]{subfigure}
+% \usepackage[scriptsize]{subfigure}
 \usepackage{booktabs}
 \usepackage{rotating}
 \usepackage{listings}
