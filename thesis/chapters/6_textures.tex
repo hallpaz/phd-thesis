@@ -168,6 +168,7 @@ We define a \textit{periodic INR} to be a sinusoidal MLP such that its first lay
 
 \subsection{Multiresolution sinusoidal networks}\label{s-mr-networks}
 \label{s-multiresolution}
+
 To represent textures using INRs we need to represent them in multiresolution. For this, we adopt the \textit{multiresolution network} (MRnet)~\cite{paz2022,paz2023mr} as a representation. Here, a MRnet is a network $f\!:\!\R^2\!\times\! [0,N]\!\to\! \R$ defined as a sum of $N$ periodic INR $g_i:\R^2\to\R$:
 \begin{align}\label{e-mrnet}
 f(x,t) = c_0(t)g_0(x) + \cdots + c_{N-1}(t)g_{N-1}(x),
@@ -253,13 +254,77 @@ Classical methods do not provide such flexibility.
 
 \section{Experiments}
 
-This section presents experiments conducted with our method for representing tileable material textures. We initiate the process by fitting a tileable pattern across various scales and evaluate its performance through qualitative and quantitative analysis.
-Subsequently, we train the network using a sample that includes repetitions of the pattern, with a fundamental period smaller than the training domain. To achieve this, we employ masks to selectively exclude certain image areas during training, assessing the network's capability to reconstruct them accurately.
-Furthermore, we tackle non-tileable patterns that can be rendered seamless through Poisson regularization. Finally, we offer comparative evaluations with existing methods in the field.
+This section details experiments carried out using our method to represent tileable material textures. We begin by fitting a tileable pattern across different scales and evaluate its performance qualitatively. Next, we train the network on a sample containing repetitions of the pattern, where the fundamental period is smaller than the training domain. Our goal is to examine how the choice of the network's period influences pattern reconstruction. Additionally, we use masks during training to selectively exclude specific image regions, testing the network's accuracy in reconstructing them.
+
+Moreover, we address non-tileable patterns that we make seamless using our Poisson regularization technique. Lastly, we provide comparative evaluations with established methods in the field.
 
 \subsection{Seamless Tileable Materials}\label{s-multires-2d}
 
-We start with a single tile, matching the fundamental period of a texture, with a resolution of $1024^2$ pixels and $8$ bits per color channel in \texttt{RGB} space. We convert the  train a MRnet, using the framework in \cite{paz2023mr}, consisting of a $6$ periodic INRs (stages).
+We start with a single tile, matching the fundamental period of a texture, with a resolution of $512^2$ pixels and $8$ bits per color channel in \texttt{RGB} space. The network is trained in the domain $[-1, 1] \times [-1, 1]$ and, thus, we set its period as $2$. Table \red{XXX} displays the architecture of the network used in this experiment, while Figure \ref{f:periodic-reconstruction} shows the ground truth image, the result of the reconstruction in the training domain and the exptrapolation in the domain [-2, 2].
+
+
+% \begin{figure}
+%     \centering
+%     \begin{subfigure}[b]{0.3\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{img/placeholder512.png}
+%         \caption{$y=x$}
+%         \label{fig:y equals x}
+%     \end{subfigure}
+%     \hfill
+%     \begin{subfigure}[b]{0.3\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{img/placeholder512.png}
+%         \caption{$y=3\sin x$}
+%         \label{fig:three sin x}
+%     \end{subfigure}
+%     \hfill
+%     \begin{subfigure}[b]{0.3\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{img/placeholder512.png}
+%         \caption{$y=5/x$}
+%         \label{fig:five over x}
+%     \end{subfigure}
+%        \caption{Three simple graphs}
+%        \label{f:periodic-reconstruction}
+% \end{figure}
+
+% Figure \ref{f:comparison-siren} illustrates a comparison between training a neural network initialized with our method against training a network initialized as Siren. Note that without our periodic initialization, the network only learns the periodic tile inside the domain of supervision, exhibiting noise when evaluated in another set of coordinates. 
+
+% \begin{figure}
+%     \centering
+%     \begin{subfigure}[b]{0.3\textwidth}
+%         \centering
+%         \includegraphics[width=0.40\linewidth]{img/ch6/mnet_extrapolation.png}
+%         \caption{Periodic reconstruction in $[-2, 2]^2$}
+%         \label{f:periodic-leopard-regular}
+%     \end{subfigure}
+%     \hfill
+%     \begin{subfigure}[b]{0.3\textwidth}
+%         \centering
+%         \includegraphics[width=0.40\linewidth]{img/ch6/siren_extrapolation.png}
+%         \caption{Siren reconstruction in $[-2, 2]^2$}
+%         \label{f:siren-leopard-regular}
+%     \end{subfigure}
+%     \begin{subfigure}[b]{0.3\textwidth}
+%         \centering
+%         \includegraphics[width=0.40\linewidth]{img/ch6/siren_extrapolation.png}
+%         \caption{Periodic reconstruction in $[-9, -6] \times [1, 4]$}
+%         \label{f:periodic-leopard-translated}
+%     \end{subfigure}
+%     \begin{subfigure}[b]{0.3\textwidth}
+%         \centering
+%         \includegraphics[width=0.40\linewidth]{img/ch6/siren_extrapolation.png}
+%         \caption{Siren reconstruction in $[-9, -6] \times [1, 4]$}
+%         \label{f:siren-leopard-translated}
+%     \end{subfigure}
+%        \caption{Periodic network vs Siren$}
+%        \label{f:comparison-siren}
+% \end{figure}
+
+
+% We convert the train a MRnet, using the framework in \cite{paz2023mr}, consisting of a $6$ periodic INRs (stages).
+
 % We use periodic INRs with a single hidden layer, and heterogeneous width, as experiments indicated that we need fewer parameters to fit an image of lower resolution and low-frequency details. The initialization uses the scheme described in Sec~\ref{s-initialization}. The architecture of the hidden layer (number of input/output neurons) and the band limits of the first layer are in Table \ref{tab:mnet-architecture}.
 
 % \pagebreak
