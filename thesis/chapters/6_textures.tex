@@ -260,124 +260,115 @@ Moreover, we address non-tileable patterns that we make seamless using our Poiss
 
 \subsection{Seamless Tileable Materials}\label{s-multires-2d}
 
-We start with a single tile, matching the fundamental period of a texture, with a resolution of $512^2$ pixels and $8$ bits per color channel in \texttt{RGB} space. The network is trained in the domain $[-1, 1] \times [-1, 1]$ and, thus, we set its period as $2$. Table \red{XXX} displays the architecture of the network used in this experiment, while Figure \ref{f:periodic-reconstruction} shows the ground truth image, the result of the reconstruction in the training domain and the exptrapolation in the domain [-2, 2].
+We start with a single tile, matching the fundamental period of a texture, with a resolution of $512^2$ pixels and $8$ bits per color channel in \texttt{RGB} space. The network is trained in the domain $[-1, 1] \times [-1, 1]$ and, thus, we set its period as $2$. The initialization uses the scheme described in Sec~\ref{s-initialization} \red{with the maximum frequency} $\omega=32$. \red{Table XXX} displays the architecture of the network used in this experiment, while Figure \ref{f:periodic-reconstruction} shows the ground truth image, the result of the reconstruction in the training domain and the exptrapolation in the domain [-2, 2]. Observe that the ground truth image and the reconstructed image exhibit a high degree of similarity with a \red{PSNR of XX.X dB}.
 
 
-% \begin{figure}
-%     \centering
-%     \begin{subfigure}[b]{0.3\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/placeholder512.png}
-%         \caption{$y=x$}
-%         \label{fig:y equals x}
-%     \end{subfigure}
-%     \hfill
-%     \begin{subfigure}[b]{0.3\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/placeholder512.png}
-%         \caption{$y=3\sin x$}
-%         \label{fig:three sin x}
-%     \end{subfigure}
-%     \hfill
-%     \begin{subfigure}[b]{0.3\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/placeholder512.png}
-%         \caption{$y=5/x$}
-%         \label{fig:five over x}
-%     \end{subfigure}
-%        \caption{Three simple graphs}
-%        \label{f:periodic-reconstruction}
-% \end{figure}
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{$Ground truth$}
+        \label{fig:y equals x}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction in $[-1, 1]$}
+        \label{fig:three sin x}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Extrapolation in $[-2, 2]$}
+        \label{fig:five over x}
+    \end{subfigure}
+       \caption{Reconstruction using periodic network}
+       \label{f:periodic-reconstruction}
+\end{figure}
 
-% Figure \ref{f:comparison-siren} illustrates a comparison between training a neural network initialized with our method against training a network initialized as Siren. Note that without our periodic initialization, the network only learns the periodic tile inside the domain of supervision, exhibiting noise when evaluated in another set of coordinates. 
+Figure \ref{f:comparison-siren} illustrates a comparison between training a neural network initialized with our method against training a network initialized as Siren. Note that without our periodic initialization, the network only learns the periodic tile inside the domain of supervision, exhibiting noise when evaluated in another set of coordinates.
 
-% \begin{figure}
-%     \centering
-%     \begin{subfigure}[b]{0.3\textwidth}
-%         \centering
-%         \includegraphics[width=0.40\linewidth]{img/ch6/mnet_extrapolation.png}
-%         \caption{Periodic reconstruction in $[-2, 2]^2$}
-%         \label{f:periodic-leopard-regular}
-%     \end{subfigure}
-%     \hfill
-%     \begin{subfigure}[b]{0.3\textwidth}
-%         \centering
-%         \includegraphics[width=0.40\linewidth]{img/ch6/siren_extrapolation.png}
-%         \caption{Siren reconstruction in $[-2, 2]^2$}
-%         \label{f:siren-leopard-regular}
-%     \end{subfigure}
-%     \begin{subfigure}[b]{0.3\textwidth}
-%         \centering
-%         \includegraphics[width=0.40\linewidth]{img/ch6/siren_extrapolation.png}
-%         \caption{Periodic reconstruction in $[-9, -6] \times [1, 4]$}
-%         \label{f:periodic-leopard-translated}
-%     \end{subfigure}
-%     \begin{subfigure}[b]{0.3\textwidth}
-%         \centering
-%         \includegraphics[width=0.40\linewidth]{img/ch6/siren_extrapolation.png}
-%         \caption{Siren reconstruction in $[-9, -6] \times [1, 4]$}
-%         \label{f:siren-leopard-translated}
-%     \end{subfigure}
-%        \caption{Periodic network vs Siren$}
-%        \label{f:comparison-siren}
-% \end{figure}
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch6/mnet_extrapolation.png}
+        \caption{Ours in $[-2, 2]^2$}
+        \label{f:periodic-leopard-regular}
+    \end{subfigure}
+    % \hfill
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch6/siren_extrapolation.png}
+        \caption{Siren in $[-2, 2]^2$}
+        \label{f:siren-leopard-regular}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch6/siren_extrapolation.png}
+        \caption{Ours in $[-9, -6] \times [1, 4]$}
+        \label{f:periodic-leopard-translated}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch6/siren_extrapolation.png}
+        \caption{Siren in $[-9, -6] \times [1, 4]$}
+        \label{f:siren-leopard-translated}
+    \end{subfigure}
+       \caption{Our periodic network vs Siren}
+       \label{f:comparison-siren}
+\end{figure}
+
+As we've demonstrated in chapter \ref{ch:mrnet}, the networks of the MR-Net family are analytically equivalent to a deep sinusoidal neural network. This way it is expected that this periodic initialization also works in multiresolution. To validate this hypothesis, we train a M-Net model, using the framework described in \ref{ch:mrnet}, consisting of $6$ stages. The architecture of the hidden layer (number of input/output neurons) and the band limits of the first layer for each stage are in Table \ref{tab:mnet-architecture}.
+
+\begin{table}[h]
+\small
+\begin{tabular}{|l|c|l|l|}
+\hline
+\textbf{Stage} & \multicolumn{1}{l|}{\textbf{Band-Limit}} & \multicolumn{1}{l|}{\textbf{Hidden Input}} & \multicolumn{1}{l|}{\textbf{Hidden Output}} \\ \hline
+ 0     & $[0, 3]\times[-3, 3]$                       & 24                                & 32                                 \\
+ 1     & $[0, 6]\times[-6, 6]$                       & 48                                & 32                                 \\
+ 2     & $[0, 12]\times[-12, 12]$                     & 80                                & 64                                 \\
+ 3     & $[0, 24]\times[-24, 24]$                     & 192                               & 160                                \\
+ 4     & $[0, 56]\times[-56, 56]$                     & 384                               & 256                                \\
+ 5     & $[0, 128]\times[-128, 128]$                   & 1024                              & 512                                \\ \hline
+\end{tabular}
+\caption{M-Net architecture.}
+\end{table}\label{tab:mnet-architecture}
 
 
-% We convert the train a MRnet, using the framework in \cite{paz2023mr}, consisting of a $6$ periodic INRs (stages).
+Figure \ref{f:rec_gt} presents a qualitative comparison between the original image and the reconstructed image at the finest scale. Once again, our method achieves a high-quality reconstruction with a \red{PNSR of XX.X db}. Additionally, our model achieves this level of fidelity using 855,572 parameters, which is less than the number of pixels in the image ($1024^2 = 1,048,576$). 
 
-% We use periodic INRs with a single hidden layer, and heterogeneous width, as experiments indicated that we need fewer parameters to fit an image of lower resolution and low-frequency details. The initialization uses the scheme described in Sec~\ref{s-initialization}. The architecture of the hidden layer (number of input/output neurons) and the band limits of the first layer are in Table \ref{tab:mnet-architecture}.
+\red{Our model also demonstrated the ability to encode information at multiresolution giving an even better compression compared to a traditional Mipmap. [What is the size of each file? Can I zip the network weights?]}
 
-% \pagebreak
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.42\linewidth]{img/placeholder512.png}
+\includegraphics[width=0.42\linewidth]{img/placeholder512.png}
+\caption{Original image (left); reconstruction of the network (right) 
+}
+\label{f:rec_gt}
+\end{figure}
 
-% \begin{table}[h]
-% \small
-% \begin{tabular}{|l|c|l|l|}
-% \hline
-% \textbf{Stage} & \multicolumn{1}{l|}{\textbf{Band-Limit}} & \multicolumn{1}{l|}{\textbf{Hidden Input}} & \multicolumn{1}{l|}{\textbf{Hidden Output}} \\ \hline
-%  0     & $[0, 3]\times[-3, 3]$                       & 24                                & 32                                 \\
-%  1     & $[0, 6]\times[-6, 6]$                       & 48                                & 32                                 \\
-%  2     & $[0, 12]\times[-12, 12]$                     & 80                                & 64                                 \\
-%  3     & $[0, 24]\times[-24, 24]$                     & 192                               & 160                                \\
-%  4     & $[0, 56]\times[-56, 56]$                     & 384                               & 256                                \\
-%  5     & $[0, 128]\times[-128, 128]$                   & 1024                              & 512                                \\ \hline
-% \end{tabular}
-% \caption{M-Net architecture.}
-% \end{table}\label{tab:mnet-architecture}
+To verify the periodicity of our model, we evaluate the network in a larger domain ($[-2, 2]^2$) than its training domain $[-1, 1]^2$; Figure~\ref{f:mr-periodic} illustrates it for levels of detail 2, 4, and 6.
 
-% \vspace{-.7cm}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.84\linewidth]{img/placeholder512.png}
+\caption{Reconstructed multiresolution levels extrapolation. Top left: level 2; bottom left: level 4; right: level 6.}
+\label{f:mr-periodic}
+\end{figure}
 
-% Figure \ref{f:rec_gt} presents a qualitative comparison between the original image and the reconstructed image using our method. 
-% Observe that the images exhibit a high degree of similarity with a PSNR of 31.8 dB.
-% Additionally, our model achieves this level of fidelity using 855,572 parameters, which is less than the number of pixels in the image (1,048,576). Our model also demonstrated the ability to encode information at multiresolution giving an even better compression compared to a traditional Mipmap.
+\subsection{Repeating Patterns in Sample}
 
-% \begin{figure}[h]
-% \centering
-% \includegraphics[width=0.42\linewidth]{img/dirty/gt6.png}
-% \includegraphics[width=0.42\linewidth]{img/dirty/detail6.png}
-% \vspace{-0.4cm}
-% \caption{Original image (left); reconstruction of the network (right) 
-% }
-% \label{f:rec_gt}
-% \end{figure}
+We can also represent a texture with a fundamental period smaller than the sample size. 
+This means that the periodic pattern repeats multiple times within the sample. 
+To address this, we can specify the fundamental period either by prior knowledge or through pre-processing of the image, and train the network using the entire data or only a specific portion of it.
 
-% To verify the periodicity of our INR model (Secs \ref{s-deep-networks} and \ref{s-mr-networks}), we evaluate the network in a larger domain ($[-2, 2]^2$) than its training domain $[-1, 1]^2$; Figure~\ref{f:mr-periodic} illustrates it for levels of detail 2, 4, and 6.
-
-% \begin{figure}[!h]
-% \centering
-% \includegraphics[width=0.84\linewidth]{img/dirty/ext.pdf}
-% \vspace{-0.4cm}
-% \caption{Reconstructed multiresolution levels extrapolation. Top left: level 2; bottom left: level 4; right: level 6.}
-% \label{f:mr-periodic}
-% \end{figure}
-
-% \subsection{Repeating Patterns in Sample}
-
-% We can also represent a texture with a fundamental period smaller than the sample size. 
-% This means that the periodic pattern repeats multiple times within the sample. 
-% To address this, we can specify the fundamental period either by prior knowledge or through pre-processing of the image, and train the network using the entire data or only a specific portion of it.
-
-% Figure \ref{f:mask_nomask} showcases a texture sample where the pattern is repeated twice, and its extrapolated reconstructions in the region $[0, 3]^2$. The training considered $[-1, 1]^2$, with a specified period of 1. 
-% Figures~\ref{f:mask_nomask} (a) and (c) show the training data, while the network reconstruction is given by (b) and (d), respectively. 
+Figure \ref{f:mask_nomask} showcases a texture sample where the pattern is repeated twice, and its extrapolated reconstructions in the region $[0, 3]^2$. The training considered $[-1, 1]^2$, with a specified period of 1. Figures~\ref{f:mask_nomask} (a) and (c) show the training data, while the network reconstruction is given by (b) and (d), respectively. 
 % In (a-b), all coordinates within the region are provided, thus the network learns a periodic representation of the pattern. 
 % In (c-d), we employ a mask to exclude a small part while preserving a contiguous region that contains the fundamental period. Again, our method reconstructs the periodic pattern across the entire region. This demonstrates that the over-determined problem does not negatively impact the results. 
 
@@ -413,66 +404,64 @@ We start with a single tile, matching the fundamental period of a texture, with 
 % \end{figure}
 
 
-% Next, we selectively remove points from the training data encouraging a sparse representation of the pattern. We generate the mask by randomly selecting a pixel and subsequently discarding all pixels that correspond to the selected one based on the pattern's period. 
-% % These steps are repeated until no additional pixels remain to be sampled. 
-% Consequently, the mask encompasses exactly $1/4$ of the total pixels. Figure \ref{f:masked_recontruction} shows the training data, where the black pixels were removed from training, and the learned texture in $[2, 6]^2$. 
-% \begin{figure}[!h]
-% \centering
-% \includegraphics[width=0.4\linewidth]{img/victorian/stochastic_mask.png}
-% \includegraphics[width=0.4\linewidth]{img/victorian/extrapolation_randommask.png}
-% \vspace{-0.4cm}
-% \caption{On the left, the masked input data, where the black pixels were removed from training. On the right, the network reconstruction.~\\
-% }
-% \label{f:masked_recontruction}
-% \end{figure}
-% % \vspace{-0.6cm}
+Next, we selectively remove points from the training data encouraging a sparse representation of the pattern. We generate the mask by randomly selecting a pixel and subsequently discarding all pixels that correspond to the selected one based on the pattern's period. 
+These steps are repeated until no additional pixels remain to be sampled. 
+Consequently, the mask encompasses exactly $1/4$ of the total pixels. Figure \ref{f:masked_recontruction} shows the training data, where the black pixels were removed from training, and the learned texture in $[2, 6]^2$. 
 
-% Even in this case, our method captures the underlying periodicity. This provides evidence that we can use the training data at any part of the domain. In other words, we only need a single sample from the class of equivalence defined by the periodicity to reconstruct the image without requiring any additional regularization.
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.4\linewidth]{img/ch6/stochastic_mask.png}
+\includegraphics[width=0.4\linewidth]{img/ch6/extrapolation_randommask.png}
+\caption{On the left, the masked input data, where the black pixels were removed from training. On the right, the network reconstruction.~\\
+}
+\label{f:masked_recontruction}
+\end{figure}
+
+Even in this case, our method captures the underlying periodicity. This provides evidence that we can use the training data at any part of the domain. In other words, we only need a single sample from the class of equivalence defined by the periodicity to reconstruct the image without requiring any additional regularization.
 
 \subsection{Seamless with Poisson Regularization}\label{s:poisson-regularization}
 
-% When obtaining a sample for a material, the inherent irregularity in the sample's pattern poses a challenge in seamlessly stitching it together. Achieving a seamless material is crucial for numerous applications. This section details the application of our methodology to generate seamless results from material patches.
+When obtaining a sample for a material, the inherent irregularity in the sample's pattern poses a challenge in seamlessly stitching it together. Achieving a seamless material is crucial for numerous applications. This section details the application of our methodology to generate seamless results from material patches.
 
-% We train a periodic INR for this task using the loss function of Section~\ref{s-training} which is based on the Poisson equation. In regard to classical Poisson problem solutions, a key observation of our method is the inversion of boundary and interior conditions. 
-% We employ masks (the function $\lambda$ in Eq~\ref{e-blending-no-grad}) to delineate the supervision of gradients at the border, while color values are supervised within the interior of the region. Given that our work is situated in the realm of periodic functions, the problem domain is equivalently represented as a torus, thus obviating traditional boundaries.
+We train a periodic INR for this task using the loss function of Section~\ref{s-training} which is based on the Poisson equation. In regard to classical Poisson problem solutions, a key observation of our method is the inversion of boundary and interior conditions. 
+We employ masks (the function $\lambda$ in Eq~\ref{e-blending-no-grad}) to delineate the supervision of gradients at the border, while color values are supervised within the interior of the region. Given that our work is situated in the realm of periodic functions, the problem domain is equivalently represented as a torus, thus obviating traditional boundaries.
 
 
-% While binary masks can produce satisfactory outcomes, they often introduce artifacts at the gradient of the reconstructed network (Figure \ref{f:training_masks}), requiring customized adjusts, per image, of the weights of the loss function components. Consequently, we opted for soft masks computed via a distance function to the center of the mask. 
-% In our experiments, we utilized the $L_2$ distance, but any $L_p$ distance can be employed as a parameter for refining the results. 
+While binary masks can produce satisfactory outcomes, they often introduce artifacts at the gradient of the reconstructed network (Figure \ref{f:training_masks}), requiring customized adjusts, per image, of the weights of the loss function components. Consequently, we opted for soft masks computed via a distance function to the center of the mask. 
+In our experiments, we utilized the $L_2$ distance, but any $L_p$ distance can be employed as a parameter for refining the results. 
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.90\linewidth]{img/placeholder512.png}
+% \includegraphics[width=0.32\linewidth]{img/non-tileable/hard_mask_d0.png}
+% \includegraphics[width=0.32\linewidth]{img/non-tileable/soft_mask_d0.png}
+
+% \includegraphics[width=0.32\linewidth]{img/non-tileable/hard_gradient.png}
+% \includegraphics[width=0.32\linewidth]{img/non-tileable/soft_gradient.png}
+
+\caption{Binary mask (top), soft mask (bottom), and the normalized magnitude of the gradients of the trained networks. This is the gradient of the texture in Line 2 of Fig \ref{f:seamless_examples}.}
+\label{f:training_masks}
+\end{figure}
+
+
 % \begin{figure}[!h]
 % \centering
-% \includegraphics[width=0.90\linewidth]{img/non-tileable/gradients-merged.png}
-% % \includegraphics[width=0.32\linewidth]{img/non-tileable/hard_mask_d0.png}
-% % \includegraphics[width=0.32\linewidth]{img/non-tileable/soft_mask_d0.png}
-
-% % \includegraphics[width=0.32\linewidth]{img/non-tileable/hard_gradient.png}
-% % \includegraphics[width=0.32\linewidth]{img/non-tileable/soft_gradient.png}
-% \vspace{-0.4cm}
-% \caption{Binary mask (top), soft mask (bottom), and the normalized magnitude of the gradients of the trained networks. This is the gradient of the texture in Line 2 of Fig \ref{f:seamless_examples}.}
-% \label{f:training_masks}
+% \includegraphics[width=0.40\linewidth]{img/non-tileable/22fabric1.jpg}
+% \includegraphics[width=0.40\linewidth]{img/non-tileable/extrapolation_jeans.png}
+% \vspace{-0.2cm}
+% \caption{Seamless reconstruction of jeans fabric}
+% \label{f:extrapolation_jeans}
 % \end{figure}
 
-% \vspace{-0.2cm}
+% \begin{figure}[!h]
+% \centering
+% \includegraphics[width=0.38\linewidth]{img/non-tileable/mosaic_leaves.jpg}
+% % \includegraphics[width=0.20\linewidth]{img/non-tileable/mask_d1.png}
+% % \includegraphics[width=0.20\linewidth]{img/non-tileable/mask_d1.png}
+% \includegraphics[width=0.38\linewidth]{img/non-tileable/extrapolation-leaves.png}
 
-% % \begin{figure}[!h]
-% % \centering
-% % \includegraphics[width=0.40\linewidth]{img/non-tileable/22fabric1.jpg}
-% % \includegraphics[width=0.40\linewidth]{img/non-tileable/extrapolation_jeans.png}
-% % \vspace{-0.2cm}
-% % \caption{Seamless reconstruction of jeans fabric}
-% % \label{f:extrapolation_jeans}
-% % \end{figure}
-
-% % \begin{figure}[!h]
-% % \centering
-% % \includegraphics[width=0.38\linewidth]{img/non-tileable/mosaic_leaves.jpg}
-% % % \includegraphics[width=0.20\linewidth]{img/non-tileable/mask_d1.png}
-% % % \includegraphics[width=0.20\linewidth]{img/non-tileable/mask_d1.png}
-% % \includegraphics[width=0.38\linewidth]{img/non-tileable/extrapolation-leaves.png}
-
-% % \caption{Wonderful caption}
-% % \label{f:seamless_reconstruction}
-% % \end{figure}
+% \caption{Wonderful caption}
+% \label{f:seamless_reconstruction}
+% \end{figure}
 
 % Figure~\ref{f:seamless_examples} illustrates several seamless reconstructions (second column) of non-tileable material samples (first column).
 % The first line shows an example of a fabric patch containing only fine details.
@@ -523,9 +512,9 @@ We start with a single tile, matching the fundamental period of a texture, with 
 
 
 
-% \subsection{Comparisons}
+\subsection{Evaluation}
 
-% Here we show that employing periodic activation functions is insufficient for learning periodic images with supervision in a restricted domain. Figure \ref{f:comparison_siren} shows a comparison between image reconstruction/extrapolation using Siren's initialization and our periodic initialization. In this comparison, we use an identical architecture to SIREN: periodic INR with 3 hidden layers, of the form $\R^{256}\to \R^{256}$. The key difference lies in the initialization: we randomly selected 256 pairs of integer frequencies from the range $[0, 30]\times[-30, 30]$, whereas SIREN follows the initialization given in \cite{sitzmann2019siren} with $\omega_0=30$. The images were trained on a $512\times512$ grid within the region $[-1, 1]$ for 500 epochs. The extrapolations are displayed in the interval $[-2, 2]$.
+Here we show that employing periodic activation functions is insufficient for learning periodic images with supervision in a restricted domain. Figure \ref{f:comparison_siren} shows a comparison between image reconstruction/extrapolation using Siren's initialization and our periodic initialization. In this comparison, we use an identical architecture to SIREN: periodic INR with 3 hidden layers, of the form $\R^{256}\to \R^{256}$. The key difference lies in the initialization: we randomly selected 256 pairs of integer frequencies from the range $[0, 30]\times[-30, 30]$, whereas SIREN follows the initialization given in \cite{sitzmann2019siren} with $\omega_0=30$. The images were trained on a $512\times512$ grid within the region $[-1, 1]$ for 500 epochs. The extrapolations are displayed in the interval $[-2, 2]$.
 
 
 % \begin{figure}[!h]
@@ -698,12 +687,11 @@ We start with a single tile, matching the fundamental period of a texture, with 
 
 % \end{comment}
 
-% \section{Conclusion and Future Work}
+\section{Conclusion and Future Work}
 
-% We presented an unified framework for modeling seamless textures by incorporating Fourier series ideas into neural network architectures. 
-% Our approach demonstrates the ability to train the network using partial texture data, making it more compact, and capturing sharper details compared to the ground truth in certain cases.
+In this chapter, we have presented an unified framework for modeling seamless textures by incorporating Fourier series ideas into neural network architectures. Our approach demonstrates the ability to train the network using partial texture data, making it more compact, and capturing sharper details compared to the ground truth in certain cases.
 
-% While we have made significant progress in understanding the impact of sinusoidal network initialization on representation capacity, there are still paths for future exploration. Although we have constrained the space of frequency choices by selecting integer multiples of a period and partitioning the frequency space, determining the appropriate band limit remains an empirical task. In our current approach, we freeze the weights of the first layer to maintain their constancy throughout training. However, finding a way to make these weights learnable parameters while preserving the desired period is a valuable research direction.
+While we have made significant progress in understanding the impact of sinusoidal network initialization on representation capacity, there are still paths for future exploration. Although we have constrained the space of frequency choices by selecting integer multiples of a period and partitioning the frequency space, determining the appropriate band limit remains an empirical task. In our current approach, we freeze the weights of the first layer to maintain their constancy throughout training. However, finding a way to make these weights learnable parameters while preserving the desired period is a valuable research direction.
 
 % % Our method has demonstrated effectiveness in 2D/3D texture representations. 
 
@@ -713,11 +701,11 @@ We start with a single tile, matching the fundamental period of a texture, with 
 
 % % \lnote{red}{falar do iFlow - nao exploramos, pois o ponto e' a integracao com o rendering e parametrizacao - talvez citar - "Synthesis of Progressively Variant Textures on Arbitrary Surfaces". ACM Transactions on Graphics, 22(3):295–302, July 2003}
 
-% To fully integrate neural networks as primitives in a graphics pipeline, it is crucial to develop methods for operating and editing them. The functional structure of sinusoidal INRs provides opportunities to explore algebraic structures for network manipulation. 
+To fully integrate neural networks as primitives in a graphics pipeline, it is crucial to develop methods for operating and editing them. The functional structure of sinusoidal INRs provides opportunities to explore algebraic structures for network manipulation. 
 
 % % \lnote{red}{naturalmente compacta mas compressao e' trabalho futuro}
 
-% Periodic INRs have high-capacity representation. When restricted to periodic functions domain, they can naturally compress the images, specially in multiresolution. However, investigating compression techniques tailored for sinusoidal networks is essential for achieving compact storage and efficient transmission over computer networks. Exploring the distribution of signal frequencies to inform network initialization is a promising direction in this regard.
+Periodic INRs have high-capacity representation. When restricted to periodic functions domain, they can naturally compress the images, specially in multiresolution. However, investigating compression techniques tailored for sinusoidal networks is essential for achieving compact storage and efficient transmission over computer networks. Exploring the distribution of signal frequencies to inform network initialization is a promising direction in this regard.
 
 % \section{Conclusion and Future Work}
 
@@ -749,27 +737,6 @@ We start with a single tile, matching the fundamental period of a texture, with 
 % \caption{Reconstructed multiresolution levels extrapolation.}
 % \label{f:lod}
 % \end{figure*}
-
-
-% DO NOT INCLUDE ACKNOWLEDGMENTS IN AN ANONYMOUS SUBMISSION TO SIGGRAPH 2019
-%\begin{acks}
-%
-%The authors would like to thank Dr. Maura Turolla of Telecom
-%Italia for providing specifications about the application scenario.
-%
-%The work is supported by the \grantsponsor{GS501100001809}{National
-%  Natural Science Foundation of
-%  China}{http://dx.doi.org/10.13039/501100001809} under Grant
-%No.:~\grantnum{GS501100001809}{61273304\_a}
-%and~\grantnum[http://www.nnsf.cn/youngscientists]{GS501100001809}{Young
-%  Scientists' Support Program}.
-%
-%
-%\end{acks}
-
-% Bibliography
-% \bibliographystyle{ACM-Reference-Format}
-% \bibliography{bibliography}
 
 
 \begin{comment}
@@ -843,119 +810,3 @@ We start with a single tile, matching the fundamental period of a texture, with 
 % \caption{.}
 % \label{f:ph1}
 % \end{figure*}
-
-% Appendix
-% \appendix
-% \section{Proof of Theorem~\ref{t-periodic}}
-% \label{p-theorem}
-% In this appendix, 
-
-
-
-% \section{Simulator}
-% \label{sec:sim}
-
-% If the model checker requests successors of a state which are not
-% created yet, the state space uses the simulator to create the
-% successors on-the-fly. To create successor states the simulator
-% conducts the following steps.
-% % enumerate
-% \begin{enumerate}
-% \item Load state into microcontroller model.
-% \item Determine assignments needed for resolving nondeterminism.
-% \item For each assignment.
-%       \begin{enumerate}
-%       \item either call interrupt handler or simulate effect of next instruction, or
-%       \item evaluate truth values of atomic propositions.
-%       \end{enumerate}
-% \item Return resulting states.
-% \end{enumerate}
-% Figure~\ref{fig:one} shows a typical microcontroller C program that
-% controls an automotive power window lift. The program is one of the
-% programs used in the case study described in Section~\ref{sec:sim}.
-% At first sight, the programs looks like an ANSI~C program. It
-% contains function calls, assignments, if clauses, and while loops.
-% % Figure
-% \begin{figure}
-%   \includegraphics{mouse}
-%   \caption{Code before preprocessing.}
-%   \label{fig:one}
-% \end{figure}
-
-% \subsection{Problem Formulation}
-
-% The objective of variable coalescence-based offset assignment is to find
-% both the coalescence scheme and the MWPC on the coalesced graph. We start
-% with a few definitions and lemmas for variable coalescence.
-
-% % Enunciations
-% % \begin{definition}[Coalesced Node (C-Node)]A C-node is a set of
-% % live ranges (webs) in the AG or IG that are coalesced. Nodes within the same
-% % C-node cannot interfere with each other on the IG. Before any coalescing is
-% % done, each live range is a C-node by itself.
-% % \end{definition}
-
-% % \begin{definition}[C-AG (Coalesced Access Graph)]The C-AG is the access
-% % graph after node coalescence, which is composed of all C-nodes and C-edges.
-% % \end{definition}
-
-% % \begin{lemma}
-% % The C-MWPC problem is NP-complete.
-% % \end{lemma}
-% % \begin{proof} C-MWPC can be easily reduced to the MWPC problem assuming a
-% % coalescence graph without any edge or a fully connected interference graph.
-% % Therefore, each C-node is an uncoalesced live range after value separation
-% % and C-PC is equivalent to PC. A fully connected interference graph is made
-% % possible when all live ranges interfere with each other. Thus, the C-MWPC
-% % problem is NP-complete.
-% % \end{proof}
-
-% % \begin{lemma}[Lemma Subhead]The solution to the C-MWPC problem is no
-% % worse than the solution to the MWPC.
-% % \end{lemma}
-% % \begin{proof}
-% % Simply, any solution to the MWPC is also a solution to the
-% % C-MWPC. But some solutions to C-MWPC may not apply to the MWPC (if any
-% % coalescing were made).
-% % \end{proof}
-
-% \section{Performance Evaluation}
-
-% During all the experiments, the Geographic Forwarding (GF) by Akyildiz
-% et al.~\shortcite{Akyildiz-01} routing protocol is used. GF exploits
-% geographic information of nodes and conducts local data-forwarding to
-% achieve end-to-end routing. Our simulation is configured according to
-% the settings in Table~\ref{tab:one}. Each run lasts for 2 minutes and
-% repeated 100 times. For each data value we present in the results, we
-% also give its $90\%$ confidence interval.
-
-% % Table
-% \begin{table}%
-% \caption{Simulation Configuration}
-% \label{tab:one}
-% \begin{minipage}{\columnwidth}
-% \begin{center}
-% \begin{tabular}{ll}
-%   \toprule
-%   TERRAIN\footnote{This is a table footnote. This is a
-%     table footnote. This is a table footnote.}   & (200m$\times$200m) Square\\ \midrule
-%   Node Number     & 289\\
-%   Node Placement  & Uniform\\
-%   Application     & Many-to-Many/Gossip CBR Streams\\
-%   Payload Size    & 32 bytes\\
-%   Routing Layer   & GF\\
-%   MAC Layer       & CSMA/MMSN\\
-%   Radio Layer     & RADIO-ACCNOISE\\
-%   Radio Bandwidth & 250Kbps\\
-%   Radio Range     & 20m--45m\\
-%   \bottomrule
-% \end{tabular}
-% \end{center}
-% \bigskip\centering
-% \footnotesize\emph{Source:} This is a table
-%  sourcenote. This is a table sourcenote. This is a table
-%  sourcenote.
-
-%  \emph{Note:} This is a table footnote.
-% \end{minipage}
-% \end{table}%
