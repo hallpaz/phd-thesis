@@ -283,7 +283,7 @@ Training a 6 stages M-Net with 197182 parameters (MNet$_\text{6stg\_24\_288hf}$)
 Until now, we have only used the M-Net subclass. In this section, we briefly present a comparison of M-Net with the others MR-Net subclasses.
 
 For S-Net, we define a configuration composed of 3 stages, with 1000, 2000, and 4000 hidden features per layer respectively, which add to a total of 28000 parameters. For the L-Net, the configuration follows 3 stages with 2 hidden layers with 40, 60, and 80 neurons for each layer. This L-Net version has an overall number of parameters of 24.280. For the last variant, the M-Net, we set 3 stages with 1 hidden layer each. Each stage has 30, 40, and 80 hidden features per layer respectively where the final number of parameters was 23.100. During training the S-Net, L-Net, and M-Net were trained at the maximum of 4000, 2000, and 2000 epochs respectively and we test 10 different images with resolution $128 \times 128$ for training. 
-As we can see in Table \ref{t:comp_variantes}, on average, considering the PSNR, the M-Net outperforms the other variants when reconstructing images.
+As we can see in Table \ref{t:comp-variants}, on average, considering the PSNR, the M-Net outperforms the other variants when reconstructing images.
 
 \begin{table}[!h]
 \centering
@@ -298,7 +298,7 @@ M-Net & {\bf 23100} & {\bf 51.1} dB   \\
 \hline
 \end{tabular}
 \vspace{-0.3cm}
-\caption{\label{tab:comp} Comparison between the MR-Net Variants.}
+\caption{\label{tab:comp-variants} Comparison between the MR-Net Variants.}
 \label{t:comp_variantes}
 \end{table}
 
