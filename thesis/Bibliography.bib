@@ -19,6 +19,13 @@ author = {Chandrajit Bajaj and Insung Ihm and Sanghun Park},
 abstract = {While 2D texture mapping is one of the most effective of the rendering techniques that make 3D objects appear visually interesting, it often suffers from visual artifacts produced when 2D image patterns are wrapped onto the surfaces of objects with arbitrary shapes. On the other hand, 3D texture mapping generates highly natural visual effects in which objects appear carved from lumps of materials rather than laminated with thin sheets as in 2D texture mapping. Storing 3D texture images in a table for fast mapping computations, instead of evaluating procedures on the fly, however, has been considered impractical due to the extremely high memory requirement. In this paper, we present a new effective method for 3D texture mapping designed for real-time rendering of polygonal models. Our scheme attempts to resolve the potential texture memory problem by compressing 3D textures using a wavelet-based encoding method. The experimental results on various nontrivial 3D textures and polygonal models show that high compression rates are achieved with few visual artifacts in the rendered images and a small impact on rendering time. The simplicity of our compression-based scheme will make it easy to implement practical 3D texture mapping in software/hardware rendering systems including real-time 3D graphics APIs such as OpenGL and Direct3D.}
 }
 
+@article{bhaskaran1997image,
+  title={Image and video compression standards: algorithms and architectures},
+  author={Bhaskaran, Vasudev and Konstantinides, Konstantinos},
+  year={1997},
+  publisher={Springer Science \& Business Media}
+}
+
 @article{blinn76,
 author = {Blinn, James F. and Newell, Martin E.},
 title = {Texture and Reflection in Computer Generated Images},
@@ -36,6 +43,34 @@ month = {oct},
 pages = {542–547},
 numpages = {6} 
 }
+
+@book{bracewell1986fourier,
+  title={The Fourier transform and its applications},
+  author={Bracewell, Ronald Newbold and Bracewell, Ronald N},
+  volume={31999},
+  year={1986},
+  publisher={McGraw-Hill New York}
+}
+
+@incollection{burt1987laplacian,
+  title={The Laplacian pyramid as a compact image code},
+  author={Burt, Peter J and Adelson, Edward H},
+  booktitle={Readings in computer vision},
+  pages={671--679},
+  year={1987},
+  publisher={Elsevier}
+}
+
+@ARTICLE{dct-og,
+  author={Ahmed, N. and Natarajan, T. and Rao, K.R.},
+  journal={IEEE Transactions on Computers}, 
+  title={Discrete Cosine Transform}, 
+  year={1974},
+  volume={C-23},
+  number={1},
+  pages={90-93},
+  doi={10.1109/T-C.1974.223784}}
+
 
 @inproceedings{deeptile,
 author = {Toulatzis, Vasilis and Fudos, Ioannis},
@@ -139,6 +174,41 @@ location = {Dallas, TX, USA},
 series = {SIGGRAPH '90}
 }
 
+@book{marr82,
+  added-at = {2012-10-25T15:58:41.000+0200},
+  address = {New York, NY, USA},
+  author = {Marr, David},
+  biburl = {https://www.bibsonomy.org/bibtex/2771360e49193a390e85f280dd207de20/daill},
+  description = {Vision},
+  interhash = {31060780234ce2036de55d261cc63a61},
+  intrahash = {771360e49193a390e85f280dd207de20},
+  isbn = {0716715678},
+  keywords = {computer vision},
+  publisher = {Henry Holt and Co., Inc.},
+  timestamp = {2012-10-25T15:58:41.000+0200},
+  title = {Vision: A Computational Investigation into the Human Representation and Processing of Visual Information},
+  year = 1982
+}
+
+@article{mipmap83,
+author = {Williams, Lance},
+title = {Pyramidal Parametrics},
+year = {1983},
+issue_date = {July 1983},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {17},
+number = {3},
+issn = {0097-8930},
+url = {https://doi.org/10.1145/964967.801126},
+doi = {10.1145/964967.801126},
+journal = {SIGGRAPH Comput. Graph.},
+month = {jul},
+pages = {1–11},
+numpages = {11},
+keywords = {Texture mapping, Visible surface algorithms, Modeling, Pyramidal data structures, Antialiasing, Reflectance mapping, Illumination models}
+}
+
 @inproceedings{schardong2024neural,
 author = {Schardong, Guilherme 
             and Novello, Tiago 
@@ -178,6 +248,73 @@ articleno = {93},
 numpages = {267},
 location = {Los Angeles, California},
 series = {SIGGRAPH '08}
+}
+
+@inproceedings{marcellin2000overview,
+  title={An overview of JPEG-2000},
+  author={Marcellin, Michael W and Gormish, Michael J and Bilgin, Ali and Boliek, Martin P},
+  booktitle={Proceedings DCC 2000. Data Compression Conference},
+  pages={523--541},
+  year={2000},
+  organization={IEEE}
+}
+
+
+@article{mallat1989theory,
+  title={A theory for multiresolution signal decomposition: the wavelet representation},
+  author={Mallat, Stephane G},
+  journal={IEEE transactions on pattern analysis and machine intelligence},
+  volume={11},
+  number={7},
+  pages={674--693},
+  year={1989},
+  publisher={Ieee}
+}
+
+
+@article{antonini1992image,
+  title={Image coding using wavelet transform},
+  author={Antonini, Marc and Barlaud, Michel and Mathieu, Pierre and Daubechies, Ingrid},
+  journal={IEEE Transactions on image processing},
+  volume={1},
+  number={2},
+  pages={205--220},
+  year={1992}
+}
+
+@inproceedings{mallat-2gen,
+author = {Froment, Jacques and Mallat, Ste\'{e}phane},
+title = {Second Generation Image Coding and Wavelet Transform},
+year = {1996},
+isbn = {311013215X},
+publisher = {Walter de Gruyter \& Co.},
+address = {USA},
+booktitle = {Proceedings of the First World Congress on World Congress of Nonlinear Analysts '92, Volume II},
+pages = {1923–1932},
+numpages = {10},
+location = {Tampa, Florida, USA},
+series = {WCNA '92}}
+
+
+@book{pixel,
+  title     = "A Biography of the Pixel",
+  author    = "Alvy Ray Smith",
+  year      = 2021,
+  publisher = "MIT Press",
+  address   = "Boston"
+}
+
+@techreport{heckbert1983texture,
+  title={Texture mapping polygons in perspective},
+  author={Heckbert, Paul S and others},
+  year={1983},
+  institution={NYIT Computer Graphics Lab}
+}
+
+@misc{KodakDataset,
+  title = {Kodak Lossless True Color Image Suite},
+  howpublished = {\url{http://r0k.us/graphics/kodak/}},
+  note = {Accessed: 2023-01-30}
 }
 
 @article{match,
@@ -288,9 +425,28 @@ keywords = {interactive, functional composition, solid texture, fire, space func
 }
 
 @inproceedings{taming2017,
-  author={G. Parascandolo and H. Huttunen and T. Virtanen},
   title={Taming the waves: sine as activation function in deep neural networks},
-  year={2017}
+  author={Giambattista Parascandolo and Heikki Huttunen and Tuomas Virtanen},
+  year={2017},
+  url={https://api.semanticscholar.org/CorpusID:126004626}
+}
+
+@article{thies19,
+author = {J. Thies and M. Zollh\"{o}fer and M. Nie\ss{}ner},
+title = {Deferred Neural Rendering: Image Synthesis Using Neural Textures},
+year = {2019},
+issue_date = {August 2019},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {38},
+number = {4},
+issn = {0730-0301},
+url = {https://doi.org/10.1145/3306346.3323035},
+doi = {10.1145/3306346.3323035},
+journal = {ACM Trans. Graph.},
+articleno = {66},
+numpages = {12},
+keywords = {novel view synthesis, facial reenactment, neural rendering, neural texture}
 }
 
 @inproceedings{yuce2022structured,
