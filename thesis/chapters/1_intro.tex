@@ -1,17 +1,16 @@
 \chapter{Introduction}
 
-Nice introductory text here identifying the gaps and the research question.
+\red{Nice introductory text here identifying the gaps and the research question.}
+
+Machine learning has been initially introduced in Computer Vision as a tool for solving analysis tasks such object detection [CITE], instance segmentation [CITE], pose estimation [CITE] and other scene understanding tasks [CITE]. Given the non-structured nature of the data and the challenges on identifying and engineering features in images, video and other visual representations, neural networks have been employed as the predominant model in vision tasks. This way, deep learning gained a lot of popularity within the computer vision community.
+
+Later on, generative models such as Variational Auto-encoders [CITE] and Generative Adversarial Networks (GANs) \cite{goodfellow2014generative}, and more recently Diffusion Generative Models \cite{ho2020denoising} have opened new possibilities in the realm of learning to generate a family of objects. While most of the works have concentrated into image generation [CITE], there have been exploration in the direction of other media objects [CITE].
 
 
+Note that audio, image and videos have a natural representation in euclidean domains, as their digital representations are encoded as lattices, samples with regularity in space and time. However, other media objects such as 3D models have many possible representations available such as point clouds, polygonal meshes, multiview images or implicit surfaces.
 
-Machine learning has been initially introduced in Computer Vision as a tool for solving analysis tasks such object detection [CITE], instance segmentation [CITE], pose estimation [CITE] and other scene understanding tasks [CITE]. 
+\red{As these two use cases became more "stable", the field kept advancing towards non-euclidean domains. Geometric Deep Learning, Graph Neural Networks .... How to apply machine learning techiniques, more specifically, deep learning, to solve problems in Computer Graphics?}
 
-Later on, generative models such as Variational Auto-encoders [CITE] and Generative Adversarial Networks (GANs) [CITE] have opened new possibilities in the realm of learning to generate a family of objects. While most of the works have concentrated into image generation [CITE], there have been exploration in the direction of other media objects [CITE]
-
-
-As these two use cases became more "stable", the field kept advancing towards non-euclidean domains. How to apply machine learning techiniques, more specifically, deep learning, to solve problems in Computer Graphics?
-
-Note that audio, image and videos have a natural representation in euclidean domains, as their digital representations are encoded as lattices, samples with regularity in space and time. When dealing with 3D models, there are many possible representations available such as point clouds, polygonal meshes, multiview images or implicit surfaces.
 
 Many works have addressed each of these representations. For instance [CITE works for each kind]... At this point, other tasks such as geometry reconstruction and appearance estimation started to be better addressed. Still, most of these works could be either classified as analysis - how to classify an object based on a point cloud - or generative models based: after training on a dataset, given an image as a prior, generate the corresponding geometry.
 
@@ -20,12 +19,16 @@ In this context, using neural networks to represent media objects such as audio,
 
 \section{Motivation and Vision}
 
-Lore ipsum.
+Nowadays, images can be stored and processed in a variety of file formats. However there are basically two big classes of representations fr
+
+However, deep learning has been so present in computation today that specialized hardware such as a Tensor Processor Unit (TPU) has been developed to accelerate computations with neural networks. In this context, we envision a future where media objects (audio, image, video, 3D models etc) will be encoded in neural networks either for starage, processing or derivation of new operations. 
+
+Neural Networks are universal approximators models for functions. All these objects can be described in terms of signals in the Mathematical Universe
+
 
 \section{Research Questions}
 
-Lore ipsum.
-
+- Can we represent signals, particularly images, in multiresolution using a neural network? Would this representation be useful for tasks  where tradionally multiscale computations have been employed, for example: anti-aliasing, mip-mapping, storage
 
 \section{Contributions}
 
