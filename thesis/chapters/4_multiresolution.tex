@@ -40,25 +40,24 @@ The correct initialization of sinusoidal neural netowrks is crucial for having s
 % $\sin(\omega_0 \cdot \bold{W}x + b)$ 
 spans multiple periods over $[-1, 1]$. They introduce $\omega_0$ as a hyperparameter that could be adjusted to each signal. For the examples presented in their work, they used a fixed $\omega_0=30$ and found it to work well empirically, but they do not dive deeper on the why. 
 
-In this section, we show how the choice of \omega_0  impacts the frequencies learned by the network, the speed of the training and even if it will converge to a reasonable result or collapse into noise. The hyperparameter \omega_0 is directly related to the interval of frequencies used to initialize the first layer of the network, determining the set of the spectral atoms where the signal will be projected. This same hyperparameter is also applied on the initialization of the hidden layers as the authors argue it boosts the gradients during the training and accelerates the convergence. However, in the hidden layers, it is basically used as pre-conditioner, a numeral trick, since the implementation multiplies by \omega_0 and also divides by this same value. We propose to call this hyperparameter in the hidden layers by \omega_h, and keep \omega_0 only for the first layer.
+In this section, we show how the choice of $\omega_0$  impacts the frequencies learned by the network, the speed of the training and even if it will converge to a reasonable result or collapse into noise. The hyperparameter $\omega_0$ is directly related to the interval of frequencies used to initialize the first layer of the network, determining the set of the spectral atoms where the signal will be projected. This same hyperparameter is also applied on the initialization of the hidden layers as the authors argue it boosts the gradients during the training and accelerates the convergence. However, in the hidden layers, it is basically used as pre-conditioner, a numeral trick, since the implementation multiplies by $\omega_0$ and also divides by this same value. We propose to call this hyperparameter in the hidden layers by $\omega_h$, and keep $\omega_0$ only for the first layer.
 
 
 \subsection{Isolating Frequencies}
 
 
-
-% \red{decidir se os experimentos da seção 3.6 do relatório técnico entram aqui}
+\red{refazer experimentos da seção 3.6 do relatório técnico}
 
 % We started encoding signals created by summing individual frequencies using sinusoidal functions.
 
 \subsection{Learning and filtering a stochastic signal}
 
-After experimenting with signals with a few controlled frequencies, we generated stochastic signals, using a technique known as Perlin Noise \cite{perlin-1985}. 
+After experimenting with signals with a few controlled frequencies, we generated stochastic signals, using a technique known as Perlin Noise \cite{perlin-1985}. procedural generated
 
 
 For the following experiments, we sampled 2048 points uniformly in the interval $[-1, 1]$. Thus, the sampling rate is 1/1024. According to the Shannon-Nyquist sampling theorem, we are limited to frequencies in the interval $[0, 512]$. \red{SHOULD I INCLUDE NEGATIVE FREQS?}
 
-We initialize a Siren network with the following architecture:
+We initialize a Siren network with the \red{following architecture}:
 
 - First layer: 256 neurons, sine activation function, $\omega_0=30$
 - Hidden Layer: 256 neurons, sine activation function, $\omega_h=30$
@@ -67,64 +66,140 @@ We initialize a Siren network with the following architecture:
 
 In the first experiment, we initialize a Perlin Noise with \red{PARAMETERS OF THE NOISE}. 
 
-% \begin{figure}
-%     \includegraphics[width=\linewidth]{img/ch3/siren_correct_reconstruction.png}
-%     \caption{Fitting of a regular signal using Siren initialization and their default suggested hyperparameters}
-% \end{figure}
+\begin{figure}
+    \includegraphics[width=0.3\linewidth]{img/placeholder512.png}
+    \caption{Fitting of a regular signal using Siren initialization and their default suggested hyperparameters}
+\end{figure}
+
+
+\red{To achieve the result shown in the first figure, where the signal is perfectly fitted, we used $\omega_0 = 200$. We found that a value between $100$ and $200$ converges to a good approximation quickly (around 200 epochs). 
+
+
+If we use a low $\omega_0$ such as $20$, our result looks like a smoothed version of the signal (Figure \ref{fig:rec-smooth-noise1}), as if we were reconstructing only its low frequencies. We plotted the Fast Fourier Transform (FFT) of both the original signal and its reconstruction in order to verify that the low frequencies match (Figure \ref{fig:fft-smooth-noise1}).} Note that the FFT plot presents a distribution of multiple frequencies up to 256. By comparing the Fast Fourier Transform of the learned signal and the target signal, we concluded that the network learns the low frequencies of the signal up to an unknown value that increases or decreases with $\omega_0$.
+
+Figure shows the spectrum of frequencies of the target signal and its reconstruction using $\omega_0 = 10$. Notice how the Fast Fourier Transform of the reconstructed signal matches that of the original signal up to a value around XXXX, then it fails to capture the exact contribution of frequencies between XXXXX and XXXXXX and finally it does not exhibit contributions of higher frequencies..
+
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{$Ground truth$}
+        \label{fig:gt-noise1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction}
+        \label{fig:rec-smooth-noise1}
+    \end{subfigure}
+    \hfill
+    \caption{Reconstruction of a signal with high frequencies with a network inititialized with much lower frequencies}
+
+    \begin{subfigure}[b]{0.6\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction in $[-1, 1]$}
+        \label{fig:fft-smooth-noise1}
+    \end{subfigure}
+
+    \label{f:noise-smoothed-reconstruction}
+\end{figure}
+
+We observe that as we increase the value of $\omega_0$, meaning the frequency interval used in initialization of the first layer of the sinusoidal network, it becomes better in fitting fine details of the signal. Figure \ref{f:zoomed-views-noise} shows some zoomed views of the reconstruction. The grid where the network has been evaluated \red{has been refined XX, XXX and XXXX times}. Note that the model is well behaved in the points that were not given as supervision (not part of the training data), that is, it correctly interpolates the signal.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{$Ground truth$}
+        % \label{fig:gt-noise1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction}
+        % \label{fig:rec-smooth-noise1}
+    \end{subfigure}
+    \hfill
+    \caption{Reconstruction of a signal with high frequencies with a network inititialized with much lower frequencies}
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction }
+        % \label{fig:fft-smooth-noise1}
+    \end{subfigure}
+    \label{f:zoomed-views-noise}
+\end{figure}
+
+
+On the other hand, if $\omega_0$ is too high it may cause the training to diverge. \red{In the Figure \ref{f:diverging-omega0}, we show the evolution of the training loss (Figure \ref{fig:diverging-loss}) and the result (Figure \ref{fig:diverging-reconstruction}) after 200 epochs when we initialized the SIREN with $\omega_0=600$. Note that after about 50 epochs, the loss starts to increase and our final result bears no resemblance to the original signal.}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{$Loss function$}
+        \label{fig:diverging-loss}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction}
+        \label{fig:diverging-reconstruction}
+    \end{subfigure}
+    \caption{Reconstruction of a signal with high frequencies with a network inititialized with much lower frequencies}
+    \label{f:diverging-omega0}
+\end{figure}
+
+We conclude that the frequency initialization of the first layer, which depends on $\omega_0$, is of central importance in the convergence of network training and multiresolution learning.
+Ideally we should initialize the network with frequencies that match the frequency content of the target signal. However, as we do not have access to this information in many applications, we must guess a value for $\omega_0$. Here, the Shannon-Nyquist therorem may help us bound the value of $\omega_0$. For example, considering a sampling rate of 512 Hz, we cannot represent frequencies higher than 256 (half the sampling rate), so it does not make sense to choose $\omega_0$ higher than this value. Also, since the composition of sines generates higher frequencies \cite{novello2022understanding}, it is reasonable to initialize the netowork with much lower frequencies than the Nyquist limit.
+
+\subsection{Capacity Filtering}
+
+So far, we have worked with a high capacity SIREN Network using 3 hidden layers with 256 units per layer. As we saw, this network can approximate our 1D signals perfectly and, in fact, we know it can approximate much more complex signals. For example, representations of neural implicit surfaces in three and higher dimensions.
+
+We decreased the number of layers and computational units to evaluate what happens when we try to approximate a signal using a SIREN model with lower capacity than it would be necessary. Experiments showed us that we can also reconstruct a filtered version of the target signal when using low capacity SIREN models initialized with small $\omega_0$.
+
+
+\section{The Multiresolution Module}
+
+Our goal is to design a module capable of approximating a signal with multiple frequency bands. When we introduce hidden layers, we know, from previous experiments, that the model capacity increases and we can’t control the exact content of frequencies the network learns. This way, we aimed for a module with a single hidden layer and used Perlin Noises with 4 local extrema (Figure 17) as a perceptual indicator of ”limited frequency band”.
+
+We did experiments with 1 and 2 hidden layers modules using 8, 16 or 32 computational units in each layer. After looking at the results, we chose a module with 1 hidden layer and 16 units in each layer as our MR-Module for most experiments.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        % \caption{$Loss function$}
+        % \label{fig:diverging-loss}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        % \caption{Reconstruction}
+        % \label{fig:diverging-reconstruction}
+    \end{subfigure}
+    \caption{Reconstruction of low frequency signals using a small size model}
+    \label{f:mr-module}
+\end{figure}
+
+We have not targeted the minimal module possible, as Figure XXX shows this module is able to approximate more complex signals up to a certain frequency. Having a small module with reasonable capacity gives us more flexibility in terms of level of detail strategy and helps to keep each stage of different MR-Net architectures uniformly as we will discuss on the next section. However, the breadth and depth of the MR-Module could be adapted to specific applications without compromising compatibility with the MR-Nets architectures.
 
 
 
-% To achieve the result shown in the first figure, where the signal is perfectly fitted, we used \omega_0 =200. We found that a value between 100 and 200 converges to a good approximation quickly (around 200 epochs). If we use a low \omega_0 such as 20, our result looks like a smoothed version of the signal as if we were reconstructing only its low frequencies. We plotted the Fast Fourier Transform of both the original signal and its reconstruction in order to verify that the low frequencies match. 
+\section{Multiresolution Training}
 
-%  After validating our ideia in these simple examples, we started using the Perlin Noise algorithm \textbf{[cite]} to generate signals with a stochastic nature and a broad distribution of frequencies. 
-% The figure \textit{below} shows the result of fitting a SIREN to a Perlin Noise generated with 16 octaves. Although the signal has many variations and fine details, we were able to represent it well by training the network for only 200 epochs.
+We have established that we can bound the frequencies learned by a sinusoidal neural network by adjusting the interval of frequencies sampled for initialization of its first layer, and also by adjusting the network capacity. That is, if the value of $\omega_0$ is too low, the network will learn the lower frequencies of the signal, fitting their intensities in the Fourier spectrum, but won't learn the higher frequencies, even if it has enough computational units to to do. On the other hand, if the capacity given by the computational units is too small, the result will also resemble a filtered version of the target signal.
 
-% \begin{figure}[!htb]
-% \minipage{0.49\textwidth}
-% \includegraphics[width=\linewidth]{charts/Section-8-Panel-0-z4g8njbpz}
-% \caption{}
-% \endminipage\hfill
-% \minipage{0.49\textwidth}
-% \includegraphics[width=\linewidth]{charts/Section-8-Panel-1-6vzyf3265}
-% \caption{}
-% \endminipage
-% \end{figure}
-
-% \subsection{Influence of \omega_0 initialization
-
-
-% \begin{figure}[!htb]
-% \minipage{0.49\textwidth}
-% \includegraphics[width=\linewidth]{charts/Section-13-Panel-0-3m5nbgtlh}
-% \caption{}
-% \endminipage\hfill
-% \minipage{0.49\textwidth}
-% \includegraphics[width=\linewidth]{charts/Section-13-Panel-1-9dkanxgav}
-% \caption{}
-% \endminipage
-% \end{figure}
-
-% \begin{figure}[!htb]
-% \minipage{0.49\textwidth}
-% \includegraphics[width=\linewidth]{charts/Section-13-Panel-2-hbc6vfs3t}
-% \caption{}
-% \endminipage
-% \end{figure}
-
-% On the other hand, if \omega_0 is too high it may cause the training to diverge. In the next figure, we show the evolution of the training loss and the result after 200 epochs when we initialized the SIREN with \omega_0=600. Note that after about 50 epochs, the loss starts to increase and our final result bears no resemblance to the original signal.
-
-% \begin{figure}[!htb]
-% \minipage{0.49\textwidth}
-% \includegraphics[width=\linewidth]{charts/Section-15-Panel-0-rpuua88ix}
-% \caption{}
-% \endminipage\hfill
-% \minipage{0.49\textwidth}
-% \includegraphics[width=\linewidth]{charts/Section-15-Panel-1-z4g8njbpz}
-% \caption{}
-% \endminipage
-% \end{figure}
-
-% \subsection{Gaussian Pyramid Training
+\subsection{Gaussian Pyramid Training}
 % After exploring the impact of different values of initialization frequencies, we investigated if we could fit multiple scales of the same signal by building a Gaussian pyramid of it. We filtered the signal using a box filter of dimension 5, decimated it by a factor of 2 and used this subsampled version to train our network. Then, we used the trained network to predict the values over all originally sampled points, so we could verify its behaviour on unsupervised points. As we are filtering the higher frequencies of the signal, we expect to be able to represent it exactly by using fewer samples, acconding to the classical sampling theory.  
 % We compared our result to a smoothed but not decimated version of the signal where we doubled the size of the filter as we walked to coarse scales. The panel of figures below shows the result of fitting a signal in 7 different scales, starting with \omega_0=256 and dividing it by 2 as we walk to coarse scales.
 % We trained the network using less points at each scale.
