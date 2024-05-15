@@ -17,13 +17,14 @@ if __name__ == '__main__':
     omegas = [8, 32, 128, 256, 512]
     h_layers = [1, 2, 3]
     noise_params = { "scale": 10, "octaves": 16, "p": 1.4}
-    
+    device = "cuda" if torch.cuda.is_available() else "cpu"
     for features in nfeatures:
         for layers in h_layers:
             for omega_0 in omegas:
                 torch.manual_seed(777)
                 #-- hyperparameters in configs --#
                 hyper = load_hyperparameters('experiments/ch4/configs/noise.yml')
+                hyper['device'] = device
                 hyper['hidden_features'] = features
                 hyper['hidden_layers'] = layers
                 hyper['omega_0'] = omega_0
