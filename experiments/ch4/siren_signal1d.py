@@ -14,7 +14,7 @@ from IPython import embed
 
 
 def exp_single_frequency(nsamples = 512):
-    for hidden_features in [64, 128]:#, 256, 512, 1024]:
+    for hidden_features in [100]:#[64, 128]:#, 256, 512, 1024]:
         torch.manual_seed(777)
         #-- hyperparameters in configs --#
         hyper = load_hyperparameters('experiments/ch4/configs/shallow.yml')
@@ -23,10 +23,10 @@ def exp_single_frequency(nsamples = 512):
         hyper['hidden_features'] = hidden_features
         
         X = torch.linspace(-1, 1, nsamples)
-        frequencies = (torch.cos(1 * 2 * torch.pi * X) 
-                       + torch.cos(5 * 2 * torch.pi * X)
-                       + torch.cos(40 * 2 * torch.pi * X)
-                       + torch.cos(50 * 2 * torch.pi * X))
+        frequencies = (torch.sin(1 * 2 * torch.pi * X) 
+                       + torch.sin(5 * 2 * torch.pi * X)
+                       + torch.sin(40 * 2 * torch.pi * X)
+                       + torch.sin(50 * 2 * torch.pi * X)) / 3
         base_signal = Signal1D(frequencies.view(1, -1), 
                             domain=hyper['domain'],
                             batch_size=hyper['batch_size'])

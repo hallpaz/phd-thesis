@@ -53,16 +53,19 @@ In this section, we show how the choice of \omega_0  impacts the frequencies lea
 
 \subsection{Learning and filtering a stochastic signal}
 
-% For the following experiments, we generate a stochastic signal, using a techinique known as Perlin Noise \cite{perlin-1985}, sampling 2048 in the interval [-1, 1]. Thus, the sampling rate is 1/1024, so by the Shannon-Nyquist sampling theorem, we are limited to frequencies in the interval [0, 512]. 
+After experimenting with signals with a few controlled frequencies, we generated stochastic signals, using a technique known as Perlin Noise \cite{perlin-1985}. 
 
-% We initialize a Siren network with the following architecture:
+
+For the following experiments, we sampled 2048 points uniformly in the interval $[-1, 1]$. Thus, the sampling rate is 1/1024. According to the Shannon-Nyquist sampling theorem, we are limited to frequencies in the interval $[0, 512]$. \red{SHOULD I INCLUDE NEGATIVE FREQS?}
+
+We initialize a Siren network with the following architecture:
 
 - First layer: 256 neurons, sine activation function, $\omega_0=30$
 - Hidden Layer: 256 neurons, sine activation function, $\omega_h=30$
 - Last layer: 256 neurons, relu activation function, $\omega_h=30$
 
 
-% In the first experiment, we initialize a Perlin Noise XXXX with. By the Shannon-Nyquist sampling theorem, the frequencies represented in this signal are limited to the interval [0, XXXX]. The figure 
+In the first experiment, we initialize a Perlin Noise with \red{PARAMETERS OF THE NOISE}. 
 
 % \begin{figure}
 %     \includegraphics[width=\linewidth]{img/ch3/siren_correct_reconstruction.png}
