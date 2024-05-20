@@ -47,7 +47,7 @@ In this section, we show how the choice of $\omega_0$  impacts the frequencies l
 
 A shallow network with just one layer of sinusoidal activation functions can filter a signal by band-limiting its frequency content. Thus, it provides a tool for controlling the level of detail of the output signal. This conclusion is natural since the resulting signal representation is a linear combination of sinusoidal functions with induced frequency band. In a sense, the network is projecting the input signal into a learned dictionary of spectral atoms.
 
-In that context, a one-layer SIREN network could also be used as a spectral filter, just as in the MFN-based architectures \cite{fathony2020multiplicative}. To verify this hypothesis, we trained a shallow SIREN controlling the initialization of the weights of the first linear transformation, and observed how this can determine the final reconstruction. In the first experiment, the input signal, presented in Figure \ref{fig:gt-4freqs}, is a combination of four tones, two with lower frequencies (1Hz and 5Hz) and two more with higher frequencies (40Hz and 50Hz). The hyperparameters of the network and training are: sample size: 512; hidden layers: 0; total steps: 300; learning rate: $10^{-2}$; optimization method: Adam; number of neurons: 64. 
+In that context, a one-layer SIREN network could also be used as a spectral filter, just as in the MFN-based architectures \cite{fathony2020multiplicative}. To verify this hypothesis, we trained a shallow SIREN controlling the initialization of the weights of the first linear transformation, and observed how this can determine the final reconstruction. In the first experiment, the input signal, presented in Figure \ref{fig:gt-4freqs}, is a combination of four tones, two with lower frequencies (2Hz and 5Hz) and two more with higher frequencies (31Hz and 42Hz). The hyperparameters of the network and training are: sample size: 512; hidden layers: 0; total steps: 300; learning rate: $10^{-2}$; optimization method: Adam; number of neurons: 64. 
 
 We first tried to recover the lower frequencies using $\omega_0=10$. The reconstructed signal (Figure \ref{fig:rec-naive-w0}) looks like a very low frequency signal. In fact, we have computed the Fast Fourier Transform of both signals (Figure \ref{fig:fft-smooth-4freqs}) and it's clear that the network learned to represent a very smoothed version of the input signal.
 
@@ -70,7 +70,7 @@ We first tried to recover the lower frequencies using $\omega_0=10$. The reconst
     \begin{subfigure}[b]{0.3\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/placeholder512.png}
-        \caption{Reconstruction in $[-1, 1]$}
+        \caption{Reconstruction}
         \label{fig:fft-smooth-4freqs}
     \end{subfigure}
     \label{f:4freqs-smoothed-reconstruction}
@@ -107,43 +107,157 @@ Doing the experiment again, considering $\omega_0 = 10$Hz, the expected behavior
     \caption{Reconstruction of a signal with high frequencies with a network inititialized with much lower frequencies}
 \end{figure}
 
-Next we change the initialization to frequencies between 45 and 55 Hz. As expected, that also succeeds in predicting the high frequency tones but fails in capturing the low frequency ones. However, when we use the full range of frequencies, that is, $\omega_0 in [-55, 55]$ Hz, we can learn to completely represent the signal.
+Next we change the initialization to frequencies between 25 and 45 Hz. As expected, that also succeeds in predicting the high frequency tones but fails in capturing the low frequency ones. Moreover, by initializing the frequencies between 35 and 45 Hz, we are able to isolate the 42 Hz tone (Figures \ref{f:placeholder-ref} and \ref{f:placeholder-ref}).
 
 \begin{figure}
     \centering
-    \begin{subfigure}[b]{0.3\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/placeholder512.png}
-        \caption{$Ground truth$}
-        % \label{fig:gt-4freqs}
+        \caption{$Reconstruction$}
+        \label{fig:rec-25-45}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.3\textwidth}
+    \begin{subfigure}[b]{0.4\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/placeholder512.png}
         \caption{Reconstruction}
-        \label{fig:rec-full-w0}
+        \label{fig:fft-25-45}
     \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.3\textwidth}
+    
+    \begin{subfigure}[b]{0.4\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/placeholder512.png}
-        \caption{Reconstruction in $[-1, 1]$}
-        \label{fig:fft-low-4freqs}
+        \caption{Reconstruction}
+        \label{fig:rec-35-45}
     \end{subfigure}
-    \label{f:4freqs-full-reconstruction}
-    \caption{Reconstruction of a signal with high frequencies with a network inititialized with much lower frequencies}
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction}
+        \label{fig:fft-35-45}
+    \end{subfigure}
+    \label{f:high-freqs-reconstruction}
+    \caption{Reconstruction of the highest frequencies of the signal}
+\end{figure}
+
+Surprisingly, when we use the full range of frequencies, that is, $\omega_0 in [-55, 55]$ Hz, the network fails to learn all frequencies (Figure \ref{f:placeholder-ref} and \ref{f:placeholder-ref}). We think that this is due to its limited capacity, given by only 64 neurons per layer. When we increased the model size to 128 neurons per layer, it learned the complete signal as expected (Figures \ref{f:placeholder-ref} and \ref{f:placeholder-ref}).
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{$Reconstruction$}
+        \label{fig:rec-64-full-45}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction}
+        \label{fig:fft-64-full-45}
+    \end{subfigure}
+    
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction}
+        \label{fig:rec-128-full-45}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction}
+        \label{fig:fft-128-full-45}
+    \end{subfigure}
+    \label{f:all-freqs-reconstruction}
+    \caption{Reconstruction of all frequencies}
 \end{figure}
 
 
-% We started encoding signals created by summing individual frequencies using sinusoidal functions.
+These experiments validate our hypothesis that a shallow network with just one layer of sinusoidal activation functions can filter a signal by band-limiting its frequency content, providing a spectral filter similar to that in MFN-based architectures. However, when we add a hidden sinusoidal layer to the network, it becomes much harder to isolate specific frequencies. Figure shows the reconstruction of a sinusoidal network with 1 hidden layer and 64 neurons per layer, initialized with $\omega_0=10$ Hz. Note that the reconstruction seems to perfectly fit the input signal both in spatial (Figure \ref{f:placeholder-ref}) and spectral domains (Figure \ref{f:placeholder-ref}). Figures \ref{f:placeholder-ref} and \ref{f:placeholder-ref} presents two zoomed views for better analysis of details. For this visualization, the network is evaluated in a grid with 512 samples but in a much smaller interval, so that most samples were not part of the training data. Notice that the reconstruction is smooth, with no spurious noise between the supervised samples.
+
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{$Reconstruction$}
+        \label{fig:rec-freqs-1hl}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction}
+        \label{fig:fft-freqs-1hl}
+    \end{subfigure}
+    
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction}
+        \label{fig:4x-freqs-1hl}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction}
+        \label{fig:8x-freqs-1hl}
+    \end{subfigure}
+    \label{f:freqs-1hl}
+    \caption{Reconstruction of all frequencies}
+\end{figure}
+
+The same phenomenon is observed when the network is initialized with only the highest  frequencies (Figure \ref{f:placeholder-ref}). However, if the frequencies in initialization are too high, the hidden layers may generate even higher frequencies, introducing noise in the model reconstruction. This noise is not perceived at the training coodinates, as the model is very good at overfitting this data, but it can be perceived in a more refined grid (Figure \ref{f:placeholder-ref}).
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{$Reconstruction$}
+        % \label{fig:rec-freqs-1hl}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction}
+        % \label{fig:fft-freqs-1hl}
+    \end{subfigure}
+    
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction}
+        % \label{fig:4x-freqs-1hl}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction}
+        % \label{fig:8x-freqs-1hl}
+    \end{subfigure}
+    \label{f:placeholder-ref}
+    \caption{Reconstruction of all frequencies}
+\end{figure}
+
+
+Therefore it seems to be that, in general, it not straightforward to decompose the frequencies of a signal using a sinusoidal deep network with more than one layer, except for special cases where the signal is simple and the initialization is in a range very close to the target.
 
 \subsection{Learning and filtering a stochastic signal}
 
-After experimenting with signals with a few controlled frequencies, we generated stochastic signals, using a technique known as Perlin Noise \cite{perlin-1985}. procedural generated
+After experimenting with signals with a few controlled frequencies, we procedurally generated stochastic signals, using a technique known as Perlin Noise \cite{perlin-1985}. This way, we can analyse how a sinusoidal model learns a distribution of frequencies in a broad range.
 
 
-For the following experiments, we sampled 2048 points uniformly in the interval $[-1, 1]$. Thus, the sampling rate is 1/1024. According to the Shannon-Nyquist sampling theorem, we are limited to frequencies in the interval $[0, 512]$. \red{SHOULD I INCLUDE NEGATIVE FREQS?}
+For the following experiments, we sampled 2048 points uniformly in the interval $[-1, 1]$. Thus, the sampling rate is 1/1024. According to the Shannon-Nyquist sampling theorem, we are limited to frequencies up to $512$ Hz.
 
 We initialize a Siren network with the \red{following architecture}:
 

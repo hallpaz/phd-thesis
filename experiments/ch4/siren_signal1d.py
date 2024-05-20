@@ -97,49 +97,51 @@ def exp_smoothed():
 
 
 def exp_high_frequencies_only():
-    torch.manual_seed(777)
-    #-- hyperparameters in configs --#
-    hyper = load_hyperparameters('experiments/ch4/configs/shallow.yml')
-    nsamples = hyper['nsamples']
-    project_name = hyper['project_name']
-    
-    high_tone = 45 * 2 * torch.pi
-    low_tone = 25 * 2 * torch.pi
-    hyper['omega_0'] = high_tone
-    
-    frequencies = crafted_signal(nsamples)
-    base_signal = Signal1D(frequencies.view(1, -1), 
-                        domain=hyper['domain'],
-                        batch_size=hyper['batch_size'])
+    for hidden_layers in [0, 1, 2]:
+        for low_tone in [25 * 2 * torch.pi, 35 * 2 * torch.pi]:
+            torch.manual_seed(777)
+            #-- hyperparameters in configs --#
+            hyper = load_hyperparameters('experiments/ch4/configs/shallow.yml')
+            nsamples = hyper['nsamples']
+            project_name = hyper['project_name']
+            hyper['hidden_layers'] = hidden_layers
+            
+            high_tone = 45 * 2 * torch.pi
+            hyper['omega_0'] = high_tone
+            
+            frequencies = crafted_signal(nsamples)
+            base_signal = Signal1D(frequencies.view(1, -1), 
+                                domain=hyper['domain'],
+                                batch_size=hyper['batch_size'])
 
-    train_dataset = [base_signal]
-    test_dataset = [base_signal]
+            train_dataset = [base_signal]
+            test_dataset = [base_signal]
 
-    # you can substitute this line by your custom handler class
-    optim_handler = get_optim_handler(hyper.get('optim_handler', 'regular'))
-    
-    mrmodel = MRFactory.from_dict(hyper)
-    print("Model: ", type(mrmodel))
-    with torch.no_grad():
-        layer_width = len(mrmodel.stages[0].first_layer.linear.weight)
-        print(layer_width)
-        mrmodel.stages[0].first_layer.linear.weight[:layer_width//2].uniform_(-1, -low_tone/high_tone)
-        mrmodel.stages[0].first_layer.linear.weight[layer_width//2:].uniform_(low_tone/high_tone, 1)
-    print(mrmodel)
+            # you can substitute this line by your custom handler class
+            optim_handler = get_optim_handler(hyper.get('optim_handler', 'regular'))
+            
+            mrmodel = MRFactory.from_dict(hyper)
+            print("Model: ", type(mrmodel))
+            with torch.no_grad():
+                layer_width = len(mrmodel.stages[0].first_layer.linear.weight)
+                print(layer_width)
+                mrmodel.stages[0].first_layer.linear.weight[:layer_width//2].uniform_(-1, -low_tone/high_tone)
+                mrmodel.stages[0].first_layer.linear.weight[layer_width//2:].uniform_(low_tone/high_tone, 1)
+            print(mrmodel)
 
-    name = os.path.basename(hyper['data_path'])
-    training_listener = TrainingListener(project_name,
-                                f"{name}{hyper['model']}l{low_tone:.1f}h{high_tone:.1f}",
-                                hyper,
-                                Path(hyper.get("log_path", "runs")))
-
-    mrtrainer = MRTrainer.init_from_dict(mrmodel,
-                                        train_dataset,
-                                        test_dataset,
-                                        training_listener,
+            name = os.path.basename(hyper['data_path'])
+            training_listener = TrainingListener(project_name,
+                                        f"{name}{hyper['model']}l{low_tone:.1f}h{high_tone:.1f}",
                                         hyper,
-                                        optim_handler=optim_handler)
-    mrtrainer.train(hyper['device'])
+                                        Path(hyper.get("log_path", "runs")))
+
+            mrtrainer = MRTrainer.init_from_dict(mrmodel,
+                                                train_dataset,
+                                                test_dataset,
+                                                training_listener,
+                                                hyper,
+                                                optim_handler=optim_handler)
+            mrtrainer.train(hyper['device'])
 
 def exp_all_frequencies():
     torch.manual_seed(777)
@@ -181,7 +183,7 @@ def exp_all_frequencies():
     mrtrainer.train(hyper['device'])
 
 if __name__ == '__main__':
-    exp_smoothed()
-    exp_crafted_frequencies()
+    # exp_smoothed()
+    # exp_crafted_frequencies()
     exp_high_frequencies_only()
-    exp_all_frequencies()    
+    # exp_all_frequencies()    

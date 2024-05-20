@@ -1,6 +1,6 @@
 # Logging
 project_name: phd-thesis-ch4
-logger: wandb
+logger: local
 # Model Class (S, L, M)
 model: S
 
@@ -52,5 +52,5 @@ eval_device: cpu
 save_format: 'general'
 visualize_grad: True
 extrapolate: [-2, 2]
-zoom: [2, 4]
+zoom: [2, 4, 8]
 zoom_filters: ['linear', 'cubic', 'nearest']
