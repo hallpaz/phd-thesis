@@ -1,6 +1,6 @@
 # Logging
 project_name: phd-thesis-ch4
-logger: local
+logger: wandb
 # Model Class (S, L, M)
 model: S
 
@@ -8,7 +8,7 @@ model: S
 in_features: 1
 out_features: 1
 hidden_layers: 0
-hidden_features: [100]
+hidden_features: [64]
 bias: True
 max_stages: 1
 
@@ -17,12 +17,13 @@ pmode: wrap
 domain: [-1, 1]
 
 # Frequency Initialization
-omega_0: [10]
+omega_0: 10
 hidden_omega_0: 30
 superposition_w0: True
 
 # Sampling
 sampling_scheme: regular
+nsamples: 512
 decimation: True
 filter: gauss # vary between none, laplace and gauss
 attributes: ['d0', 'd1']
@@ -41,7 +42,7 @@ max_epochs_per_stage: 300
 batch_size: 128 * 128
 
 # Data
-data_path: data/arrays/sinusoidal.npy
+data_path: data/arrays/tones.npy
 
 # Computation (Only vary between 'cpu' and 'cuda')
 device: cpu

@@ -146,16 +146,16 @@
 \newcommand*{\FACULTY}[1]{\def\FACNAME{#1}}
 \newcommand*{\subject}[1]{\def\subjectname{#1}}
 \newcommand*{\keywords}[1]{\def\keywordnames{#1}}
-\supervisor  {}
+\supervisor  {Luiz Velho}
 \examiner    {}
 \degree      {}
-\authors     {}
-\university  {\texorpdfstring{\href{University Web Site URL Here (include http://)}
-                {University Name}}
-                {University Name}}
-\UNIVERSITY  {\texorpdfstring{\href{University Web Site URL Here (include http://)}
-                {UNIVERSITY NAME (IN BLOCK CAPITALS)}}
-                {UNIVERSITY NAME (IN BLOCK CAPITALS)}}
+\authors     {Hallison Paz}
+\university  {\texorpdfstring{\href{https://impa.br}
+                {Instituto de Matemática Pura e Aplicada}}
+                {Instituto de Matemática Pura e Aplicada}}
+\UNIVERSITY  {\texorpdfstring{\href{https://impa.br}
+                {INSTITUTO DE MATEMATICA PURA E APLICADA (IMPA)}}
+                {INSTITUTO DE MATEMATICA PURA E APLICADA (IMPA)}}
 \department  {\texorpdfstring{\href{Department or School Web Site URL Here (include http://)}
                 {Department or School Name}}
                 {Department or School Name}}

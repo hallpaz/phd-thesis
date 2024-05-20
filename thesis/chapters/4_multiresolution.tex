@@ -45,8 +45,96 @@ In this section, we show how the choice of $\omega_0$  impacts the frequencies l
 
 \subsection{Isolating Frequencies}
 
+A shallow network with just one layer of sinusoidal activation functions can filter a signal by band-limiting its frequency content. Thus, it provides a tool for controlling the level of detail of the output signal. This conclusion is natural since the resulting signal representation is a linear combination of sinusoidal functions with induced frequency band. In a sense, the network is projecting the input signal into a learned dictionary of spectral atoms.
 
-\red{refazer experimentos da seção 3.6 do relatório técnico}
+In that context, a one-layer SIREN network could also be used as a spectral filter, just as in the MFN-based architectures \cite{fathony2020multiplicative}. To verify this hypothesis, we trained a shallow SIREN controlling the initialization of the weights of the first linear transformation, and observed how this can determine the final reconstruction. In the first experiment, the input signal, presented in Figure \ref{fig:gt-4freqs}, is a combination of four tones, two with lower frequencies (1Hz and 5Hz) and two more with higher frequencies (40Hz and 50Hz). The hyperparameters of the network and training are: sample size: 512; hidden layers: 0; total steps: 300; learning rate: $10^{-2}$; optimization method: Adam; number of neurons: 64. 
+
+We first tried to recover the lower frequencies using $\omega_0=10$. The reconstructed signal (Figure \ref{fig:rec-naive-w0}) looks like a very low frequency signal. In fact, we have computed the Fast Fourier Transform of both signals (Figure \ref{fig:fft-smooth-4freqs}) and it's clear that the network learned to represent a very smoothed version of the input signal.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{$Ground truth$}
+        \label{fig:gt-4freqs}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction}
+        \label{fig:rec-naive-w0}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction in $[-1, 1]$}
+        \label{fig:fft-smooth-4freqs}
+    \end{subfigure}
+    \label{f:4freqs-smoothed-reconstruction}
+    \caption{Reconstruction of a signal with high frequencies with a network inititialized with much lower frequencies}
+\end{figure}
+
+We think this result is due to the netwrok being initialized with very low frequencies. Considering that the sine function is periodic with period $2\pi$, we propose that the hyperparameter $\omega_0$ be always multiplyed by $2\pi$ so we can better establish a relationship between initialization of the first layer and the range of frequencies represented by each atom in the first layer of the network.
+% Since the risk landscape for the SIREN loss has many local minima, is expected that these weights can’t move much further than their initialization, therefore controlling where the weights start should control the range of frequencies one can filter in from the ground truth wave.
+Doing the experiment again, considering $\omega_0 = 10$Hz, the expected behavior seems to hold: the predicted wave (Figure \ref{fig:rec-2pi-w0}) approximates the low frequency portion of the signal. Notice how the FFT plot (Figure \ref{fig:fft-low-4freqs}) matches the two peaks at 1 Hz and 5Hz while the high frequency tones are not learned.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{$Ground truth$}
+        % \label{fig:gt-4freqs}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction}
+        \label{fig:rec-2pi-w0}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction in $[-1, 1]$}
+        \label{fig:fft-low-4freqs}
+    \end{subfigure}
+    \label{f:4freqs-low-reconstruction}
+    \caption{Reconstruction of a signal with high frequencies with a network inititialized with much lower frequencies}
+\end{figure}
+
+Next we change the initialization to frequencies between 45 and 55 Hz. As expected, that also succeeds in predicting the high frequency tones but fails in capturing the low frequency ones. However, when we use the full range of frequencies, that is, $\omega_0 in [-55, 55]$ Hz, we can learn to completely represent the signal.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{$Ground truth$}
+        % \label{fig:gt-4freqs}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction}
+        \label{fig:rec-full-w0}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Reconstruction in $[-1, 1]$}
+        \label{fig:fft-low-4freqs}
+    \end{subfigure}
+    \label{f:4freqs-full-reconstruction}
+    \caption{Reconstruction of a signal with high frequencies with a network inititialized with much lower frequencies}
+\end{figure}
+
 
 % We started encoding signals created by summing individual frequencies using sinusoidal functions.
 
