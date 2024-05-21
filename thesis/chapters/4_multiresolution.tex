@@ -1,37 +1,27 @@
-% 4 Multiresolution Sinusoidal Neural Networks
-
-% - Present the experiments in understanding the control of frequencies in a sinusoidal network:
-%     - Fitting a signal with few frequencies
-%     - Fitting a stochastic signal
-%     - Filtering a stochastic signal. Show how the network converges to a filtered version of the signal when initialized with low frequencies. Show the Fourier transform plot.
-%     - Diverging by using high frequencies. Show how the network diverges when initialized with very high frequencies.
-% - Present the experiments in fitting multiresolution signals
-%     - 1D Gaussian Tower
-%     - 1D Gaussian Pyramid
-%     - show that networks is well behaved between samples
-% - Present the MR-Net architecture
-%     - Discussion on Filtering, scheduling etc
-%     - show the atoms
-
 \chapter{Multiresolution Sinusoidal Neural Networks}
 
-Our goal is to design a new architecture of neural networks capable of encoding a signal in multiple scales. We aim for a continuous and compact representation of scalar fields that can be used to model images, shapes and other complex objects either as an explicit attribute of space-time coordinates or as level sets of implicit functions.
+Our goal is to design a new architecture of neural networks capable of encoding signals at multiple scales. We aim for a continuous and compact representation of scalar fields that can be used to model images, shapes, and other complex objects either as an explicit attribute of space-time coordinates or as level sets of implicit functions.
 
-In this chapter, we present hypothesis, experiments and discussions related to the representation of one-dimensional signals using sinusoidal neural networks. By working, initially, with one-dimensional signals, we can have better control over the signal frequencies, easily visualize it plotting its Fast Fourier Transform and also validate the results in terms of the classical sampling theory. 
+In this chapter, we present hypotheses, experiments, and discussions related to the representation of one-dimensional signals using sinusoidal neural networks. By initially working with one-dimensional signals, we can better control the signal frequencies, easily visualize them by plotting their Fast Fourier Transform (FFT), and validate the results in terms of classical sampling theory.
 
-We build our architecture upon Siren \cite{sitzmann2019siren}, Sinusoidal Representation Networks, as it's able to learn high frequency details of a signal quickly and it's also suitable for modelling the signal derivatives. For this, we explore the initialization of the network better undestanding the relationship between its hyperparameters, the frequencies of a signal and the frequencies learned by the network.
+We build our architecture upon SIREN (Sinusoidal Representation Networks) \cite{sitzmann2019siren}, which is capable of learning high-frequency details of a signal quickly and is also suitable for modeling the signal derivatives. To do this, we explore the initialization of the network by better understanding the relationship between its hyperparameters, the frequencies of a signal, and the frequencies learned by the network.
 
-For the multiresolution approach, we leverage classical structures of image and signal processing as Gaussian and Laplacian Pyramids. We develop a framework to train a multi-stage neural network using multiresolution structures in an efficient way. We demonstrate that our model can keep a comparable reconstruction quality to a simple SIREN model with the same amount of parameters, while encoding multiple levels of details.
+For the multiresolution approach, we leverage classical structures of image and signal processing, such as Gaussian and Laplacian Pyramids. We develop a framework to train a multi-stage neural network using multiresolution structures in an efficient way. We demonstrate that our model can maintain a comparable reconstruction quality to a simple SIREN model with the same number of parameters while encoding multiple levels of detail.
 
 \section{Related Work}
 
-- Related works: tamings the waves \cite{taming2017} , SIREN \cite{sitzmann2019siren}, Fourier feature mapping \cite{tancik2020fourfeat}
+We are particularly interested in signals as media objects. In that sense, they are given by functions in dimensions one, two and three, which are considered low dimensional domains for machine learning applications. \cite{tancik2020fourfeat} used the neural tangent kernel (NTK) literature to show that a standard MLP fails to learn high frequencies both in theory and in practice. To overcome this spectral bias, they have proposed to use a Fourier feature mapping to to map input coordinates into a higher dimensional spectral feature space before passing them through the network. This way, a coordinate-based MLP can learn high-frequency content of low dimensional signals.
 
-- What do these networks do? Talk about projection in the spectral space and reconstruction from a dictionary of spectral atoms.
+On the other hand, sinusoidal neural networks are examples of coordinate-based networks in which their activation function is the sine function. As such, they bridge the gap between the spatial and spectral domains, given the close relationship of the sine function with the Fourier basis, and they can naturally overcome the spectral bias of regular MLP. The first layer of a sinusoidal neural network performs a projection of the signal in the spectral space, while the last layer performs a reconstruction of the signal from a dictionary of spectral atoms. However, these sinusoidal neural networks have been regarded as difficult to train~\cite{taming2017}. To overcome this problem, \citet{sitzmann2019siren} proposed a sinusoidal network for signal representation called SIREN. One of the key contributions of this work is the initialization scheme that guarantees stability and good convergence. Furthermore, it also shows that sinusoidal neural networks allows modeling fine details in accordance with the signal’s frequency content. 
 
-- Avoiding composition of sines: Multiplicative Filter networks \cite{fathony2020multiplicative}; Bacon \cite{bacon2021}.
+The dififuclty in training sinusoidal neural networks is due in part to the composition of sinusoidal function that can generate multiple new and higher frequencies. \cite{novello2022understanding} studies a sinusoidal MLP by expanding it as a harmonic sum, presenting theoretical results to justify the compactness property of sinusoidal MLPs, then proves that each of these sinusoidal neurons expands as a harmonic sum producing a large number of new frequencies expressed as integer linear combinations of the input frequencies. That is a progress into better understanding the behavior of these networks.
 
-- Undestanding sinusoidal networks: Novello; Diana.
+A \textit{multiplicative filter network} (MFN) is a sinusoidal network simpler than SIREN which, as we will demonstrate, is equivalent to a shallow sinusoidal network~\cite{fathony2020multiplicative}. \citet{bacon2021} presented \textit{band-limited coordinate network }(BACON), an MFN that produces intermediate outputs with an analytical spectral bandwidth (specified at initialization) and achieves multiresolution of the underlying signal. While its structure allows BACON to be expressed as a linear combinations of sines, avoiding the composition of sines present in sinusoidal MLPs, it creates multiresolution representations by truncating the frequency spectra of the signals. This approach produces ringing artifacts  in some levels of detail, and becomes evident when we look at the Fourier transform of the images.
+
+The control of frequency bands in the representation is closely related with the capability of adaptive reconstruction of the signal in multiple levels of detail. In that context, \citet{mueller2022instant} developed a multiresolution neural network architecture based on hash encoding. Also, \citet{martel2021acorn} designed an adaptive coordinate network for neural signals.
+
+In this context, we have introduced \textit{multiresolution sinusoidal neural networks}~(MR-Net) \cite{paz2022,perez2003} based on classical signal multiresolution representations. 
+Our results, presented in Section~\ref{sub:spectra-eval}, indicate that using MR-Net produces better results compared to the previous state-of-the-art technique, BACON, while employing a smaller number of parameters.
 
 
 \section{Frequency Initialization}
@@ -251,6 +241,21 @@ The same phenomenon is observed when the network is initialized with only the hi
 
 
 Therefore it seems to be that, in general, it not straightforward to decompose the frequencies of a signal using a sinusoidal deep network with more than one layer, except for special cases where the signal is simple and the initialization is in a range very close to the target.
+
+% 4 Multiresolution Sinusoidal Neural Networks
+
+% - Present the experiments in understanding the control of frequencies in a sinusoidal network:
+%     - Fitting a signal with few frequencies
+%     - Fitting a stochastic signal
+%     - Filtering a stochastic signal. Show how the network converges to a filtered version of the signal when initialized with low frequencies. Show the Fourier transform plot.
+%     - Diverging by using high frequencies. Show how the network diverges when initialized with very high frequencies.
+% - Present the experiments in fitting multiresolution signals
+%     - 1D Gaussian Tower
+%     - 1D Gaussian Pyramid
+%     - show that networks is well behaved between samples
+% - Present the MR-Net architecture
+%     - Discussion on Filtering, scheduling etc
+%     - show the atoms
 
 \subsection{Learning and filtering a stochastic signal}
 
