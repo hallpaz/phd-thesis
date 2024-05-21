@@ -26,11 +26,22 @@ In this context, we introduce \textit{Multiresolution Sinusoidal Neural Networks
 
 \section{Frequency Initialization}
 
-The correct initialization of sinusoidal neural netowrks is crucial for having stability during training and convergence to the expected result. According to \cite{sitzmann2019siren}, a Siren model must be initialized so that for a uniform input in $[-1, 1]$ the outputs of each hidden layer before the sine nonlinearity are standard normal distributed. The authors of SIREN propose to initialize the first layer of the network so that the sine function $\sin(\omega_0 \cdot W x + b)$
-% $\sin(\omega_0 \cdot \bold{W}x + b)$ 
-spans multiple periods over $[-1, 1]$. They introduce $\omega_0$ as a hyperparameter that could be adjusted to each signal. For the examples presented in their work, they used a fixed $\omega_0=30$ and found it to work well empirically, but they do not dive deeper on the why. 
+The correct initialization of sinusoidal neural netowrks is crucial for having stability during training and convergence to the expected result. According to \cite{sitzmann2019siren}, a SIREN model must be initialized 
+
+so that for a uniform input in $[-1, 1]$ the outputs of each hidden layer before the sine nonlinearity are standard normal distributed. The authors of SIREN propose to initialize the first layer of the network so that the sine function $\sin(\omega_0 \cdot W x + b)$ spans multiple periods over $[-1, 1]$. They introduce $\omega_0$ as a hyperparameter that could be adjusted to each signal. For the examples presented in their work, they used a fixed $\omega_0=30$ and found it to work well empirically, but they do not dive deeper on the why. 
+
+
+such that, for a uniform input in \([-1, 1]\), the outputs of each hidden layer before applying the sine nonlinearity are normally distributed with a mean of zero and a standard deviation of one. 
+
+The authors of SIREN suggest initializing the first layer of the network to ensure that the sine function \(\sin(\omega_0 \cdot Wx + b)\) spans multiple periods over \([-1, 1]\). They introduce \(\omega_0\) as a hyperparameter that can be adjusted for each signal. Empirically, they found a fixed \(\omega_0 = 30\) to work well, although they do not delve into the underlying reasons.
 
 In this section, we show how the choice of $\omega_0$  impacts the frequencies learned by the network, the speed of the training and even if it will converge to a reasonable result or collapse into noise. The hyperparameter $\omega_0$ is directly related to the interval of frequencies used to initialize the first layer of the network, determining the set of the spectral atoms where the signal will be projected. This same hyperparameter is also applied on the initialization of the hidden layers as the authors argue it boosts the gradients during the training and accelerates the convergence. However, in the hidden layers, it is basically used as pre-conditioner, a numeral trick, since the implementation multiplies by $\omega_0$ and also divides by this same value. We propose to call this hyperparameter in the hidden layers by $\omega_h$, and keep $\omega_0$ only for the first layer.
+
+
+
+In this section, we examine how the choice of \(\omega_0\) impacts the frequencies learned by the network, the speed of training, and whether the network will converge to a reasonable result or collapse into noise. The hyperparameter \(\omega_0\) directly influences the range of frequencies used to initialize the first layer of the network, thus determining the set of spectral atoms onto which the signal will be projected. This hyperparameter is also applied to the initialization of the hidden layers, as the authors argue that it boosts gradients during training and accelerates convergence. However, in the hidden layers, \(\omega_0\) functions primarily as a pre-conditioner—a numerical trick—since the implementation multiplies by \(\omega_0\) and then divides by the same value. To clarify this distinction, we propose referring to the hyperparameter in the hidden layers as \(\omega_h\), reserving \(\omega_0\) exclusively for the first layer.
+
+By understanding and adjusting \(\omega_0\) and \(\omega_h\), we aim to optimize the training process and improve the performance of sinusoidal neural networks.
 
 
 \subsection{Isolating Frequencies}
