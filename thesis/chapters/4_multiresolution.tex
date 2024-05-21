@@ -1,12 +1,13 @@
 \chapter{Multiresolution Sinusoidal Neural Networks}
 
-Our goal is to design a new architecture of neural networks capable of encoding signals at multiple scales. We aim for a continuous and compact representation of scalar fields that can be used to model images, shapes, and other complex objects either as an explicit attribute of space-time coordinates or as level sets of implicit functions.
+In this chapter, we introduce a novel neural network architecture designed to encode signals at multiple scales. Our objective is to achieve a continuous and compact representation of scalar fields, which can be applied to model images, shapes, and other complex media objects, either as explicit attributes of space-time coordinates or as level sets of implicit functions.
 
-In this chapter, we present hypotheses, experiments, and discussions related to the representation of one-dimensional signals using sinusoidal neural networks. By initially working with one-dimensional signals, we can better control the signal frequencies, easily visualize them by plotting their Fast Fourier Transform (FFT), and validate the results in terms of classical sampling theory.
+We focus on representing one-dimensional signals using sinusoidal neural networks. This approach allows us to experiment on the control of signal frequencies, visualize them through their Fast Fourier Transform (FFT) plots, and validate our results against classical sampling theory.
 
-We build our architecture upon SIREN (Sinusoidal Representation Networks) \cite{sitzmann2019siren}, which is capable of learning high-frequency details of a signal quickly and is also suitable for modeling the signal derivatives. To do this, we explore the initialization of the network by better understanding the relationship between its hyperparameters, the frequencies of a signal, and the frequencies learned by the network.
+Our architecture builds upon the Sinusoidal Representation Networks (SIREN) framework \cite{sitzmann2019siren}, known for its ability to learn high-frequency signal details efficiently and model signal derivatives. We deeply investigate the network's initialization, exploring the interplay between its hyperparameters, the inherent signal frequencies, and the frequencies the network learns.
 
-For the multiresolution approach, we leverage classical structures of image and signal processing, such as Gaussian and Laplacian Pyramids. We develop a framework to train a multi-stage neural network using multiresolution structures in an efficient way. We demonstrate that our model can maintain a comparable reconstruction quality to a simple SIREN model with the same number of parameters while encoding multiple levels of detail.
+For the multiresolution approach, we leverage classical structures of image and signal processing, such as Gaussian and Laplacian Pyramids. We develop a framework to train a multi-stage neural network using multiresolution structures in an efficient way. We demonstrate that our model can achieve a comparable reconstruction quality to a simple SIREN model with the same number of parameters, while encoding multiple levels of detail.
+
 
 \section{Related Work}
 
@@ -22,6 +23,24 @@ The control of frequency bands in the representation is closely related with the
 
 In this context, we have introduced \textit{multiresolution sinusoidal neural networks}~(MR-Net) \cite{paz2022,perez2003} based on classical signal multiresolution representations. 
 Our results, presented in Section~\ref{sub:spectra-eval}, indicate that using MR-Net produces better results compared to the previous state-of-the-art technique, BACON, while employing a smaller number of parameters.
+
+
+Here’s a refined version of your Related Work section:
+
+\section{Related Work}
+
+Our focus lies on signals as media objects, represented by functions in one, two, and three dimensions, which are considered low-dimensional domains for machine learning applications. Tancik et al. \cite{tancik2020fourfeat} demonstrated that standard Multilayer Perceptrons (MLPs) struggle to learn high frequencies both theoretically and empirically. They proposed using Fourier feature mapping to transform input coordinates into a higher-dimensional spectral feature space before processing them through the network. This enables coordinate-based MLPs to effectively capture high-frequency content in low-dimensional signals.
+
+Sinusoidal neural networks represent another class of coordinate-based networks, employing the sine function as their activation function. They serve as a bridge between spatial and spectral domains due to the close relationship between the sine function and the Fourier basis. This characteristic allows them to naturally overcome the spectral bias of regular MLPs. The first layer of a sinusoidal neural network projects the signal into spectral space, while the last layer reconstructs the signal from a dictionary of spectral atoms. However, these networks have historically been challenging to train \cite{taming2017}. To address this issue, Sitzmann et al. \cite{sitzmann2019siren} proposed SIREN, a sinusoidal network for signal representation. One of its key contributions is an initialization scheme that ensures stability and convergence, enabling the modeling of fine details consistent with the signal’s frequency content.
+
+The difficulty in training sinusoidal neural networks stems in part from the composition of sinusoidal functions, which can generate multiple new and higher frequencies. Novello et al. \cite{novello2022understanding} studied sinusoidal MLPs by expanding them as harmonic sums, providing theoretical justification for their compactness property. They demonstrated that each sinusoidal neuron expands as a harmonic sum, generating numerous new frequencies expressed as integer linear combinations of the input frequencies, contributing to a better understanding of these networks’ behavior.
+
+A simpler form of sinusoidal network is the Multiplicative Filter Network (MFN), which is equivalent to a shallow sinusoidal network \cite{fathony2020multiplicative}. Bacon et al. \cite{bacon2021} introduced the Band-Limited Coordinate Network (BACON), an MFN that produces intermediate outputs with an analytically specified spectral bandwidth, achieving multiresolution representations of underlying signals. While BACON avoids the composition of sines present in sinusoidal MLPs, it creates multiresolution representations by truncating the frequency spectra of the signals, resulting in ringing artifacts in some detail levels, particularly noticeable in the Fourier transform of images.
+
+The ability to control frequency bands in representation is closely tied to the capability of adaptively reconstructing signals at multiple detail levels. Mueller et al. \cite{mueller2022instant} developed a multiresolution neural network architecture based on hash encoding, while Martel et al. \cite{martel2021acorn} designed an adaptive coordinate network for neural signals.
+
+In this context, we introduce Multiresolution Sinusoidal Neural Networks (MR-Net) \cite{paz2022,perez2003} based on classical signal multiresolution representations. Our results, discussed in Section \ref{sub:spectra-eval}, demonstrate that MR-Net outperforms the previous state-of-the-art technique, BACON, while utilizing a smaller number of parameters.
+
 
 
 \section{Frequency Initialization}
