@@ -54,3 +54,6 @@ visualize_grad: True
 extrapolate: [-2, 2]
 zoom: [2, 4, 8]
 zoom_filters: ['linear', 'cubic', 'nearest']
+img_format: pdf
+# color_scheme: ["#ffb400", "#9080ff", "#d2980d", "#776bcd"]
+# single_color: ["#d2980d"]

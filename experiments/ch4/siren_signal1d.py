@@ -183,7 +183,7 @@ def exp_all_frequencies():
     mrtrainer.train(hyper['device'])
 
 if __name__ == '__main__':
-    # exp_smoothed()
+    exp_smoothed()
     # exp_crafted_frequencies()
-    exp_high_frequencies_only()
+    # exp_high_frequencies_only()
     # exp_all_frequencies()    

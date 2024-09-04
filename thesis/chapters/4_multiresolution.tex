@@ -2,83 +2,82 @@
 
 In this chapter, we introduce a novel neural network architecture designed to encode signals at multiple scales. Our objective is to achieve a continuous and compact representation of scalar fields, which can be applied to model images, shapes, and other complex media objects, either as explicit attributes of space-time coordinates or as level sets of implicit functions.
 
-We focus on representing one-dimensional signals using sinusoidal neural networks. This approach allows us to experiment on the control of signal frequencies, visualize them through their Fast Fourier Transform (FFT) plots, and validate our results against classical sampling theory.
+We initially focus on representing one-dimensional signals using sinusoidal neural networks. This approach allows us to experiment on the control of signal frequencies, visualize them through their Fast Fourier Transform (FFT) plots, and validate our results against classical sampling theory.
 
-Our architecture builds upon the Sinusoidal Representation Networks (SIREN) framework \cite{sitzmann2019siren}, known for its ability to learn high-frequency signal details efficiently and model signal derivatives. We deeply investigate the network's initialization, exploring the interplay between its hyperparameters, the inherent signal frequencies, and the frequencies the network learns.
+Our architecture builds upon the Sinusoidal Representation Networks (SIREN) framework (\cite{sitzmann2019siren}), known for its ability to learn high-frequency signal details efficiently and model signal derivatives. We deeply investigate the network's initialization, exploring the interplay between its hyperparameters, the inherent signal frequencies, and the frequencies the network learns.
 
-For the multiresolution approach, we leverage classical structures of image and signal processing, such as Gaussian and Laplacian Pyramids. We develop a framework to train a multi-stage neural network using multiresolution structures in an efficient way. We demonstrate that our model can achieve a comparable reconstruction quality to a simple SIREN model with the same number of parameters, while encoding multiple levels of detail.
+For the multiresolution approach, we leverage classical structures of image and signal processing, such as Gaussian and Laplacian Pyramids. We use these ideas to develop a framework to train a multi-stage neural network using multiresolution structures in an efficient way. \red{Finally, we demonstrate that our model can achieve a comparable reconstruction quality to a simple SIREN model with the same number of parameters, while encoding multiple levels of detail. MAYBE MOVE TO THE IMAGE APPLICATION, BUT THEN WHAT WOULD BE THE CONCLUSION HERE?}
 
 
 \section{Related Works}
 
-Our focus lies on signals as media objects, usually represented by functions in one, two, and three dimensions, which are considered low-dimensional domains for machine learning applications. \cite{tancik2020fourfeat} demonstrated that standard Multilayer Perceptrons (MLPs) struggle to learn high frequencies both theoretically and empirically. They proposed using Fourier feature mapping to transform input coordinates into a higher-dimensional spectral feature space before processing them through the network. This enables coordinate-based MLPs to effectively capture high-frequency content in low-dimensional signals, overcoming this \textit{spectral bias} \cite{rahaman2018spectral}.
+Our focus lies on signals as media objects, usually represented by functions in one, two, and three dimensions, which are considered low-dimensional domains for machine learning applications. \cite{tancik2020fourfeat} demonstrated that standard Multilayer Perceptrons (MLPs) struggle to learn high frequencies both theoretically and empirically. They proposed using Fourier feature mapping to transform input coordinates into a higher-dimensional spectral feature space before processing them through the network. This enables coordinate-based MLPs to effectively capture high-frequency content in low-dimensional signals, overcoming this \textit{spectral bias} (\cite{rahaman2018spectral}).
 
 Sinusoidal neural networks represent a class of coordinate-based networks that employs the sine function as their activation function. They serve as a bridge between spatial and spectral domains due to the close relationship between the sine function and the Fourier basis. The first layer of a sinusoidal neural network projects the signal into spectral space, while the last layer reconstructs the signal from a dictionary of spectral atoms. This characteristic allows them to naturally overcome the spectral bias of regular MLPs. However, these sinusoidal neural networks have been regarded as difficult to train \cite{taming2017}. To address this issue, Sitzmann et al. \cite{sitzmann2019siren} proposed SIREN, a sinusoidal network for signal representation. One of its key contributions is an initialization scheme that ensures stability and convergence, enabling the modeling of fine details consistent with the signal’s frequency content.
 
-The challenge in training sinusoidal neural networks comes in part from the composition of sinusoidal functions, which can generate multiple new and higher frequencies. Novello \cite{novello2022understanding} studied sinusoidal MLPs by expanding them as harmonic sums, demonstrating how numerous new frequencies are expressed as integer linear combinations of the input frequencies. This work provides theoretical justification for sinusoidal MLPs compactness property and contributes to a better understanding of these networks’ behavior.
+The challenge in training sinusoidal neural networks comes in part from the composition of sinusoidal functions, which can generate multiple new and higher frequencies. \cite{novello2022understanding} studied sinusoidal MLPs by expanding them as harmonic sums, demonstrating how numerous new frequencies are expressed as integer linear combinations of the input frequencies. This work provides theoretical justification for sinusoidal MLPs compactness property and contributes to a better understanding of these networks’ behavior.
 
-A simpler form of sinusoidal network is the Multiplicative Filter Network (MFN) \cite{fathony2020multiplicative}, which is equivalent to a shallow sinusoidal MLP. \cite{bacon2021} introduced the Band-Limited Coordinate Network (BACON), an MFN that produces intermediate outputs with an analytically specified spectral bandwidth, achieving multiresolution representations of underlying signals. While its structure allows BACON to be expressed as a linear combinations of sines, avoiding the composition of sines present in deep sinusoidal MLPs, it creates multiresolution representations by truncating the frequency spectra of the signals. This approach produces ringing artifacts in some levels of detail, and becomes evident when we look at the Fourier transform of images reconstructed using this network.
+A simpler form of sinusoidal network is the Multiplicative Filter Network (MFN) \cite{fathony2020multiplicative}, which is equivalent to a shallow sinusoidal MLP. \cite{bacon2021} introduced the Band-Limited Coordinate Network (BACON), an MFN that produces intermediate outputs with an analytically specified spectral bandwidth, achieving multiresolution representations of underlying signals. While its structure allows BACON to be expressed as a linear combinations of sines, avoiding the composition of sines present in deep sinusoidal MLPs, it creates multiresolution representations by truncating the frequency spectra of the signals at a specific value. This approach produces ringing artifacts in some levels of detail, and becomes evident when we look at the Fourier transform of images reconstructed using this network (see Chapter \ref{ch:imaging}).
 
 The ability to control frequency bands in representation is closely tied to the capability of adaptively reconstructing signals at multiple detail levels. \citet{mueller2022instant} developed a multiresolution neural network architecture based on hash encoding, while \citet{martel2021acorn} designed an adaptive coordinate network for neural signals.
 
-In this context, we introduce \textit{Multiresolution Sinusoidal Neural Networks} (MR-Net) \cite{paz2022,paz2023mr} based on classical signal multiresolution representations. Our results, discussed in Chapter \ref{ch:imaging}, demonstrate that MR-Net outperforms the previous state-of-the-art technique, BACON, while utilizing a smaller number of parameters.
+In this context, we introduce \textit{Multiresolution Sinusoidal Neural Networks} (MR-Net) \cite{paz2022,paz2023mr} based on classical signal multiresolution representations. Our results in imaging applications, discussed in Chapter \ref{ch:imaging}, demonstrate that MR-Net outperforms the previous state-of-the-art technique, BACON, while utilizing a smaller number of parameters.
 
 
 \section{Frequency Initialization}
 
-The correct initialization of sinusoidal neural netowrks is crucial for having stability during training and convergence to the expected result. According to \cite{sitzmann2019siren}, a SIREN model must be initialized 
+The correct initialization of sinusoidal neural netowrks is crucial for having stability during training and convergence to the expected result. According to \cite{sitzmann2019siren}, a SIREN model must be initialized so that for a uniform input in $[-1, 1]$ the outputs of each hidden layer before the sine nonlinearity are standard normal distributed. 
 
-so that for a uniform input in $[-1, 1]$ the outputs of each hidden layer before the sine nonlinearity are standard normal distributed. The authors of SIREN propose to initialize the first layer of the network so that the sine function $\sin(\omega_0 \cdot W x + b)$ spans multiple periods over $[-1, 1]$. They introduce $\omega_0$ as a hyperparameter that could be adjusted to each signal. For the examples presented in their work, they used a fixed $\omega_0=30$ and found it to work well empirically, but they do not dive deeper on the why. 
+% such that, for a uniform input in \([-1, 1]\), the outputs of each hidden layer before applying the sine nonlinearity are normally distributed with a mean of zero and a standard deviation of one. 
 
+Moreover, the authors of SIREN propose to initialize the first layer of the network so that the sine function $\sin(\omega_0 \cdot W x + b)$ spans multiple periods over $[-1, 1]$. They introduce $\omega_0$ as a hyperparameter that could be adjusted to each signal. For the examples presented in their work, they used a fixed $\omega_0=30$ and found it to work well empirically, but they did not dive deeper on the why.
 
-such that, for a uniform input in \([-1, 1]\), the outputs of each hidden layer before applying the sine nonlinearity are normally distributed with a mean of zero and a standard deviation of one. 
+% The authors of SIREN suggest initializing the first layer of the network to ensure that the sine function \(\sin(\omega_0 \cdot Wx + b)\) spans multiple periods over \([-1, 1]\). They introduce \(\omega_0\) as a hyperparameter that can be adjusted for each signal. Empirically, they found a fixed \(\omega_0 = 30\) to work well, although they do not delve into the underlying reasons.
 
-The authors of SIREN suggest initializing the first layer of the network to ensure that the sine function \(\sin(\omega_0 \cdot Wx + b)\) spans multiple periods over \([-1, 1]\). They introduce \(\omega_0\) as a hyperparameter that can be adjusted for each signal. Empirically, they found a fixed \(\omega_0 = 30\) to work well, although they do not delve into the underlying reasons.
+% In this section, we show how the choice of $\omega_0$  impacts the frequencies learned by the network, the speed of the training and even if it will converge to a reasonable result or collapse into noise. The hyperparameter $\omega_0$ is directly related to the interval of frequencies used to initialize the first layer of the network, determining the set of the spectral atoms where the signal will be projected. This same hyperparameter is also applied on the initialization of the hidden layers as the authors argue it boosts the gradients during the training and accelerates the convergence. However, in the hidden layers, it is basically used as pre-conditioner, a numeral trick, since the implementation multiplies by $\omega_0$ and also divides by this same value. We propose to call this hyperparameter in the hidden layers by $\omega_h$, and keep $\omega_0$ only for the first layer.
 
-In this section, we show how the choice of $\omega_0$  impacts the frequencies learned by the network, the speed of the training and even if it will converge to a reasonable result or collapse into noise. The hyperparameter $\omega_0$ is directly related to the interval of frequencies used to initialize the first layer of the network, determining the set of the spectral atoms where the signal will be projected. This same hyperparameter is also applied on the initialization of the hidden layers as the authors argue it boosts the gradients during the training and accelerates the convergence. However, in the hidden layers, it is basically used as pre-conditioner, a numeral trick, since the implementation multiplies by $\omega_0$ and also divides by this same value. We propose to call this hyperparameter in the hidden layers by $\omega_h$, and keep $\omega_0$ only for the first layer.
+In this section, we examine how the choice of \(\omega_0\) impacts the frequencies learned by the network, the speed of training, and whether the network will converge to a reasonable result or collapse into noise. We show that the hyperparameter \(\omega_0\) directly influences the range of frequencies used to initialize the first layer of the network, thus determining the set of spectral atoms onto which the signal will be projected. This hyperparameter is also applied to the initialization of the hidden layers, as the authors argue that it boosts gradients during training and accelerates convergence. However, in the hidden layers, \(\omega_0\) functions primarily as a pre-conditioner, a numerical trick, since the implementation multiplies the weights by \(\omega_0\) and then divides them by the same value. To clarify this distinction, we propose referring to the hyperparameter in the hidden layers as \(\omega_h\), reserving \(\omega_0\) exclusively for the first layer.
 
-
-
-In this section, we examine how the choice of \(\omega_0\) impacts the frequencies learned by the network, the speed of training, and whether the network will converge to a reasonable result or collapse into noise. The hyperparameter \(\omega_0\) directly influences the range of frequencies used to initialize the first layer of the network, thus determining the set of spectral atoms onto which the signal will be projected. This hyperparameter is also applied to the initialization of the hidden layers, as the authors argue that it boosts gradients during training and accelerates convergence. However, in the hidden layers, \(\omega_0\) functions primarily as a pre-conditioner—a numerical trick—since the implementation multiplies by \(\omega_0\) and then divides by the same value. To clarify this distinction, we propose referring to the hyperparameter in the hidden layers as \(\omega_h\), reserving \(\omega_0\) exclusively for the first layer.
-
-By understanding and adjusting \(\omega_0\) and \(\omega_h\), we aim to optimize the training process and improve the performance of sinusoidal neural networks.
+By understanding and adjusting \(\omega_0\) and \(\omega_h\), we aim to optimize the training process of sinusoidal neural networks and develop a multiresolution architecture with them.
 
 
 \subsection{Isolating Frequencies}
 
 A shallow network with just one layer of sinusoidal activation functions can filter a signal by band-limiting its frequency content. Thus, it provides a tool for controlling the level of detail of the output signal. This conclusion is natural since the resulting signal representation is a linear combination of sinusoidal functions with induced frequency band. In a sense, the network is projecting the input signal into a learned dictionary of spectral atoms.
 
-In that context, a one-layer SIREN network could also be used as a spectral filter, just as in the MFN-based architectures \cite{fathony2020multiplicative}. To verify this hypothesis, we trained a shallow SIREN controlling the initialization of the weights of the first linear transformation, and observed how this can determine the final reconstruction. In the first experiment, the input signal, presented in Figure \ref{fig:gt-4freqs}, is a combination of four tones, two with lower frequencies (2Hz and 5Hz) and two more with higher frequencies (31Hz and 42Hz). The hyperparameters of the network and training are: sample size: 512; hidden layers: 0; total steps: 300; learning rate: $10^{-2}$; optimization method: Adam; number of neurons: 64. 
+In that context, a one-layer SIREN network could also be used as a spectral filter, just as in the MFN-based architectures (\cite{fathony2020multiplicative}). To verify this hypothesis, we trained a shallow SIREN controlling the initialization of the weights of the first linear transformation, and observed how this can determine the final reconstruction. In the first experiment, the input signal, presented in Figure \ref{fig:gt-4freqs}, is a combination of four tones, two with lower frequencies (2Hz and 5Hz) and two more with higher frequencies (31Hz and 42Hz). The hyperparameters of the network and training are: sample size: 512; hidden layers: 0; total steps: 300; learning rate: $10^{-2}$; optimization method: Adam; number of neurons: 64. 
 
-We first tried to recover the lower frequencies using $\omega_0=10$. The reconstructed signal (Figure \ref{fig:rec-naive-w0}) looks like a very low frequency signal. In fact, we have computed the Fast Fourier Transform of both signals (Figure \ref{fig:fft-smooth-4freqs}) and it's clear that the network learned to represent a very smoothed version of the input signal.
+We first tried to recover the lower frequencies using $\omega_0=10$. The reconstructed signal (Figure \ref{fig:rec-naive-w0}) resembles a very low-frequency signal. In fact, the Fast Fourier Transform of both signals (Figure \ref{fig:fft-smooth-4freqs}) reveals that the network only captured a peak at 2 Hz and learned only small amplitudes of other low frequencies, representing a heavily smoothed version of the input signal.
 
-\begin{figure}
+\begin{figure}[h]
     \centering
-    \begin{subfigure}[b]{0.3\textwidth}
+    \begin{subfigure}[b]{0.32\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{img/placeholder512.png}
-        \caption{$Ground truth$}
+        \includegraphics[width=\textwidth]{img/ch4/train_tones512.pdf}
+        \caption{$Input signal$}
         \label{fig:gt-4freqs}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.3\textwidth}
+    \begin{subfigure}[b]{0.32\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \includegraphics[width=\textwidth]{img/ch4/prediction_w10_smoothed.pdf}
         \caption{Reconstruction}
         \label{fig:rec-naive-w0}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.3\textwidth}
+    \begin{subfigure}[b]{0.32\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{img/placeholder512.png}
-        \caption{Reconstruction}
+        \includegraphics[width=\textwidth]{img/ch4/fft_w10_smoothed.pdf}
+        \caption{Frequencies (FFT)}
         \label{fig:fft-smooth-4freqs}
     \end{subfigure}
     \label{f:4freqs-smoothed-reconstruction}
-    \caption{Reconstruction of a signal with high frequencies with a network inititialized with much lower frequencies}
+    \caption{Reconstruction of a signal with low and high frequencies using a network initialized with very low frequencies.}
 \end{figure}
 
-We think this result is due to the netwrok being initialized with very low frequencies. Considering that the sine function is periodic with period $2\pi$, we propose that the hyperparameter $\omega_0$ be always multiplyed by $2\pi$ so we can better establish a relationship between initialization of the first layer and the range of frequencies represented by each atom in the first layer of the network.
+
+
+We think this result is due to the network being initialized with very low frequencies. Considering that the sine function is periodic with period $2\pi$, we propose that the hyperparameter $\omega_0$ be always multiplyed by $2\pi$ so we can better establish a relationship between initialization of the first layer and the range of frequencies represented by each atom in the first layer of the network.
 % Since the risk landscape for the SIREN loss has many local minima, is expected that these weights can’t move much further than their initialization, therefore controlling where the weights start should control the range of frequencies one can filter in from the ground truth wave.
 Doing the experiment again, considering $\omega_0 = 10$Hz, the expected behavior seems to hold: the predicted wave (Figure \ref{fig:rec-2pi-w0}) approximates the low frequency portion of the signal. Notice how the FFT plot (Figure \ref{fig:fft-low-4freqs}) matches the two peaks at 1 Hz and 5Hz while the high frequency tones are not learned.
 
