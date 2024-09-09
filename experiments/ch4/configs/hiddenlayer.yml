@@ -1,14 +1,15 @@
 # Logging
-project_name: phd-thesis
-logger: wandb
+project_name: phd-thesis-ch4
+logger: local
+log_path: runs/ch4
 # Model Class (S, L, M)
-model: M
+model: S
 
 # Network
 in_features: 1
 out_features: 1
-hidden_layers: 0
-hidden_features: [256]
+hidden_layers: 1
+hidden_features: [24]
 bias: True
 max_stages: 1
 
@@ -17,12 +18,13 @@ pmode: wrap
 domain: [-1, 1]
 
 # Frequency Initialization
-omega_0: [30]
+omega_0: 10
 hidden_omega_0: 30
 superposition_w0: True
 
 # Sampling
 sampling_scheme: regular
+nsamples: 512
 decimation: True
 filter: gauss # vary between none, laplace and gauss
 attributes: ['d0', 'd1']
@@ -34,14 +36,14 @@ optim_handler: 'regular'
 
 # Training
 opt_method: Adam
-lr: 0.0001
+lr: 0.001
 loss_tol: 0.00000000001
 diff_tol: 0.0000001
-max_epochs_per_stage: 200
+max_epochs_per_stage: 300
 batch_size: 128 * 128
 
 # Data
-data_path: data/arrays/sinusoidal.npy
+data_path: data/arrays/tones.npy
 
 # Computation (Only vary between 'cpu' and 'cuda')
 device: cpu
@@ -51,5 +53,8 @@ eval_device: cpu
 save_format: 'general'
 visualize_grad: True
 extrapolate: [-2, 2]
-zoom: [2, 4]
+zoom: [2, 4, 8]
 zoom_filters: ['linear', 'cubic', 'nearest']
+img_format: pdf
+# color_scheme: ["#ffb400", "#9080ff", "#d2980d", "#776bcd"]
+# single_color: ["#d2980d"]

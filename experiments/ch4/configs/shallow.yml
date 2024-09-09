@@ -1,6 +1,7 @@
 # Logging
 project_name: phd-thesis-ch4
 logger: local
+log_path: runs/ch4
 # Model Class (S, L, M)
 model: S
 
@@ -8,7 +9,7 @@ model: S
 in_features: 1
 out_features: 1
 hidden_layers: 0
-hidden_features: [64]
+hidden_features: [1024]
 bias: True
 max_stages: 1
 
