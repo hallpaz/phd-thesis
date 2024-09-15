@@ -11,12 +11,53 @@ from mrnet.datasets.procedural import perlin_noise
 from mrnet.training.utils import load_hyperparameters, get_optim_handler
 from IPython import embed
 
+def make_noise(hyper):
+    nsamples = hyper['nsamples']
+    X = torch.linspace(-1, 1, nsamples)
+    scale = hyper['scale']
+    octaves = hyper['octaves']
+    p = hyper['p']
+    noise = perlin_noise(nsamples, scale, octaves, p)
+    
+    base_signal = Signal1D(noise.view(1, -1), 
+                        domain=hyper['domain'],
+                        batch_size=hyper['batch_size'])
+    return base_signal
+
+def training_pipeline(hyper):
+    project_name = hyper['project_name']
+    scale, octaves, p = hyper['scale'], hyper['octaves'], hyper['p']
+    name = f"noise-s{scale}-o{octaves}-p{p}"
+    
+    base_signal = make_noise(hyper)
+    train_dataset = [base_signal]
+    test_dataset = [base_signal]
+
+    # you can substitute this line by your custom handler class
+    optim_handler = get_optim_handler(hyper.get('optim_handler', 'regular'))
+    
+    mrmodel = MRFactory.from_dict(hyper)
+    print("Model: ", type(mrmodel))
+    print(mrmodel)
+    
+    training_listener = TrainingListener(project_name,
+                                f"{name}{hyper['model']}",
+                                hyper,
+                                Path(hyper.get("log_path", "runs")))
+
+    mrtrainer = MRTrainer.init_from_dict(mrmodel,
+                                        train_dataset,
+                                        test_dataset,
+                                        training_listener,
+                                        hyper,
+                                        optim_handler=optim_handler)
+    mrtrainer.train(hyper['device'])
+
 
 if __name__ == '__main__':
     nfeatures = [32, 64, 128, 256]
-    omegas = [8, 32, 128, 256, 512]
-    h_layers = [1, 2, 3]
-    noise_params = { "scale": 10, "octaves": 16, "p": 1.4}
+    omegas = [8, 32, 64, 128, 256, 512, 1024]
+    h_layers = [0, 1, 2, 3]
     device = "cuda" if torch.cuda.is_available() else "cpu"
     for features in nfeatures:
         for layers in h_layers:
@@ -29,38 +70,4 @@ if __name__ == '__main__':
                 hyper['hidden_layers'] = layers
                 hyper['omega_0'] = omega_0
                 
-                project_name = hyper['project_name']
-                nsamples = hyper['nsamples']
-                
-                X = torch.linspace(-1, 1, nsamples)
-                scale = noise_params['scale']
-                octaves = noise_params['octaves']
-                p = noise_params['p']
-                noise = perlin_noise(nsamples, scale, octaves, p)
-                
-                base_signal = Signal1D(noise.view(1, -1), 
-                                    domain=hyper['domain'],
-                                    batch_size=hyper['batch_size'])
-                train_dataset = [base_signal]
-                test_dataset = [base_signal]
-
-                # you can substitute this line by your custom handler class
-                optim_handler = get_optim_handler(hyper.get('optim_handler', 'regular'))
-                
-                mrmodel = MRFactory.from_dict(hyper)
-                print("Model: ", type(mrmodel))
-                print(mrmodel)
-
-                name = f"noise-s{scale}-o{octaves}-p{p}"
-                training_listener = TrainingListener(project_name,
-                                            f"{name}{hyper['model']}",
-                                            hyper,
-                                            Path(hyper.get("log_path", "runs")))
-
-                mrtrainer = MRTrainer.init_from_dict(mrmodel,
-                                                    train_dataset,
-                                                    test_dataset,
-                                                    training_listener,
-                                                    hyper,
-                                                    optim_handler=optim_handler)
-                mrtrainer.train(hyper['device'])
+                training_pipeline(hyper)

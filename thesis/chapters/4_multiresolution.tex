@@ -226,28 +226,28 @@ To better understand the impact of the hidden layer, we conducted additional exp
 
 \begin{figure}[h!]
     \centering
-    \begin{subfigure}[b]{0.38\textwidth}
+    \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch4/prediction_1hl_16hf_w10.pdf}
         \caption{1 hidden layer, 16 neurons}
         \label{fig:rec-1hl-16hf-w10}
     \end{subfigure}
     % \hfill
-    \begin{subfigure}[b]{0.38\textwidth}
+    \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch4/fft_1hl_16hf_w10.pdf}
         \caption{1 hidden layer, 16 neurons}
         \label{fig:fft-1hl-16hf-w10}
     \end{subfigure}
     
-    \begin{subfigure}[b]{0.38\textwidth}
+    \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch4/prediction_0hl_1024hf_w10.pdf}
         \caption{No hidden layers}
         \label{fig:rec-0hl-1024-w10hf}
     \end{subfigure}
     % \hfill
-    \begin{subfigure}[b]{0.38\textwidth}
+    \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch4/fft_0hl_1024hf_w10.pdf}
         \caption{No hidden layers}
@@ -261,28 +261,28 @@ A similar phenomenon is observed when the network is initialized with only the h
 
 \begin{figure}
     \centering
-    \begin{subfigure}[b]{0.38\textwidth}
+    \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch4/prediction_1hl_16hf_35w45.pdf}
         \caption{1 hidden layer, 16 neurons}
         \label{fig:rec-1hl-16hf-35w45}
     \end{subfigure}
     % \hfill
-    \begin{subfigure}[b]{0.38\textwidth}
+    \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch4/fft_1hl_16hf_35w45.pdf}
         \caption{1 hidden layer, 16 neurons}
         \label{fig:fft-1hl-16hf-35w45}
     \end{subfigure}
     
-    \begin{subfigure}[b]{0.38\textwidth}
+    \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch4/prediction_1hl_1024hf_35w45.pdf}
         \caption{No hidden layers}
         \label{fig:rec-1hl-1024hf-35w45}
     \end{subfigure}
     % \hfill
-    \begin{subfigure}[b]{0.38\textwidth}
+    \begin{subfigure}[b]{0.40\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch4/fft_1hl_1024hf_35w45.pdf}
         \caption{No hidden layers}
@@ -316,28 +316,20 @@ We conclude that a sinusoidal neural network with no hidden layers can effective
 %     - Discussion on Filtering, scheduling etc
 %     - show the atoms
 
-After experimenting with signals with a few controlled frequencies, we procedurally generated stochastic signals, using a technique known as Perlin Noise \cite{perlin-1985}. This way, we can analyse how a sinusoidal model learns a distribution of frequencies in a broad range.
+After experimenting with signals with a few controlled frequencies, we procedurally generated stochastic signals, using a technique known as Perlin Noise \cite{perlin-1985}. This way, we can analyse how a sinusoidal model learns a distribution of frequencies in a broad range. For the following experiments, we sampled 2048 points uniformly in the interval $[-1, 1]$. Thus, the sampling rate is 1/1024. According to the Shannon-Nyquist sampling theorem, we are limited to frequencies up to $512$ Hz.
 
-
-For the following experiments, we sampled 2048 points uniformly in the interval $[-1, 1]$. Thus, the sampling rate is 1/1024. According to the Shannon-Nyquist sampling theorem, we are limited to frequencies up to $512$ Hz.
-
-We initialize a Siren network with the \red{following architecture}:
+We initialize a SIREN model with one hidden layer following the architecture:
 
 - First layer: 256 neurons, sine activation function, $\omega_0=30$
 - Hidden Layer: 256 neurons, sine activation function, $\omega_h=30$
 - Last layer: 256 neurons, relu activation function, $\omega_h=30$
 
 
-In the first experiment, we initialize a Perlin Noise with \red{PARAMETERS OF THE NOISE}. 
+In the first experiment, we initialize a Perlin Noise with:
 
-\begin{figure}
-    \includegraphics[width=0.3\linewidth]{img/placeholder512.png}
-    \caption{Fitting of a regular signal using Siren initialization and their default suggested hyperparameters}
-\end{figure}
-
-
-\red{To achieve the result shown in the first figure, where the signal is perfectly fitted, we used $\omega_0 = 200$. We found that a value between $100$ and $200$ converges to a good approximation quickly (around 200 epochs). 
-
+\red{- scale: 10
+- octaves: 16
+- p: 1.4}
 
 If we use a low $\omega_0$ such as $20$, our result looks like a smoothed version of the signal (Figure \ref{fig:rec-smooth-noise1}), as if we were reconstructing only its low frequencies. We plotted the Fast Fourier Transform (FFT) of both the original signal and its reconstruction in order to verify that the low frequencies match (Figure \ref{fig:fft-smooth-noise1}).} Note that the FFT plot presents a distribution of multiple frequencies up to 256. By comparing the Fast Fourier Transform of the learned signal and the target signal, we concluded that the network learns the low frequencies of the signal up to an unknown value that increases or decreases with $\omega_0$.
 
@@ -420,6 +412,14 @@ On the other hand, if $\omega_0$ is too high it may cause the training to diverg
     \caption{Reconstruction of a signal with high frequencies with a network inititialized with much lower frequencies}
     \label{f:diverging-omega0}
 \end{figure}
+
+\red{To achieve the result shown in the first figure, where the signal is perfectly fitted, we used $\omega_0 = 200$. We found that a value between $100$ and $200$ converges to a good approximation quickly (around 200 epochs). 
+
+\begin{figure}
+    \includegraphics[width=0.3\linewidth]{img/placeholder512.png}
+    \caption{Fitting of a regular signal using Siren initialization and their default suggested hyperparameters}
+\end{figure}
+
 
 We conclude that the frequency initialization of the first layer, which depends on $\omega_0$, is of central importance in the convergence of network training and multiresolution learning.
 Ideally we should initialize the network with frequencies that match the frequency content of the target signal. However, as we do not have access to this information in many applications, we must guess a value for $\omega_0$. Here, the Shannon-Nyquist therorem may help us bound the value of $\omega_0$. For example, considering a sampling rate of 512 Hz, we cannot represent frequencies higher than 256 (half the sampling rate), so it does not make sense to choose $\omega_0$ higher than this value. Also, since the composition of sines generates higher frequencies \cite{novello2022understanding}, it is reasonable to initialize the netowork with much lower frequencies than the Nyquist limit.

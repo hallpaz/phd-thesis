@@ -1,6 +1,7 @@
 # Logging
-project_name: phd-thesis-ch4
+project_name: phd-thesis-ch4-noise
 logger: wandb
+log_path: runs/ch4
 # Model Class (S, L, M)
 model: S
 
@@ -43,6 +44,9 @@ batch_size: 128 * 128
 
 # Data
 data_path: data/arrays/sinusoidal.npy
+scale: 10
+octaves: 16
+p: 1.4
 
 # Computation (Only vary between 'cpu' and 'cuda')
 device: cpu
