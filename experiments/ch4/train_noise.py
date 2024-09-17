@@ -55,9 +55,9 @@ def training_pipeline(hyper):
 
 
 if __name__ == '__main__':
-    nfeatures = [32, 64, 128, 256]
-    omegas = [8, 32, 64, 128, 256, 512, 1024]
-    h_layers = [0, 1, 2, 3]
+    nfeatures = [512, 1024] #[32, 64, 128, 256]
+    omegas = [256, 512] #[8, 32, 64, 128, 256, 512, 1024]
+    h_layers = [0]#, 1, 2]#, 3]
     device = "cuda" if torch.cuda.is_available() else "cpu"
     for features in nfeatures:
         for layers in h_layers:
@@ -68,6 +68,6 @@ if __name__ == '__main__':
                 hyper['device'] = device
                 hyper['hidden_features'] = features
                 hyper['hidden_layers'] = layers
-                hyper['omega_0'] = omega_0
+                hyper['omega_0'] = omega_0 * 2 * torch.pi
                 
                 training_pipeline(hyper)

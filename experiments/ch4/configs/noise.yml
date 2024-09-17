@@ -1,6 +1,6 @@
 # Logging
 project_name: phd-thesis-ch4-noise
-logger: wandb
+logger: local
 log_path: runs/ch4
 # Model Class (S, L, M)
 model: S
@@ -36,10 +36,10 @@ optim_handler: 'regular'
 
 # Training
 opt_method: Adam
-lr: 0.001
+lr: 0.0001
 loss_tol: 0.00000000001
 diff_tol: 0.0000001
-max_epochs_per_stage: 200
+max_epochs_per_stage: 400
 batch_size: 128 * 128
 
 # Data
@@ -56,5 +56,6 @@ eval_device: cpu
 save_format: 'general'
 visualize_grad: True
 extrapolate: [-2, 2]
-zoom: [2, 4, 8]
+zoom: [2, 4, 8, 16]
 zoom_filters: ['linear', 'cubic', 'nearest']
+img_format: pdf
