@@ -552,8 +552,96 @@ The result in Figure \ref{fig:pred-noise-1hl-32hf-w8} looks like a smoothed vers
 \end{figure}
 
 
+If we keep the width of the network fixed and increase the range of frequencies used in the initialization, we can gradually capture higher frequencies. This happens until we reach the capacity of the network, when its performance starts to degenerate and the result becomes noise. Figure \ref{f:comparison-8-to-256-hz} illustrates this phenomenon with a network with 32 neurons per layer. Notice that from 8Hz to 64 Hz, the network gets better in capturing finer details of the signal. However, when $\omega_0=128$, the reconstruction presents peaks and valleys bigger than those present in the signal, a clear evidence of spurious frequencies. When $\omega_0=256$ the result totally degenerates into noise.
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-8hz.pdf}
+        \caption{$\omega_0=8$}
+        \label{fig:16x-zoom-1hl-32hf-8hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-16hz.pdf}
+        \caption{$\omega_0=16$}
+        \label{fig:16x-zoom-1hl-32hf-16hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-32hz.pdf}
+        \caption{$\omega_0=32$}
+        \label{fig:16x-zoom-1hl-32hf-32hz}
+    \end{subfigure}
+
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-64hz.pdf}
+        \caption{$\omega_0=64$}
+        \label{fig:16x-zoom-1hl-32hf-64hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-128hz.pdf}
+        \caption{$\omega_0=128$}
+        \label{fig:16x-zoom-1hl-32hf-128hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-256hz.pdf}
+        \caption{$\omega_0=256$}
+        \label{fig:16x-zoom-1hl-32hf-256hz}
+    \end{subfigure}
+    \caption{Comparison between different ranges of frequencies in initialization}
+    \label{f:comparison-8-to-256-hz}
+\end{figure}
+
+% Repeating this experiment with more neurons per layer, we observe that we can use higher values of $\omage_0$ to correctly learn to represent the input signal (Figure \ref{}).
 
 
+% \begin{figure}[h]
+%     \centering
+%     \begin{subfigure}[b]{0.32\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-8hz.pdf}
+%         \caption{$\omega_0=8$}
+%         \label{fig:16x-zoom-1hl-32hf-8hz}
+%     \end{subfigure}
+%     \begin{subfigure}[b]{0.32\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-16hz.pdf}
+%         \caption{$\omega_0=16$}
+%         \label{fig:16x-zoom-1hl-32hf-16hz}
+%     \end{subfigure}
+%     \begin{subfigure}[b]{0.32\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-32hz.pdf}
+%         \caption{$\omega_0=32$}
+%         \label{fig:16x-zoom-1hl-32hf-32hz}
+%     \end{subfigure}
+
+%     \begin{subfigure}[b]{0.32\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-64hz.pdf}
+%         \caption{$\omega_0=64$}
+%         \label{fig:16x-zoom-1hl-32hf-64hz}
+%     \end{subfigure}
+%     \begin{subfigure}[b]{0.32\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-128hz.pdf}
+%         \caption{$\omega_0=128$}
+%         \label{fig:16x-zoom-1hl-32hf-128hz}
+%     \end{subfigure}
+%     \begin{subfigure}[b]{0.32\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-256hz.pdf}
+%         \caption{$\omega_0=256$}
+%         \label{fig:16x-zoom-1hl-32hf-256hz}
+%     \end{subfigure}
+%     \caption{Comparison between different ranges of frequencies in initialization}
+%     \label{f:comparison-64-to-256-hf}
+% \end{figure}
 
 
 By comparing the Fast Fourier Transform of the learned signal and the target signal (Figure XXXXX), we conclude that the network learned the low frequencies of the signal up to an unknown value that increases or decreases with $\omega_0$.
