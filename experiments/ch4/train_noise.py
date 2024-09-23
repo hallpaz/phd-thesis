@@ -55,9 +55,9 @@ def training_pipeline(hyper):
 
 
 if __name__ == '__main__':
-    nfeatures = [512, 1024] #[32, 64, 128, 256]
-    omegas = [256, 512] #[8, 32, 64, 128, 256, 512, 1024]
-    h_layers = [0]#, 1, 2]#, 3]
+    nfeatures = [32, 64, 128] #[32, 64, 128, 256]
+    omegas = [256] #[8, 32, 64, 128, 256, 512, 1024]
+    h_layers = [1]#, 1, 2]#, 3]
     device = "cuda" if torch.cuda.is_available() else "cpu"
     for features in nfeatures:
         for layers in h_layers:

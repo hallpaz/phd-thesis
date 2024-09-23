@@ -26,7 +26,7 @@ In this context, we introduce \textit{Multiresolution Sinusoidal Neural Networks
 
 \section{Frequency Initialization}
 
-The correct initialization of sinusoidal neural netowrks is crucial for having stability during training and convergence to the expected result. According to \cite{sitzmann2019siren}, a SIREN model must be initialized so that for a uniform input in $[-1, 1]$ the outputs of each hidden layer before the sine nonlinearity are standard normal distributed. 
+The correct initialization of sinusoidal neural networks is crucial for having stability during training and convergence to the expected result. According to \cite{sitzmann2019siren}, a SIREN model must be initialized so that for a uniform input in $[-1, 1]$ the outputs of each hidden layer before the sine nonlinearity are standard normal distributed. 
 
 % such that, for a uniform input in \([-1, 1]\), the outputs of each hidden layer before applying the sine nonlinearity are normally distributed with a mean of zero and a standard deviation of one. 
 
@@ -319,7 +319,7 @@ We conclude that a sinusoidal neural network with no hidden layers can effective
 
 After experimenting with signals with a few controlled frequencies, we procedurally generated stochastic signals, using a technique known as Perlin Noise \cite{perlin-1985}. This way, we can analyse how a sinusoidal model learns a distribution of frequencies in a broad range. For the following experiments, we sampled 2048 points uniformly in the interval $[-1, 1]$. Thus, the sampling rate is 1/1024. According to the Shannon-Nyquist sampling theorem, we are limited to frequencies up to $512$ Hz. The parameters of the generated Perlin Noise signal are: \red{scale = 10; octaves = 16; persistence = 1.4}.
 
-We start training a shallow sinusoidal network as a sanity check. We expect the network to capture only the lowest frequencies up to the range of frequencies used in its initialization, determined by $\omega_0$. We use a network with 512 hidden neurons per layer and vary the value of $\omega_0$. Figure \ref{f:rec-noise-shallow} shows the reconstruction in spatial and frequency domains for $\omega_0 in \{8, 64, 128\}$ hz. Note that this time the FFT plot presents a distribution of multiple frequencies up to 512, with a higher amplitude for the lower frenquecies. As expected, the results look like smoothed versions of the signal, as the network captures only the frequencies up to the value of $\omega_0$.
+We start training a shallow sinusoidal network as a sanity check. We expect the network to capture only the lowest frequencies up to the range of frequencies used in its initialization, determined by $\omega_0$. We use a network with 512 hidden neurons per layer and vary the value of $\omega_0$. Figure \ref{f:rec-noise-shallow} shows the reconstruction in spatial and frequency domains for $\omega_0 \in \{8, 64, 128\}$ hz. Note that this time the FFT plot presents a distribution of multiple frequencies up to 512, with a higher amplitude for the lower frenquecies. As expected, the results look like smoothed versions of the signal, as the network captures only the frequencies up to the value of $\omega_0$.
 
 \begin{figure}[h]
     \centering
@@ -456,22 +456,113 @@ We also observe that the loss function curve becomes bumpy (less smooth) in the 
 \end{figure}
 
 
+In the next experiments, we have employed sinusoidal neural networks with one hidden layer. The main question we want to investigate is: can we learn bounded frequencies using smaller (but deeper) networks? The answer is "yes", but we should be careful (make it the right way).
 
-% We initialize a SIREN model with one hidden layer following the architecture:
-
-% - First layer: 256 neurons, sine activation function, $\omega_0=30$
-% - Hidden Layer: 256 neurons, sine activation function, $\omega_h=30$
-% - Last layer: 256 neurons, relu activation function, $\omega_h=30$
+First, we must notice that introducing a hidden layer greatly increases the capacity of the network on generating higher frequencies. Figure \ref{rec-1hl-32hf-8hz} shows the reconstruction of the same Perlin noise used the previous experiments, but using a neural network with 1 hidden layer and 32 neurons per layer, initialized with $\omega_0=8$Hz. As in the first experiments with shallow networks, we have trained trained for 200 epochs with a learning rate of 0.001. 
 
 
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/pred-noise-1hl-32hf-w8.pdf}
+        \caption{}
+        \label{fig:pred-noise-1hl-32hf-w8}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/4x-zoom-noise-1hl-32hf-w8.pdf}
+        \caption{}
+        \label{fig:4x-zoom-noise-1hl-32hf-w8}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/fft-noise-1hl-32hf-w8.pdf}
+        \caption{}
+        \label{fig:fft-noise-1hl-32hf-w8}
+    \end{subfigure}
+    \caption{Smoothed reconstruction with 1 hidden layer}
+    \label{f:rec-1hl-32hf-8hz}
+\end{figure}
+
+The result in Figure \ref{fig:pred-noise-1hl-32hf-w8} looks like a smoothed version of the input signal, as expected. It can be better seen in the zoomed-in view (Figure \ref{fig:4x-freqs-1hl-64hf}). However, the Fast Fourier Transform (Figure \ref{fig:fft-noise-1hl-32hf-w8}) displays frequecies much higher than 8 Hz, they are well represented until around 30 Hz, in contrast with the experiment with larger but shallow network Figures (\ref{fig:rec-noise-shallow-w8} and \ref{fig:fft-noise-shallow-w8}). Decreasing the number of neurons per layer slightly decreases the hightest frequencies learned by the network while increasing its width, also increases the highest frequencies captured as illustrated in Figure \ref{f:comparison-16-32-64-hf}. This is directly read from the FFT plots (Figures \ref{fig:fft-noise-1hl-16hf-w8}, \ref{fig:fft-noise-1hl-32hf-w8} and \ref{fig:fft-noise-1hl-64hf-w8}) but can also be perceived by the most refined details in the spatial reconstruction of the signal (Figures \ref{fig:4x-zoom-noise-1hl-16hf-w8}, \ref{fig:comp-4x-zoom-noise-1hl-32hf-w8} and \ref{fig:4x-zoom-pred-noise-1hl-64hf-w8}).
 
 
-% % If we use a low $\omega_0$ such as $8$hz, our result looks like a smoothed version of the signal (Figure \ref{fig:rec-smooth-noise1}), as if we were reconstructing only its low frequencies. Again, when we plot the Fast Fourier Transform of both the original signal and its reconstruction, we verify that the low frequencies match indeed (Figure \ref{fig:fft-smooth-noise1}).} 
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/pred-noise-1hl-16hf-w8.pdf}
+        \caption{16 neurons}
+        \label{fig:pred-noise-1hl-16hf-w8}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/pred-noise-1hl-32hf-w8.pdf}
+        \caption{32 neurons}
+        \label{fig:comp-pred-noise-1hl-32hf-w8}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/pred-noise-1hl-64hf-w8.pdf}
+        \caption{64 neurons}
+        \label{fig:pred-noise-1hl-64hf-w8}
+    \end{subfigure}
+
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/4x-zoom-noise-1hl-16hf-w8.pdf}
+        \caption{16 neurons}
+        \label{fig:4x-zoom-noise-1hl-16hf-w8}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/4x-zoom-noise-1hl-32hf-w8.pdf}
+        \caption{32 neurons}
+        \label{fig:comp-4x-zoom-noise-1hl-32hf-w8}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/4x-zoom-noise-1hl-64hf-w8.pdf}
+        \caption{64 neurons}
+        \label{fig:4x-zoom-pred-noise-1hl-64hf-w8}
+    \end{subfigure}
+
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/fft-noise-1hl-16hf-w8.pdf}
+        \caption{16 neurons}
+        \label{fig:fft-noise-1hl-16hf-w8}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/fft-noise-1hl-32hf-w8.pdf}
+        \caption{32 neurons}
+        \label{fig:comp-fft-noise-1hl-32hf-w8}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/fft-noise-1hl-64hf-w8.pdf}
+        \caption{64 neurons}
+        \label{fig:fft-noise-1hl-64hf-w8}
+    \end{subfigure}
+    \caption{Comparison between different network widths}
+    \label{f:comparison-16-32-64-hf}
+\end{figure}
 
 
-% By comparing the Fast Fourier Transform of the learned signal and the target signal, we concluded that the network learns the low frequencies of the signal up to an unknown value that increases or decreases with $\omega_0$.
+
+
+
+
+By comparing the Fast Fourier Transform of the learned signal and the target signal (Figure XXXXX), we conclude that the network learned the low frequencies of the signal up to an unknown value that increases or decreases with $\omega_0$.
+
+% as if we were reconstructing only its low frequencies. Again, when we plot the Fast Fourier Transform of both the original signal and its reconstruction, we verify that the low frequencies match indeed (Figure \ref{fig:fft-smooth-noise1}).} 
+
 
 % Figure shows the spectrum of frequencies of the target signal and its reconstruction using $\omega_0 = 10$. Notice how the Fast Fourier Transform of the reconstructed signal matches that of the original signal up to a value around XXXX, then it fails to capture the exact contribution of frequencies between XXXXX and XXXXXX and finally it does not exhibit contributions of higher frequencies..
+
 
 
 % \begin{figure}

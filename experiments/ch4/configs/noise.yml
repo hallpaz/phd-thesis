@@ -36,10 +36,10 @@ optim_handler: 'regular'
 
 # Training
 opt_method: Adam
-lr: 0.0001
+lr: 0.001
 loss_tol: 0.00000000001
 diff_tol: 0.0000001
-max_epochs_per_stage: 400
+max_epochs_per_stage: 200
 batch_size: 128 * 128
 
 # Data
