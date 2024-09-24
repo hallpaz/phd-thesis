@@ -485,7 +485,10 @@ First, we must notice that introducing a hidden layer greatly increases the capa
     \label{f:rec-1hl-32hf-8hz}
 \end{figure}
 
-The result in Figure \ref{fig:pred-noise-1hl-32hf-w8} looks like a smoothed version of the input signal, as expected. It can be better seen in the zoomed-in view (Figure \ref{fig:4x-freqs-1hl-64hf}). However, the Fast Fourier Transform (Figure \ref{fig:fft-noise-1hl-32hf-w8}) displays frequecies much higher than 8 Hz, they are well represented until around 30 Hz, in contrast with the experiment with larger but shallow network Figures (\ref{fig:rec-noise-shallow-w8} and \ref{fig:fft-noise-shallow-w8}). Decreasing the number of neurons per layer slightly decreases the hightest frequencies learned by the network while increasing its width, also increases the highest frequencies captured as illustrated in Figure \ref{f:comparison-16-32-64-hf}. This is directly read from the FFT plots (Figures \ref{fig:fft-noise-1hl-16hf-w8}, \ref{fig:fft-noise-1hl-32hf-w8} and \ref{fig:fft-noise-1hl-64hf-w8}) but can also be perceived by the most refined details in the spatial reconstruction of the signal (Figures \ref{fig:4x-zoom-noise-1hl-16hf-w8}, \ref{fig:comp-4x-zoom-noise-1hl-32hf-w8} and \ref{fig:4x-zoom-pred-noise-1hl-64hf-w8}).
+The result in Figure \ref{fig:pred-noise-1hl-32hf-w8} looks like a smoothed version of the input signal, as expected. It can be better seen in the zoomed-in view (Figure \ref{fig:4x-freqs-1hl-64hf}). However, the Fast Fourier Transform (Figure \ref{fig:fft-noise-1hl-32hf-w8}) displays frequecies much higher than 8 Hz, in contrast with the experiment with larger but shallow network Figures (\ref{fig:rec-noise-shallow-w8} and \ref{fig:fft-noise-shallow-w8}). Notice how the Fast Fourier Transform of the reconstructed signal matches that of the original signal up to a value around 30 Hz, then it fails to capture the exact contribution of frequencies in a range that goes until around 100hz, and finally it does not exhibit contributions of frequencies higher than 100 hz.
+
+
+Decreasing the number of neurons per layer slightly decreases the hightest frequencies learned by the network while increasing its width, also increases the highest frequencies captured as illustrated in Figure \ref{f:comparison-16-32-64-hf}. This is directly read from the FFT plots (Figures \ref{fig:fft-noise-1hl-16hf-w8}, \ref{fig:fft-noise-1hl-32hf-w8} and \ref{fig:fft-noise-1hl-64hf-w8}) but can also be perceived by the most refined details in the spatial reconstruction of the signal (Figures \ref{fig:4x-zoom-noise-1hl-16hf-w8}, \ref{fig:comp-4x-zoom-noise-1hl-32hf-w8} and \ref{fig:4x-zoom-pred-noise-1hl-64hf-w8}).
 
 
 
@@ -597,59 +600,61 @@ If we keep the width of the network fixed and increase the range of frequencies 
     \label{f:comparison-8-to-256-hz}
 \end{figure}
 
-% Repeating this experiment with more neurons per layer, we observe that we can use higher values of $\omage_0$ to correctly learn to represent the input signal (Figure \ref{}).
+Repeating this experiment with more neurons per layer, we observe that we can use higher values of $\omega_0$ to correctly learn to represent the input signal (Figure \ref{f:comparison-64-to-256-hf}).
 
 
-% \begin{figure}[h]
-%     \centering
-%     \begin{subfigure}[b]{0.32\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-8hz.pdf}
-%         \caption{$\omega_0=8$}
-%         \label{fig:16x-zoom-1hl-32hf-8hz}
-%     \end{subfigure}
-%     \begin{subfigure}[b]{0.32\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-16hz.pdf}
-%         \caption{$\omega_0=16$}
-%         \label{fig:16x-zoom-1hl-32hf-16hz}
-%     \end{subfigure}
-%     \begin{subfigure}[b]{0.32\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-32hz.pdf}
-%         \caption{$\omega_0=32$}
-%         \label{fig:16x-zoom-1hl-32hf-32hz}
-%     \end{subfigure}
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-64hf-128hz.pdf}
+        \caption{64 neurons, $\omega_0=128$}
+        \label{fig:16x-zoom-1hl-64hf-128hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-128hf-128hz.pdf}
+        \caption{128 neurons, $\omega_0=128$}
+        \label{fig:16x-zoom-1hl-128hf-128hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-256hf-128hz.pdf}
+        \caption{256 neurons, $\omega_0=128$}
+        \label{fig:16x-zoom-1hl-256hf-128hz}
+    \end{subfigure}
 
-%     \begin{subfigure}[b]{0.32\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-64hz.pdf}
-%         \caption{$\omega_0=64$}
-%         \label{fig:16x-zoom-1hl-32hf-64hz}
-%     \end{subfigure}
-%     \begin{subfigure}[b]{0.32\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-128hz.pdf}
-%         \caption{$\omega_0=128$}
-%         \label{fig:16x-zoom-1hl-32hf-128hz}
-%     \end{subfigure}
-%     \begin{subfigure}[b]{0.32\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-32hf-256hz.pdf}
-%         \caption{$\omega_0=256$}
-%         \label{fig:16x-zoom-1hl-32hf-256hz}
-%     \end{subfigure}
-%     \caption{Comparison between different ranges of frequencies in initialization}
-%     \label{f:comparison-64-to-256-hf}
-% \end{figure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-64hf-256hz.pdf}
+        \caption{64 neurons, $\omega_0=256$}
+        \label{fig:16x-zoom-1hl-64hf-256hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-128hf-256hz.pdf}
+        \caption{128 neurons, $\omega_0=256$}
+        \label{fig:16x-zoom-1hl-128hf-256hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-256hf-256hz.pdf}
+        \caption{256 neurons, $\omega_0=256$}
+        \label{fig:16x-zoom-1hl-256hf-256hz}
+    \end{subfigure}
+    \caption{Reconstruction of higher frequencies bigger capacity networks}
+    \label{f:comparison-64-to-256-hf}
+\end{figure}
 
 
-By comparing the Fast Fourier Transform of the learned signal and the target signal (Figure XXXXX), we conclude that the network learned the low frequencies of the signal up to an unknown value that increases or decreases with $\omega_0$.
+By comparing the Fast Fourier Transform of the learned signal and the target signal, we conclude that the network learned the low frequencies of the signal up to an unknown value that increases or decreases with $\omega_0$.
+
+\red{Investigate more the reconstruction quality in this case - maybe add some metrics?}
 
 % as if we were reconstructing only its low frequencies. Again, when we plot the Fast Fourier Transform of both the original signal and its reconstruction, we verify that the low frequencies match indeed (Figure \ref{fig:fft-smooth-noise1}).} 
 
 
-% Figure shows the spectrum of frequencies of the target signal and its reconstruction using $\omega_0 = 10$. Notice how the Fast Fourier Transform of the reconstructed signal matches that of the original signal up to a value around XXXX, then it fails to capture the exact contribution of frequencies between XXXXX and XXXXXX and finally it does not exhibit contributions of higher frequencies..
+
 
 
 
