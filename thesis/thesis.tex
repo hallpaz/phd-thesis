@@ -54,6 +54,12 @@
 \newcommand{\fcos}[1]{\cos\left(#1\right)}
 %%%%%%%%%%%%%%%%%%%%%%
 
+\newenvironment{psmallmatrix}
+  {\left(\begin{smallmatrix}}
+  {\end{smallmatrix}\right)}
+
+%%%%%%%%%%%%%%%%%%%%%%
+
 %% ----------------------------------------------------------------
 \begin{document}
 \frontmatter      % Begin Roman style (i, ii, iii, iv...) page numbering
@@ -226,6 +232,8 @@
 % \input{chapters/3_sinusoidal}
 
 \input{chapters/4_multiresolution}
+
+\input{chapters/4_multiresolution-v2}
 
 \input{chapters/5_images}
 
