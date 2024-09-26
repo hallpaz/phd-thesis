@@ -734,12 +734,112 @@ By comparing the Fast Fourier Transform of the learned signal and the target sig
 
 We conclude that the frequency initialization of the first layer, which depends on $\omega_0$, is of central importance in the convergence of network training and multiresolution learning. Ideally we should initialize the network with frequencies that match the frequency content of the target signal. However, as we do not have access to this information in many applications, we must guess a value for $\omega_0$. Here, the Shannon-Nyquist therorem may help us bound the value of $\omega_0$. For example, considering a sampling rate of 1024 Hz, we cannot represent frequencies higher than 512 (half the sampling rate), so it does not make sense to choose $\omega_0$ higher than this value. Also, since the composition of sines generates higher frequencies \cite{novello2022understanding}, it is reasonable to initialize the network with much lower frequencies than the Nyquist limit, and the experiments corroborate that.
 
-Experiments also showed that the capacity of the network can be used to filter the signal in some sense. A network with bigger capacity learns the higher frequencies quicker than a network with lower capacity. This way for the same value of $\omega_0$ and the same amount of epochs, the result of lower capacity network is a signal with lower frequencies. However, if the we try to reconstruct higher frequencies of a signal usin a network that does not have enough capacity to fully represent them, the result will degrade.
-
 
 Another point worth noticing is that if the initialization frequencies are too high, the hidden layers may generate even higher frequencies, and even a model with high capacity will introducing noise into the model's reconstruction. This noise is not evident at the training coodinates, as the model overfits this data well, but it can be observed in a more refined grid \red{FIGURE XXXX}.
 
-\pagebreak
+% \pagebreak
+
+\subsection{Capacity Filtering}
+
+The experiment illustrated in Figure \ref{f:comparison-16-32-64-hf} suggests that a network's capacity can serve as a filter when learning a signal. To further investigate this behavior, we compared the reconstruction of a stochastic signal using two networks: one with 16 neurons per layer and another with 256 neurons per layer. For this experiment, we generated a new Perlin noise signal with the following parameters: scale = 10, octaves = 14, and persistence = 1.5. Both networks have a single hidden layer and were initialized with $\omega_0=2$ Hz. The results are shown in Figure \ref{f:capacity-filter-16-hf-256}. 
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/pred-1hl-16hf-2hz.pdf}
+        \caption{16 neurons}
+        \label{fig:pred-1hl-16hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-16hf-2hz.pdf}
+        \caption{16 neurons}
+        \label{fig:16x-zoom-1hl-16hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/fft-1hl-16hf-2hz.pdf}
+        \caption{16 neurons}
+        \label{fig:fft-1hl-16hf-2hz}
+    \end{subfigure}
+
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/pred-1hl-256hf-2hz.pdf}
+        \caption{256 neurons}
+        \label{fig:pred-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-256hf-2hz.pdf}
+        \caption{256 neurons}
+        \label{fig:16x-zoom-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/fft-1hl-256hf-2hz.pdf}
+        \caption{256 neurons}
+        \label{fig:fft-1hl-256hf-2hz}
+    \end{subfigure}
+    \caption{Comparison of reconstructions using networks with a single hidden layer and varying capacities.}
+    \label{f:capacity-filter-16-hf-256}
+\end{figure}
+
+As expected, both networks produce smoothed versions of the input signal due to their initialization with low frequencies. However, the smaller network (top row) produces a significantly smoother reconstruction compared to the larger network (bottom row).
+
+As expected, both networks produce smoothed versions of the input signal due to their initialization with low frequencies. However, the smaller network (top row) produces a significantly smoother reconstruction compared to the larger network (bottom row). This observation can be attributed to the smaller capacity of the network, which restricts it from learning higher frequencies. This highlights the role of network capacity as a natural frequency filter.
+
+
+Previous work by \cite{Rahaman2018O} has demonstrated that during training, a Multi-Layer Perceptron (MLP) tends to learn lower frequencies before higher ones, a phenomenon known as spectral bias. Because sinusoidal neural networks are a form of MLP, this explains why, for a fixed depth, the network's width can act as a frequency filter. This capacity-based filtering effect, however, only holds if the network has sufficient capacity to capture the lower frequencies in the signal. As we increase the value of $\omega_0$ to capture higher frequencies, the network with 16 neurons per layer eventually becomes unable to fit the signal, and the reconstruction quality deteriorates. Figure \ref{f:capacity-filter-16hf-increasing-omega} provides zoomed-in views of reconstructions using a network with 16 neurons per layer initialized with different values of $\omega_0$. Notice how the reconstruction becomes progressively more detailed and closer to the input signal as $\omega_0$ increases, up to $\omega_0 = 32$. However, at $\omega_0=64$, the result degrades significantly.
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x-zoom-1hl-16hf-2hz.pdf}
+        \caption{$\omega_0=2$ Hz}
+        % \label{fig:pred-1hl-16hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x_zoom-1hl-16hf-4hz.pdf}
+        \caption{$\omega_0=4$ Hz}
+        % \label{fig:16x-zoom-1hl-16hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x_zoom-1hl-16hf-8hz.pdf}
+        \caption{$\omega_0=8$ Hz}
+        % \label{fig:fft-1hl-16hf-2hz}
+    \end{subfigure}
+
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x_zoom-1hl-16hf-16hz.pdf}
+        \caption{$\omega_0=16$ Hz}
+        % \label{fig:pred-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x_zoom-1hl-16hf-32hz.pdf}
+        \caption{$\omega_0=32$ Hz}
+        % \label{fig:16x-zoom-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch4/16x_zoom-1hl-16hf-64hz.pdf}
+        \caption{$\omega_0=64$ Hz}
+        % \label{fig:pred-1hl-16hf-64hz}
+    \end{subfigure}
+    \caption{Comparison of reconstructions using a small network with varying values of $\omega_0$.}
+    \label{f:capacity-filter-16hf-increasing-omega}
+\end{figure}
+
+% They also show that increasing the network depth (for fixed width) improves the network's ability to fit higher frequencies, while increasing the width (for fixed depth) also helps, but the effect is considerably weaker. 
+ 
+
+% Experiments also showed that the capacity of the network can be used to filter the signal in some sense. A network with bigger capacity learns the higher frequencies quicker than a network with lower capacity. This way for the same value of $\omega_0$ and the same amount of epochs, the result of lower capacity network is a signal with lower frequencies. However, if the we try to reconstruct higher frequencies of a signal usin a network that does not have enough capacity to fully represent them, the result will degrade.
 
 
 \section{The Multiresolution Module}
@@ -1207,8 +1307,6 @@ We have established that we can bound the frequencies learned by a sinusoidal ne
 % The capacity of each MR-Net stage $g_i=L_i\circ H_i\circ S_i$ is controlled by its width $m$ and depth $k+1$.
 % The width $m$ determines that an input $x$ will be transformed into a list of $m$ sines $S_i(x)=\sin\left(W_{s_i}x+b_{s_i}\right)$,
 % where $W_{s_i}$ has rows sampled at the set $\Omega_i$ defined in Section~\ref{s-frequency-initialization}. By increasing $m$, the dictionary of input frequencies is augmented. The hidden block $H_i$ consisting of $k$ sinusoidal layers, further enhances this list of frequencies.
-
-% Regarding the training of the MR-Net stage $g_i$, we recall that it is a MLP. \citet{Rahaman2018O} shows that during training a MLP learns lower frequencies first, a phenomenon known as \emph{spectral bias}. They also show that increasing the network depth (for fixed width) improves the network’s ability to fit higher frequencies, while increasing the width (for fixed depth) also helps, but the effect is considerably weaker. 
 
 
 % To mitigate the effects of the spectral bias, we employ the above frequency initialization approach to the stage $g_i$. This ensures that the training of $g_i$ begins with frequencies that are \textit{close} to those present in the corresponding ground-truth data $\gt{g}_i$.

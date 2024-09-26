@@ -1,0 +1,61 @@
+# Logging
+project_name: phd-thesis-ch4-capacity
+logger: local
+log_path: runs/ch4
+# Model Class (S, L, M)
+model: S
+
+# Network
+in_features: 1
+out_features: 1
+hidden_layers: 1
+hidden_features: [32]
+bias: True
+max_stages: 1
+
+period: 0
+pmode: wrap
+domain: [-1, 1]
+
+# Frequency Initialization
+omega_0: 8
+hidden_omega_0: 30
+superposition_w0: True
+
+# Sampling
+sampling_scheme: regular
+nsamples: 2048
+decimation: True
+filter: gauss # vary between none, laplace and gauss
+attributes: ['d0', 'd1']
+
+# Loss
+loss_function: 'mse'
+loss_weights: {'d0': 1, 'd1': 0}
+optim_handler: 'regular'
+
+# Training
+opt_method: Adam
+lr: 0.001
+loss_tol: 0.00000000001
+diff_tol: 0.0000001
+max_epochs_per_stage: 200
+batch_size: 128 * 128
+
+# Data
+data_path: data/arrays/sinusoidal.npy
+scale: 10
+octaves: 14
+p: 1.5
+
+# Computation (Only vary between 'cpu' and 'cuda')
+device: cpu
+eval_device: cpu
+
+# Etc
+save_format: 'general'
+visualize_grad: True
+extrapolate: [-2, 2]
+zoom: [2, 4, 8, 16, 32]
+zoom_filters: ['linear', 'cubic', 'nearest']
+img_format: pdf
