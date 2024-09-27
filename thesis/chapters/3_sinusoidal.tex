@@ -1,11 +1,9 @@
-\chapter{Understanding Frequency Dynamics in Sinusoidal Neural Networks}
+\chapter{Frequency Dynamics in Sinusoidal Neural Networks}
+\label{chap:sinusoidal}
 
 % In this chapter, we explore the frequency dynamics within sinusoidal neural networks, laying the groundwork for designing architectures that can represent signals across multiple resolutions. While much of the research on sinusoidal neural networks has focused on their capacity to capture high-frequency details, the interplay between frequency initialization, network structure, and learned representations is still not fully understood. Our goal is to analyze these factors systematically and establish a deeper understanding of how frequency components propagate and interact in both shallow and deep sinusoidal architectures.
 
 % We begin by studying simple, one-dimensional signals and progressively increase the complexity of our experiments to evaluate how different initializations and network capacities affect frequency learning. Through a series of controlled experiments, we demonstrate how the number of neurons, the inclusion of hidden layers, and specific initialization parameters impact the networks' ability to isolate and reconstruct frequency bands. We also address the phenomenon of capacity-based filtering, highlighting how network size and depth influence the learned signal spectrum. These findings are essential in preparing for more sophisticated architectures, where multiresolution properties and frequency control become the key elements in building neural representations for complex media.
-
-
-In this chapter, we introduce a novel neural network architecture designed to encode signals at multiple scales. Our objective is to achieve a continuous and compact representation of scalar and vector fields, which can be applied to model images, shapes, and other complex media objects, either as explicit attributes of space-time coordinates or as level sets of implicit functions.
 
 We initially focus on representing one-dimensional signals using sinusoidal neural networks. This approach allows us to experiment on the control of signal frequencies, visualize them through their Fast Fourier Transform (FFT) plots, and validate our results against classical sampling theory.
 
@@ -980,7 +978,7 @@ We have established that we can bound the frequencies learned by a sinusoidal ne
 % \end{itemize}
 
 
-% This paper is an extension of our previous work~\cite{paz2022}, where we introduced a class of neural networks called \textit{Multiresolution Neural Networks}~(MR-Net). In this work, we  present a complete description of this class of networks along with the motivations and a detailed mathematical model~(see Sec.~\ref{sec:mr_snn}). We added Section~\ref{sec:mrnet_detail}, which explains our framework in detail and should help the construction of an independent implementation. We expanded the comparisons to include an analysis of the frequency spectra of the representations provided by MR-Net and BACON (see Sec. \ref{sub:spectra-eval}). We also present a broader set of experiments (see Sec.~\ref{sub:kodak}), using the Kodak dataset~\cite{KodakDataset}, for comparison of the MR-Net with other network architectures. Finally, we added Section~\ref{sec:considerations}, which compares the different MR-Net subclasses~(S-Net, L-Net, and M-Net) in both qualitative and quantitative aspects.
+% This paper is an extension of our previous work~\cite{paz2022}, where we introduced a class of neural networks called \textit{Multiresolution Neural Networks}~(MR-Net). In this work, we  present a complete description of this class of networks along with the motivations and a detailed mathematical model~(see Sec.~\ref{chap:mr_snn}). We added Section~\ref{sec:mrnet_detail}, which explains our framework in detail and should help the construction of an independent implementation. We expanded the comparisons to include an analysis of the frequency spectra of the representations provided by MR-Net and BACON (see Sec. \ref{sub:spectra-eval}). We also present a broader set of experiments (see Sec.~\ref{sub:kodak}), using the Kodak dataset~\cite{KodakDataset}, for comparison of the MR-Net with other network architectures. Finally, we added Section~\ref{sec:considerations}, which compares the different MR-Net subclasses~(S-Net, L-Net, and M-Net) in both qualitative and quantitative aspects.
 
 % - Related Works: Mip-Nerf; Bacon; 
 
