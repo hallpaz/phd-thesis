@@ -168,12 +168,12 @@
 \GROUP       {\texorpdfstring{\href{Research Group Web Site URL Here (include http://)}
                 {RESEARCH GROUP NAME (IN BLOCK CAPITALS)}}
                 {RESEARCH GROUP NAME (IN BLOCK CAPITALS)}}
-\faculty     {\texorpdfstring{\href{Faculty Web Site URL Here (include http://)}
-                {Faculty Name}}
-                {Faculty Name}}
-\FACULTY     {\texorpdfstring{\href{Faculty Web Site URL Here (include http://)}
-                {FACULTY NAME (IN BLOCK CAPITALS)}}
-                {FACULTY NAME (IN BLOCK CAPITALS)}}
+\faculty     {\texorpdfstring{\href{Faculty Web Site URL Here (include https://impa.br)}
+                {Instituto de Matemática Pura e Aplicada}}
+                {IMPA}}
+\FACULTY     {\texorpdfstring{\href{Faculty Web Site URL Here (include https://impa.br)}
+                {INSTITUTO DE MATEMÁTICA PURA E APLICADA (IN BLOCK CAPITALS)}}
+                {IMPA (IN BLOCK CAPITALS)}}
 \addresses   {}
 \subject     {}
 \keywords    {}
@@ -202,12 +202,12 @@
       {\LARGE \authornames \par}
       \vfill
       {\large A thesis submitted in partial fulfillment for the \par}
-      {\large degree of Doctor of Philosophy \par}
+      {\large degree of Doctor of Science (D.Sc.) \par}
       \bigskip
       \bigskip
       {\large in the \par}
       {\large \facname \par}
-      {\large \deptname \par}
+      % {\large \deptname \par}
       \bigskip
       \bigskip
       \bigskip
