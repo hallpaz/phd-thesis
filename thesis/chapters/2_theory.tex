@@ -1,5 +1,135 @@
 \chapter{Theoretical Framework}
 
+ 4. **Frequency Domain Analysis and Fourier Transform**
+   - **Spatial vs. Spectral Domain**: Clarify the difference between time/spatial domain and frequency domain.
+   - **Fourier Transform**: Explain how it decomposes signals into frequency components and the significance of amplitude and phase.
+   - **Visualizing Signals in the Frequency Domain**: Use simple examples (e.g., sine waves) to demonstrate how different frequencies combine to form complex signals.
+
+ 5. **Shannon-Nyquist Sampling Theorem**
+   - **Sampling Theory Basics**: Define sampling and aliasing, and explain why correctly sampling a signal is crucial to preserving its information.
+   - **Nyquist Frequency**: Introduce the concept of Nyquist frequency as the critical rate to avoid information loss.
+   - **Implications for Neural Networks**: Relate these ideas to neural networks and why they struggle to learn high-frequency content.
+
+ 6. **Multiresolution Analysis and Wavelet Theory**
+   - **Overview of Multiresolution Techniques**: Describe the concept of breaking down a signal into multiple levels of detail (e.g., low vs. high frequencies).
+   - **Gaussian and Laplacian Pyramids**: Introduce classical image pyramids as foundational techniques for multiresolution representation.
+   - **Wavelet Transforms**: Provide a high-level explanation of how wavelets offer a localized, multiresolution representation of signals.
+
+
+ 1. **Neural Networks and Their Components**
+   - **Neurons and Activation Functions**: Briefly introduce artificial neurons, weights, and biases.
+   - **Layered Architectures**: Explain what constitutes shallow and deep networks and how stacking layers increases representational power.
+   - **Activation Functions**: Cover common choices (ReLU, sigmoid) and introduce the sine function as a unique alternative used in sinusoidal networks.
+   - **Learning and Optimization**: Describe how networks learn through backpropagation and gradient descent.
+
+ 2. **Coordinate-Based Neural Representations**
+   - **Spatial and Coordinate Encoding**: Introduce the idea of using neural networks to represent data as a function of spatial coordinates (e.g., images, signals).
+   - **Implicit Neural Representations**: Explain the difference between classical (explicit) data representations and coordinate-based (implicit) approaches.
+
+ 3. **Sinusoidal Neural Networks (SIREN) and Spectral Representations**
+   - **Basics of Sinusoidal Activation Functions**: Describe why sine functions are used, focusing on their ability to capture fine details.
+   - **Spectral Properties**: Cover the concept of representing signals in the frequency domain and the link between sinusoidal activations and Fourier series.
+   - **Introduction to SIREN Models**: Provide an overview of Sinusoidal Representation Networks (SIREN), highlighting their advantages and unique challenges.
+
+
+ 7. **Capacity and Overfitting in Neural Networks**
+   - **Network Capacity**: Explain what capacity means in the context of neural networks (e.g., number of neurons, layers).
+   - **Overfitting and Underfitting**: Describe the common pitfalls when the network is too small or too large.
+   - **Impact of Capacity on Frequency Learning**: Summarize how network size affects its ability to capture different frequency bands.
+
+ 8. **Gradient Descent and Initialization Strategies**
+   - **Gradient Descent and Loss Functions**: Introduce how neural networks optimize their parameters using gradient descent.
+   - **Initialization and Its Role in Training**: Explain why initialization is critical, especially for sinusoidal networks, which can suffer from exploding or vanishing gradients.
+   - **Hyperparameter Tuning**: Mention the role of parameters like \(\omega_0\) in controlling frequency learning.
+
+ 9. **Stochastic Signals and Noise Models**
+   - **Introduction to Stochastic Processes**: Briefly explain what stochastic signals are and how they differ from deterministic ones.
+   - **Perlin Noise and Procedural Patterns**: Use Perlin noise as an example to illustrate how randomness is introduced into signals.
+   - **Filtering and Noise Removal**: Explain basic techniques for handling noise and filtering in both spatial and spectral domains.
+
+
+\section{Media objects as functions}
+
+Signal Processing: From Continuous to Discrete and Back Again
+
+In the realm of signal processing, we find ourselves at the intersection of the continuous analog world and the discrete digital domain. Our journey begins with sampling, the bridge that connects these two worlds, and continues through the landscapes of time and frequency representations, each offering unique perspectives on the nature of signals.
+
+The process of sampling is akin to taking snapshots of a continuous signal at regular intervals. Imagine a photographer capturing the motion of a dancer with a series of still images. Just as the photographer must choose how frequently to take pictures to accurately represent the dance, we must select an appropriate sampling rate for our signals. This rate, denoted as fs, determines how often we "photograph" our continuous signal x(t) to create its discrete counterpart x[n].
+
+The choice of sampling rate is not arbitrary. The Nyquist-Shannon sampling theorem, a cornerstone of digital signal processing, provides us with a crucial guideline. It states that to faithfully capture a signal, we must sample at a rate at least twice that of the highest frequency component present in the signal. This requirement ensures that we don't lose essential information in the sampling process.
+
+When we fail to adhere to this theorem, we encounter a phenomenon known as aliasing. Much like a wagon wheel appearing to spin backwards in old Western films due to the camera's frame rate, aliasing causes high-frequency components of our signal to masquerade as lower frequencies. This distortion can severely compromise the integrity of our sampled signal.
+
+Once we have our discrete signal, we enter the realm of time domain representation. Here, our signal takes the form of a sequence of values, each corresponding to a specific point in time. This representation allows us to observe how the signal's amplitude changes over time, much like tracking the height of ocean waves as they pass a fixed point.
+
+In the time domain, we can perform various operations on our signal. We can shift it in time, reverse it, or scale its amplitude. One particularly powerful operation is convolution, which allows us to model how a signal is transformed as it passes through a system. Convolution forms the basis for understanding linear time-invariant systems, a class of systems that includes many practical applications like filters and communication channels.
+
+While the time domain provides a direct and intuitive view of our signal, it's not always the most revealing perspective. Enter the frequency domain representation, which unveils the harmonic content of our signal. This representation is particularly useful for analyzing periodic signals and designing filters.
+
+The transition from time domain to frequency domain is accomplished through the Discrete Fourier Transform (DFT). This mathematical tool decomposes our signal into a sum of sinusoidal components of different frequencies. It's akin to breaking white light into its constituent colors with a prism. Each frequency component is characterized by its magnitude (how strong it is) and its phase (how it's aligned in time relative to other components).
+
+The DFT provides us with powerful insights into the nature of our signal. We can identify dominant frequencies, analyze spectral content, and even filter out unwanted components. However, computing the DFT can be computationally intensive for large datasets. This is where the Fast Fourier Transform (FFT) comes to our rescue. The FFT is an algorithm that dramatically reduces the computational complexity of the DFT, making it feasible to perform frequency analysis on large signals in real-time applications.
+
+One caveat of the DFT is that it assumes our signal is periodic and infinite. In practice, we often deal with finite-length sequences. This mismatch can lead to spectral leakage, where the energy of one frequency component spills over into adjacent frequencies. To mitigate this effect, we employ window functions. These functions gently taper the edges of our finite sequence, reducing discontinuities and improving our spectral estimates.
+
+The frequency domain representation is closely related to the Z-transform, a powerful tool in discrete-time signal analysis. The Z-transform extends our signal into the complex plane, providing a comprehensive view of its behavior. In fact, we can think of the DFT as evaluating the Z-transform at specific points on the unit circle in the complex plane.
+
+As we conclude our exploration, it's worth noting that these representations - time domain and frequency domain - are two sides of the same coin. They offer complementary views of our signal, each revealing different aspects of its nature. The ability to move between these domains, to see a signal from multiple perspectives, is what gives digital signal processing its power and versatility.
+
+In the grand tapestry of signal processing, sampling, time domain representation, and frequency domain representation form the fundamental threads. They allow us to capture, analyze, and manipulate signals in ways that were once thought impossible. As we continue to push the boundaries of technology, these concepts remain at the heart of our ability to understand and shape the world of signals around us.
+
+Certainly, I'll continue exploring these concepts and their applications in signal processing.
+
+Building upon our understanding of sampling, time domain, and frequency domain representations, we can delve deeper into how these fundamental concepts are applied in practical signal processing systems and explore some of their more advanced implications.
+
+The Practical Side of Sampling
+
+In real-world applications, the process of sampling is not as clean and straightforward as our idealized mathematical models might suggest. When we sample a continuous signal, we inevitably introduce some level of error. This error comes from two main sources: quantization noise and aliasing.
+
+Quantization noise arises because we must represent our sampled values with a finite number of bits. Each sample is rounded to the nearest available discrete level, introducing a small error. The impact of this error can be minimized by using more bits per sample, effectively increasing our vertical resolution. This is why professional audio equipment often uses 24-bit samples instead of the 16-bit samples found in consumer-grade devices.
+
+To combat aliasing, we employ anti-aliasing filters before sampling. These low-pass filters attenuate frequency components above the Nyquist frequency, ensuring that our sampled signal doesn't contain aliases. However, ideal filters with infinitely sharp cutoffs are physically impossible to implement. In practice, we use filters with a gradual rolloff, which necessitates oversampling - sampling at a rate higher than strictly required by the Nyquist theorem. This oversampling provides a guard band, allowing our anti-aliasing filters to be less aggressive and thereby introducing less distortion to the signal.
+
+Advanced Time Domain Techniques
+
+While we've discussed basic operations in the time domain, there are more sophisticated techniques that leverage the time domain representation. One such technique is adaptive filtering, where the filter coefficients are continually adjusted based on the input signal characteristics. This approach is particularly useful in applications like noise cancellation and system identification.
+
+Another powerful time domain technique is wavelet analysis. Unlike Fourier analysis, which uses sinusoids as basis functions, wavelet analysis employs localized waveforms called wavelets. This allows for better time-frequency localization, making wavelets particularly useful for analyzing signals with transient behavior or signals where frequency content changes over time.
+
+Time domain analysis is also crucial in the field of statistical signal processing. Techniques like autocorrelation and cross-correlation provide insights into the statistical properties of signals and the relationships between different signals. These tools are fundamental in applications ranging from radar and sonar to speech recognition and financial time series analysis.
+
+Frequency Domain: Beyond the Basics
+
+While the Discrete Fourier Transform (DFT) is a powerful tool, it has limitations. One significant drawback is its fixed frequency resolution. The frequency bins in a DFT are evenly spaced, which may not always align with the frequency components of interest in our signal. To address this, we can use techniques like the Chirp Z-transform, which allows us to zoom in on specific frequency ranges with higher resolution.
+
+For signals whose frequency content changes over time, we turn to time-frequency analysis techniques. The Short-Time Fourier Transform (STFT) divides the signal into overlapping segments and computes the DFT for each segment. This allows us to see how the frequency content evolves over time, creating a spectrogram representation of the signal. However, the STFT faces a tradeoff between time and frequency resolution due to the uncertainty principle.
+
+To overcome the limitations of the STFT, we can use more advanced time-frequency representations like the Wigner-Ville distribution or wavelet transforms. These techniques offer better resolution in both time and frequency, at the cost of increased computational complexity and the introduction of cross-terms or artifacts that require careful interpretation.
+
+Multirate Signal Processing
+
+An exciting area that bridges time and frequency domain concepts is multirate signal processing. This field deals with systems that operate on signals with different sampling rates. Decimation (downsampling) and interpolation (upsampling) are fundamental operations in multirate systems. These techniques allow us to efficiently change the sampling rate of a signal, which is crucial in applications like software-defined radio, where we might need to convert between various communication standards with different bandwidths and sampling rates.
+
+Polyphase filtering is a powerful technique in multirate processing that allows for efficient implementation of decimation and interpolation filters. By decomposing a filter into its polyphase components, we can perform filtering and rate conversion simultaneously, significantly reducing computational requirements.
+
+Digital Filter Design
+
+The principles we've discussed come together beautifully in the art of digital filter design. Armed with our understanding of both time and frequency domains, we can create filters that selectively attenuate or amplify specific frequency components of a signal. 
+
+Finite Impulse Response (FIR) filters are designed primarily in the frequency domain. We specify a desired frequency response and use techniques like the Parks-McClellan algorithm to find the optimal filter coefficients. The resulting filter is guaranteed to be stable and has linear phase, which is crucial in many applications.
+
+Infinite Impulse Response (IIR) filters, on the other hand, are often designed by starting with analog filter prototypes and using techniques like the bilinear transform to convert them to the digital domain. IIR filters can achieve sharper cutoffs with fewer coefficients compared to FIR filters, but they introduce nonlinear phase distortion and can potentially be unstable.
+
+The Bigger Picture
+
+As we zoom out, we see that these concepts in signal processing form the foundation for countless technologies that shape our modern world. From the voice recognition in our smartphones to the image enhancement in our digital cameras, from the noise-cancelling headphones we wear to the medical imaging devices that save lives, the principles of sampling, time domain, and frequency domain analysis are at work.
+
+Moreover, these concepts extend beyond traditional signal processing. In fields like machine learning and data science, many of the same techniques are applied to extract meaningful information from vast datasets. The ability to move between different representations of data - be it time domain, frequency domain, or more abstract feature spaces - is a powerful tool in the data scientist's arsenal.
+
+As we continue to push the boundaries of technology, our understanding of these fundamental concepts will be crucial. Whether we're developing 5G communication systems, designing autonomous vehicles, or exploring new frontiers in quantum computing, the principles of signal processing will undoubtedly play a vital role.
+
+In conclusion, the journey from continuous signals to their discrete representations, and the ability to analyze these signals in both time and frequency domains, forms the backbone of modern signal processing. As we've seen, these concepts are not just theoretical constructs but practical tools that enable us to interact with and manipulate the signals that surround us in countless ways. The field continues to evolve, with new challenges driving innovations in theory and application, ensuring that signal processing remains a vibrant and crucial area of study in our increasingly digital world.
+
 \section{Space and Frequency representation}
 
 
@@ -7,7 +137,122 @@
 
 \section{Multiresolution theory}
 
+Certainly! I'll explain Multiresolution Analysis (MRA) with a focus on the topics you've outlined. This area of signal processing is particularly fascinating due to its ability to analyze signals at multiple scales or resolutions.
+
+**Multiresolution Analysis and Wavelet Theory**
+
+Multiresolution Analysis (MRA) is a powerful framework in signal processing that allows us to examine signals at different scales or resolutions. This approach is particularly useful for analyzing complex signals that contain features at various scales, such as images with both fine details and broad structures.
+
+\subsection{Overview of Multiresolution Techniques}
+
+The core idea behind multiresolution techniques is to decompose a signal into multiple levels of detail. This decomposition separates the signal into components that represent different frequency bands or scales.
+
+At its essence, MRA involves:
+
+1. Decomposing a signal into a coarse approximation and detail information.
+2. Recursively applying this decomposition to the coarse approximation.
+
+This process creates a hierarchy of signal representations, each capturing different levels of detail. The lowest level contains the broadest, most general features (low frequencies), while higher levels capture increasingly fine details (high frequencies).
+
+Mathematically, we can express this as a series of nested subspaces:
+
+% ... ⊂ V₋₁ ⊂ V₀ ⊂ V₁ ⊂ ...
+
+% Where each Vⱼ represents a subspace of signals at a particular resolution. As j increases, the resolution becomes finer.
+
+This decomposition allows us to analyze signals in a way that's analogous to how we naturally perceive the world. For instance, when looking at an image, we first notice broad structures before focusing on finer details.
+
+\subsection{Gaussian and Laplacian Pyramids}
+
+Gaussian and Laplacian pyramids are classical techniques in image processing that exemplify the multiresolution approach. These pyramids were introduced by Burt and Adelson in the early 1980s and laid the groundwork for many modern multiresolution techniques.
+
+1. Gaussian Pyramid:
+   The Gaussian pyramid is created by repeatedly smoothing and downsampling an image. Each level of the pyramid is a lower-resolution version of the original image.
+
+   Process:
+   a. Start with the original image.
+   b. Apply a Gaussian blur (low-pass filter).
+   c. Downsample by removing every other pixel in each direction.
+   d. Repeat steps b and c to create subsequent levels.
+
+   The result is a series of increasingly blurred and smaller images, each representing the original at a lower resolution.
+
+2. Laplacian Pyramid:
+   The Laplacian pyramid captures the difference information between adjacent levels of the Gaussian pyramid. It's named after the Laplacian operator, which is used in edge detection.
+
+   Process:
+   a. Create a Gaussian pyramid.
+   b. For each level (except the smallest):
+      - Upsample and interpolate the next smaller Gaussian pyramid level.
+      - Subtract this expanded image from the current level.
+   c. The smallest Gaussian pyramid level is included as the top of the Laplacian pyramid.
+
+   Each level of the Laplacian pyramid contains the "edges" or high-frequency details lost when moving from one Gaussian pyramid level to the next.
+
+These pyramids provide a multiresolution representation that's particularly useful for tasks like image compression, texture analysis, and image blending.
+
+Certainly. Let me present Gaussian and Laplacian Pyramids in a more narrative, prose-like format.
+
+Gaussian and Laplacian Pyramids represent a fundamental shift in how we approach image representation and analysis. These techniques, introduced in the early 1980s by Burt and Adelson, provide a multi-scale framework for examining and manipulating images in ways that are both computationally efficient and perceptually meaningful.
+
+The Gaussian Pyramid, named after the Gaussian smoothing operation at its core, is essentially a series of increasingly blurred versions of an original image. Imagine you're looking at a photograph and then you begin to squint. As you squint harder and harder, the fine details of the image begin to blur, leaving only the broad structures visible. This process is analogous to ascending the levels of a Gaussian Pyramid.
+
+To construct a Gaussian Pyramid, we start with our original image and apply a Gaussian blur – a mathematical operation that simulates the blurring effect of unfocused vision. After blurring, we reduce the size of the image by half in each dimension, keeping only every other pixel. This blurred and shrunk image becomes the next level of our pyramid. We repeat this process several times, creating a stack of increasingly smaller, increasingly blurrier versions of our original image.
+
+Each level of the Gaussian Pyramid contains a low-pass filtered version of the original image, meaning it retains the low-frequency information (broad structures) while progressively eliminating high-frequency details (fine textures and edges). This multi-resolution representation is particularly useful in applications like image compression, where we can allocate more resources to the levels that contain the most visually important information.
+
+While the Gaussian Pyramid is informative, it doesn't tell the whole story. As we move up the pyramid, we're losing information – those fine details that disappear as we blur and shrink the image. This is where the Laplacian Pyramid comes into play.
+
+The Laplacian Pyramid, named after the Laplacian operator used in edge detection, is designed to capture the information lost between each level of the Gaussian Pyramid. If the Gaussian Pyramid is like a series of increasingly unfocused photographs, the Laplacian Pyramid is like a series of images showing what details were lost in each step of unfocusing.
+
+To build a Laplacian Pyramid, we start with our Gaussian Pyramid and work backwards. We take a level of the Gaussian Pyramid, enlarge it to match the size of the level below it, and then subtract this enlarged, blurry image from the less blurry level below. What's left is an image that highlights the details lost in the transition between these two levels of blur.
+
+Each level of the Laplacian Pyramid acts like a band-pass filter, capturing image features at a particular scale. The lowest levels of the pyramid contain fine details and textures, while higher levels capture broader edges and structures. Interestingly, if you were to add up all the levels of the Laplacian Pyramid (after appropriate resizing) along with the top level of the Gaussian Pyramid, you'd reconstruct the original image perfectly. This property makes the Laplacian Pyramid a complete representation of the image, storing all of the original information in a multi-scale format.
+
+The power of these pyramids lies in how they decompose an image into components that align closely with how our own visual system processes information. Our eyes and brain naturally analyze scenes at multiple scales simultaneously, noticing both broad structures and fine details. By mimicking this multi-scale analysis, Gaussian and Laplacian Pyramids provide a framework for image processing that feels intuitively "right" to our visual perception.
+
+This intuitive representation opens up a world of possibilities in image processing and computer vision. For instance, we can use Laplacian Pyramids for seamless image blending, creating composites where the transitions between images are nearly imperceptible. In image compression, we can allocate more bits to the levels of the pyramid that contain the most visually important information. In texture synthesis, we can generate new textures by matching pyramid statistics at multiple scales.
+
+Moreover, these pyramids serve as a bridge between classical signal processing techniques and more modern approaches. They can be seen as precursors to wavelet transforms, sharing the fundamental idea of multi-resolution analysis but with a fixed set of scales. This connection highlights the evolution of signal processing theory and its ongoing quest to represent and analyze signals in ways that are both mathematically rigorous and practically useful.
+
+In essence, Gaussian and Laplacian Pyramids provide us with a powerful toolset for peeling apart the layers of an image, allowing us to examine and manipulate its content at multiple scales. They represent a crucial step in our understanding of image structure and have paved the way for numerous advancements in image processing, computer vision, and our broader understanding of visual perception.
+
+\subsection{Wavelet Transforms}
+
+Wavelet transforms take the concept of multiresolution analysis a step further by providing a more flexible and mathematically rigorous framework. Unlike the fixed-scale analysis of Fourier transforms, wavelets offer a localized, multiresolution representation of signals.
+
+Key Concepts:
+
+1. Mother Wavelet: A wavelet transform uses a small wave (the "mother wavelet") as its basic building block. This wavelet can be scaled and shifted to analyze different parts of the signal at different resolutions.
+
+2. Scaling and Shifting: The mother wavelet is scaled (stretched or compressed) to analyze different frequency components and shifted to analyze different parts of the signal in time or space.
+
+3. Decomposition: A signal is decomposed into a set of basis functions, which are scaled and shifted versions of the mother wavelet. This decomposition provides both frequency and time/space localization.
+
+4. Multiresolution: The wavelet transform naturally provides a multiresolution analysis. Larger scales (more stretched wavelets) capture low-frequency, global features, while smaller scales capture high-frequency, local details.
+
+5. Discrete Wavelet Transform (DWT): In practice, we often use the DWT, which decomposes the signal into discrete scales and positions. This is computationally efficient and provides a compact representation.
+
+The wavelet transform process can be visualized as:
+
+1. Convolving the signal with a low-pass filter (scaling function) and a high-pass filter (wavelet function).
+2. Downsampling the results to get approximation coefficients (from low-pass) and detail coefficients (from high-pass).
+3. Recursively applying this process to the approximation coefficients.
+
+This results in a tree-like structure of coefficients, where each level represents the signal at a different resolution.
+
+Advantages of Wavelets:
+
+- Localization: Wavelets provide good localization in both time/space and frequency.
+- Sparsity: Many signals have sparse representations in the wavelet domain, making wavelets useful for compression.
+- Adaptability: Different wavelet families can be chosen to best match the characteristics of the signal being analyzed.
+
+Applications of wavelet transforms include signal denoising, compression (e.g., JPEG2000), feature extraction, and analyzing non-stationary signals.
+
+In conclusion, Multiresolution Analysis, exemplified by techniques like image pyramids and wavelet transforms, provides a powerful framework for analyzing signals at multiple scales. This approach aligns well with how we naturally perceive and process information, making it invaluable in various signal processing applications. The evolution from simple pyramid structures to the more sophisticated wavelet transforms has opened up new possibilities in fields ranging from image and video processing to financial analysis and beyond.
+
+
 \section{Neural Networks}
 
-
+To build a "Theoretical Framework" chapter that will help a non-specialist (but intelligent and curious) reader grasp the content of your dissertation chapter, consider including the following key subjects, each introduced at a foundational level and building up to more advanced concepts. Here’s a suggested outline of topics:
 
