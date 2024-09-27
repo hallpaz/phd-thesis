@@ -3,8 +3,6 @@
 
 In this chapter, we present a novel neural network architecture designed to efficiently encode signals at multiple scales. Our objective is to construct a continuous, compact, and high-fidelity representation of scalar and vector fields, making it applicable to a variety of media such as audio, images, shapes, and complex spatiotemporal data. These media object, interpreted as signals, can be given explicitly as attributes of space-time coordinates or implicitly as level sets of functions.
 
-% The core idea is to utilize coordinate-based neural networks with sinusoidal activation functions, allowing us to capture fine-grained details while maintaining a smooth global structure across different resolutions.
-
 This chapter builds upon our exploration of sinusoidal neural networks, where we analyzed how frequency capacity and initialization schemes influence the network's ability to represent diverse signal frequencies. Drawing on these insights, we propose a multiresolution neural network (MR-Net) architecture that combines classical multi-scale signal processing techniques with modern deep learning methodologies to address the limitations of existing coordinate-based models.
 
 The MR-Net framework introduces a unified architecture capable of encoding signals in a multiscale manner, supporting flexible training regimes and progressive refinement. It includes three primary subclasses, each designed for distinct frequency control scenarios: \emph{S-Net}, \emph{L-Net}, and \emph{M-Net}. These subclasses offer different trade-offs between frequency resolution and control, and computational efficiency, providing a versatile toolkit for representing complex signals across a range of applications.
@@ -19,23 +17,6 @@ Key features of the MR-Net framework include:
 \end{itemize}
 
 In the following sections, we describe the theoretical foundations, design principles, and architectural details of MR-Net, providing a comprehensive overview of the framework and its potential applications.
-
-
-% \section{Motivation}
-% \label{s-motivation}
-% Let $\gt{f}:\mathcal{D}\to \mathcal{C}$ be a \textit{signal}, the \textit{ground-truth}, where $\mathcal{D}$ and $\mathcal{C}$ are finite vector spaces representing the domain and codomain of~$\gt{f}$. For instance, to represent an image, we can choose $\mathcal{D}=\R^2$ to represent the image's support and $\mathcal{C}=\R^3$ to represent the RGB \textit{color space}.
-% Throughout the text, the cursive letter will indicate the ground-truth while the standard letter indicates the corresponding neural network.
-
-% We can decompose the signal into a sum $\gt{f}=\gt{g}_0+\dots+\gt{g}_{N-1}$ of $N$ stages, where $\gt{g}_0$ is its coarsest approximation and $\gt{g}_i$, for $i>0$, progressively introduce finer details. The \textit{level of detail}~$i$ is defined as 
-% $\gt{f}_i\!=\!\gt{g}_0\!+\!\cdots\!+\!\gt{g}_{i}$, or as 
-% $\gt{f}_i\!=\!\gt{f}\!-\left(\gt{g}_{i+1}\!+\!\cdots\!+\!\gt{g}_{N-1}\right)$. 
-% Thus, the stages can be defined as
-% $$\gt{g}_i=\gt{f}_{i+1}-K*\gt{f}_{i+1}, \text{ with } \gt{f}_{N-1}=\gt{f}.$$
-
-% That is, each stage $\gt{g}_i$ is the difference between the level $i+1$ and its convolution with a low-pass filter $K$. For example, $K$ could be a \textit{Gaussian kernel} $G(x,t)=\frac{1}{2\pi t}\exp{(-\frac{\norm{x}^2}{2t})}$, where $t$ is the scale parameter. The sequences $\{\gt{f}_i\}$ and $\{\gt{g}_i\}$ resemble the \textit{Gaussian} and \textit{Laplacian pyramids}, which are widely used in the multiresolution analysis of digital images (\cite{rosenfeld2013multiresolution,lindeberg1994scale,velho2009image}).
-
-% We address the problem of representing a signal $\gt{f}$ in multiresolution using sinusoidal neural networks. Motivated by the decomposition $\gt{f}=\gt{g}_0+\dots+\gt{g}_{N-1}$, we consider an aggregation of $N$ sinusoidal MLPs $g_i:\mathcal{D}\to \mathcal{C}$, which we call stages, to approximate $\gt{f}$. Therefore, we propose training each network stage $g_i$ by fitting it to the stages $\gt{g}_i$ of $\gt{f}$. This approach allows us to learn the frequency of $\gt{f}$ in a controlled manner, starting from lower details and gradually moving towards higher ones.
-% This is also inspired by the foundational experiments presented in Chapter \ref{chap:sinusoidal} that demonstrated that we can advantage of the MLPs spectral bias to learn the lower frequencies first using sinusoidal neural networks. We use a specific range of frequencies in the initialization of each network $g_i$ to control its represented frequenices such that we can fit it to the stages $\gt{g}_i$ of $\gt{f}$.
 
 \section{Multiscale Representation and Learning}
 % **"Multiresolution Signal Decomposition"**: Emphasizes the mathematical framework you’re presenting.
@@ -58,9 +39,7 @@ To represent the signal $\gt{f}$ at multiple scales, we decompose it into a sum 
 
 Each stage $\gt{g}_i$ can be computed as:
 \begin{equation}
-% \[
 \gt{g}_i = \gt{f}_{i+1} - K * \gt{f}_{i+1}, \quad \text{where } \gt{f}_{N-1} = \gt{f}.
-% \]
 \end{equation}
 
 That is, each stage $\gt{g}_i$ represents the difference between the $(i+1)$-th level and its smoothed version obtained by convolving with a low-pass filter $K$. For instance, $K$ could be a \textit{Gaussian kernel} defined as $G(x,t)=\frac{1}{2\pi t}\exp{(-\frac{\norm{x}^2}{2t})}$, where $t$ is the scale parameter. This way, the sequences $\{\gt{f}_i\}$ and $\{\gt{g}_i\}$ correspond to the \textit{Gaussian} and \textit{Laplacian pyramids}, which are standard tools in multiresolution analysis of digital images \cite{rosenfeld2013multiresolution,lindeberg1994scale,velho2009image}.
@@ -68,39 +47,6 @@ That is, each stage $\gt{g}_i$ represents the difference between the $(i+1)$-th 
 Given this multiscale decomposition, our goal is to represent a signal $\gt{f}$ using a family of sinusoidal neural networks. Motivated by the hierarchical structure of $\gt{f}=\gt{g}_0+\dots+\gt{g}_{N-1}$, we propose an aggregation of $N$ sinusoidal MLPs, denoted by $g_i:\mathcal{D}\to \mathcal{C}$, to approximate each stage $\gt{g}_i$. By training each $g_i$ to match the corresponding stage $\gt{g}_i$, we gain precise control over the frequency spectrum learned by each network. This approach leverages the spectral bias of sinusoidal networks, as demonstrated in Chapter \ref{chap:sinusoidal}, allowing the network to naturally prioritize lower frequencies and gradually introduce higher-frequency details.
 
 Each network stage $g_i$ is initialized with a specific and crescent range of frequencies, ensuring that the resulting approximation accurately matches the desired stage $\gt{g}_i$. This structured frequency learning enables us to decompose and reconstruct complex signals in a progressive and controlled manner.
-
-% \section{MR-Net Architecture}
-
-% We define the MR-Net as a function $f:\mathcal{D}\times [0,N]\to \mathcal{C}$, expressed as follows:
-% \begin{align}\label{e-mrnet}
-% f(x,t) = c_0(t)g_0(x) + \cdots + c_{N-1}(t)g_{N-1}(x),
-% \end{align}
-% Each function $g_i:\mathcal{D}\to\mathcal{C}$ is a sinusoidal MLP called MR-Module (see Sec~\ref{s-mr-module} for its precise definition) and represents the $i$th \textit{stage} of $f$, whose contribution is controlled by the function 
-% \begin{align}\label{e-control}
-% c_i(t)=\max\Big\{0, \min\big\{1, t-i\big\}\Big\}.
-% \end{align}
-% Note that when $t<i$, $c_i(t)=0$; when $i\leq t\leq i+1$, $c_i(t)=t-i$; and when $t>i+1$, $c_i(t)=1$.
-% Therefore, if $t=k+\delta$ with $k\in\mathbb{N}$ and $0\leq\delta\leq 1$, we obtain $$f(x,t)=g_0(x)+\dots + g_k(x)+\delta g_{k+1}(x).$$ 
-
-
-% $f_t:=f(\cdot, t):\mathcal{D}\to \mathcal{C}$ is the \textit{level of detail} $t$ of the MR-Net~$f$.
-% These levels evolve continuously, allowing us to encode a continuous multiresolution of $f$ at full resolution $f_N\!=\!g_0+\cdots + g_{N-1}$.
-
-
-% For this, we propose fitting $f$ to the multiresolution given by the ground-truth signal $\gt{f}=\gt{g}_0+\dots+\gt{g}_{N-1}$.
-% We initialize the parameters of each stage $g_i$ with sufficient capacity to fit the stage $\gt{g}_i$ (see Sec~\ref{s-frequency-control}), then train each $g_i$ to approximate $\gt{g}_i$.
-
-% The resulting MR-Net $f$ learns the decomposition of the ground-truth signal $\gt{f}$ as a projection into the coarse scale space and a sequence of finer detail spaces. For instance, the initial stage $f_1=g_0$ provides the least detailed approximation~of~$f_N$. 
-% The subsequent stages, represented by $g_i$ with $i<0$, progressively introduce finer details and are regulated by the scale parameter $t$. 
-% Essentially, the multiresolution can be navigated using the scale parameter $t$ within the interval $[0,N]$, which makes this architecture closely aligned with the Multiresolution Analysis~\cite{mallat-mr89}. Fig~\ref{f:mrnet-arch} shows the structure of a MR-Net having $N$ stages. 
-
-% \begin{figure}[!h]
-% \centering
-% \includegraphics[width=0.96\linewidth]{img/ch4/mr-net-stages-v2.png}
-% \caption{Anatomy of the MR-Net Family.}
-% \label{f:mrnet-arch}
-% \end{figure}
-
 
 \section{MR-Net Architecture}
 
