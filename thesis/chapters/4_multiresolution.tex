@@ -69,25 +69,74 @@ Given this multiscale decomposition, our goal is to represent a signal $\gt{f}$ 
 
 Each network stage $g_i$ is initialized with a specific and crescent range of frequencies, ensuring that the resulting approximation accurately matches the desired stage $\gt{g}_i$. This structured frequency learning enables us to decompose and reconstruct complex signals in a progressive and controlled manner.
 
+% \section{MR-Net Architecture}
+
+% We define the MR-Net as a function $f:\mathcal{D}\times [0,N]\to \mathcal{C}$, expressed as follows:
+% \begin{align}\label{e-mrnet}
+% f(x,t) = c_0(t)g_0(x) + \cdots + c_{N-1}(t)g_{N-1}(x),
+% \end{align}
+% Each function $g_i:\mathcal{D}\to\mathcal{C}$ is a sinusoidal MLP called MR-Module (see Sec~\ref{s-mr-module} for its precise definition) and represents the $i$th \textit{stage} of $f$, whose contribution is controlled by the function 
+% \begin{align}\label{e-control}
+% c_i(t)=\max\Big\{0, \min\big\{1, t-i\big\}\Big\}.
+% \end{align}
+% Note that when $t<i$, $c_i(t)=0$; when $i\leq t\leq i+1$, $c_i(t)=t-i$; and when $t>i+1$, $c_i(t)=1$.
+% Therefore, if $t=k+\delta$ with $k\in\mathbb{N}$ and $0\leq\delta\leq 1$, we obtain $$f(x,t)=g_0(x)+\dots + g_k(x)+\delta g_{k+1}(x).$$ 
+
+
+% $f_t:=f(\cdot, t):\mathcal{D}\to \mathcal{C}$ is the \textit{level of detail} $t$ of the MR-Net~$f$.
+% These levels evolve continuously, allowing us to encode a continuous multiresolution of $f$ at full resolution $f_N\!=\!g_0+\cdots + g_{N-1}$.
+
+
+% For this, we propose fitting $f$ to the multiresolution given by the ground-truth signal $\gt{f}=\gt{g}_0+\dots+\gt{g}_{N-1}$.
+% We initialize the parameters of each stage $g_i$ with sufficient capacity to fit the stage $\gt{g}_i$ (see Sec~\ref{s-frequency-control}), then train each $g_i$ to approximate $\gt{g}_i$.
+
+% The resulting MR-Net $f$ learns the decomposition of the ground-truth signal $\gt{f}$ as a projection into the coarse scale space and a sequence of finer detail spaces. For instance, the initial stage $f_1=g_0$ provides the least detailed approximation~of~$f_N$. 
+% The subsequent stages, represented by $g_i$ with $i<0$, progressively introduce finer details and are regulated by the scale parameter $t$. 
+% Essentially, the multiresolution can be navigated using the scale parameter $t$ within the interval $[0,N]$, which makes this architecture closely aligned with the Multiresolution Analysis~\cite{mallat-mr89}. Fig~\ref{f:mrnet-arch} shows the structure of a MR-Net having $N$ stages. 
+
+% \begin{figure}[!h]
+% \centering
+% \includegraphics[width=0.96\linewidth]{img/ch4/mr-net-stages-v2.png}
+% \caption{Anatomy of the MR-Net Family.}
+% \label{f:mrnet-arch}
+% \end{figure}
+
+
 \section{MR-Net Architecture}
 
-We define the MR-Net as a function $f:\mathcal{D}\times [0,N]\to \mathcal{C}$, expressed as follows:
-\begin{align}\label{e-mrnet}
-f(x,t) = c_0(t)g_0(x) + \cdots + c_{N-1}(t)g_{N-1}(x),
-\end{align}
-Each function $g_i:\mathcal{D}\to\mathcal{C}$ is a sinusoidal MLP called MR-Module (see Sec~\ref{s-mr-module} for its precise definition) and represents the $i$th \textit{stage} of $f$, whose contribution is controlled by the function 
-\begin{align}\label{e-control}
-c_i(t)=\max\Big\{0, \min\big\{1, t-i\big\}\Big\}.
-\end{align}
-Note that when $t<i$, $c_i(t)=0$; when $i\leq t\leq i+1$, $c_i(t)=t-i$; and when $t>i+1$, $c_i(t)=1$.
-Therefore, if $t=k+\delta$ with $k\in\mathbb{N}$ and $0\leq\delta\leq 1$, we obtain $$f(x,t)=g_0(x)+\dots + g_k(x)+\delta g_{k+1}(x).$$ 
-$f_t:=f(\cdot, t):\mathcal{D}\to \mathcal{C}$ is the \textit{level of detail} $t$ of the MR-Net~$f$.
-These levels evolve continuously, allowing us to encode a continuous multiresolution of $f$ at full resolution $f_N\!=\!g_0+\cdots + g_{N-1}$.
-For this, we propose fitting $f$ to the multiresolution given by the ground-truth signal $\gt{f}=\gt{g}_0+\dots+\gt{g}_{N-1}$.
-We initialize the parameters of each stage $g_i$ with sufficient capacity to fit the stage $\gt{g}_i$ (see Sec~\ref{s-frequency-control}), then train each $g_i$ to approximate $\gt{g}_i$.
+The MR-Net architecture is a family of continuous multiresolution networks designed to approximate a complex signal by progressively adding details at multiple levels of resolution. The architecture is defined as a function \( f:\mathcal{D} \times [0,N] \to \mathcal{C} \), where \(\mathcal{D}\) and \(\mathcal{C}\) represent the domain and codomain, respectively. Formally, the MR-Net is expressed as follows:
 
-The resulting MR-Net $f$ learns the decomposition of the ground-truth signal $\gt{f}$ as a projection into the coarse scale space and a sequence of finer detail spaces. For instance, the initial stage $f_1=g_0$ provides the least detailed approximation~of~$f_N$. The subsequent stages, represented by $g_i$ with $i<0$, progressively introduce finer details and are regulated by the scale parameter $t$. 
-Essentially, the multiresolution can be navigated using the scale parameter $t$ within the interval $[0,N]$, which makes this architecture closely aligned with the Multiresolution Analysis~\cite{mallat-mr89}. Fig~\ref{f:mrnet-arch} shows the structure of a MR-Net having $N$ stages. 
+\begin{align}\label{e-mrnet}
+f(x,t) = c_0(t) g_0(x) + \cdots + c_{N-1}(t) g_{N-1}(x),
+\end{align}
+
+where each function \( g_i : \mathcal{D} \to \mathcal{C} \) is a \textbf{Multiresolution (MR) Module} —a building block of the MR-Net that is defined in detail in Sec~\ref{s-mr-module}. The MR-Net is composed of \( N \) such MR Modules, each corresponding to a different stage in the multiresolution hierarchy of \( f \). 
+
+The contributions of each MR Module \( g_i \) are controlled by a set of blending functions \( c_i(t) \), defined as:
+
+\begin{align}\label{e-control}
+c_i(t) = \max \Big\{ 0, \min \big\{ 1, t - i \big\} \Big\}.
+\end{align}
+
+Intuitively, this function ensures that:
+
+\begin{itemize}
+    \item When \( t < i \), \( c_i(t) = 0 \).
+    \item When \( i \leq t \leq i+1 \), \( c_i(t) = t - i \).
+    \item When \( t > i + 1 \), \( c_i(t) = 1 \).
+\end{itemize}
+
+Therefore, if \( t = k + \delta \) (with \( k \in \mathbb{N} \) and \( 0 \leq \delta \leq 1 \)), we can express \( f(x, t) \) as a linear combination:
+
+\begin{align}
+f(x, t) = g_0(x) + \cdots + g_k(x) + \delta \, g_{k+1}(x).
+\end{align}
+
+Each stage function \( f_t := f(\cdot, t) : \mathcal{D} \to \mathcal{C} \) defines a \textit{level of detail} parameterized by \( t \). The resulting MR-Net $f$ learns the decomposition of the ground-truth signal $\gt{f}$ as a projection into the coarse scale space and a sequence of finer detail spaces. For instance, the initial stage $f_1=g_0$ provides the least detailed approximation~of~$f_N$. As \( t \) evolves from 0 to \( N \), these stages progressively refine the representation of the signal, with \( f_N = g_0 + \cdots + g_{N-1} \) representing the full-resolution approximation.
+
+To train this architecture, we fit \( f \) to the ground-truth signal \( \gt{f} = \gt{g}_0 + \cdots + \gt{g}_{N-1} \) by initializing and training each stage \( g_i \) to approximate the corresponding stage of the ground-truth decomposition (see Sec~\ref{s-frequency-control} for more details on frequency control).
+
+This structure aligns with the concept of Multiresolution Analysis (\cite{mallat-mr89}), where a function is decomposed into a sequence of approximations and detail spaces, each stage refining the approximation of the original signal. The MR-Net enables a continuous traversal through these stages using the scale parameter \(t\), allowing seamless navigation across multiple resolutions. Fig.~\ref{f:mrnet-arch} shows the general architecture of an MR-Net having \(N\) stages.
 
 \begin{figure}[!h]
 \centering
@@ -97,26 +146,61 @@ Essentially, the multiresolution can be navigated using the scale parameter $t$ 
 \end{figure}
 
 
+% ## MR Module
+% \label{s-mr-module}
 
-% The stages of the network are trained based on a predefined schedule (see Section~\ref{s:training}).
-% During training, the control layer is the identity function, i.e. $\alpha = 1$.  
+% Each stage \( g_i \) in the MR-Net is a **Multiresolution (MR) Module**, defined as a sinusoidal MLP (Multilayer Perceptron) with induced frequency bands. An MR Module is constructed as a function \( g_i = L_i \circ H_i \circ S_i \), where:
 
+% - **\( S_i \)**: The sinusoidal input layer that projects \( x \in \mathcal{D} \) into a list of sines, generating \( S_i(x) \).
+% - **\( H_i \)**: A sequence of hidden layers (optional), composing \( k \) intermediate transformations of the sines.
+% - **\( L_i \)**: The final linear layer that combines these transformations.
 
-% The contributions of these $N$ stages are added together forming the network output.
-% Assuming that the MR-Net is learning a function $f(x)$ that fits the input signal, then
-% \begin{equation}
-%     f(x) = g_0(x) + \cdots + g_{N-1}(x)
-% \end{equation}
-% where $g_i(x)$ is the detail function representing the stage $i$.
-% The first stage $g_0$ gives the coarsest approximation of the signal and the other subsequent stages add increasingly finer details to it.
+% The specific choice and configuration of these layers define the two types of MR Modules:
 
+% 1. **Pure Sine MR-Module**: A shallow MLP with only the sinusoidal layer \( S \) and linear layer \( L \).
+% 2. **Modulated Sine MR-Module**: A deep MLP that includes one or more hidden layers \( H \).
 
+% The control layer \( c_i(t) \) regulates the blending of the MR Modules at each level, allowing for continuous transitions between stages.
 
+% ### 1. Pure Sine MR-Module
+% The Pure Sine MR-Module is a basic building block defined as \( g_i = L \circ S \). The sinusoidal layer \( S \) has the form:
 
+% \[
+% S(x) = \sin(W_s x + b_s),
+% \]
 
-% Note that this architecture is very much in the spirit of the Multiresolution Analysis~\cite{mallat-mr89}. Indeed, consider the base case with $f = g_0 + g_1$, then $g_1 = f - g_0$, i.e. $g_1$ are the details that need to be added to $g_0$ to increase the level of detail.
+% where \( W_s \in \mathbb{R}^{m \times d} \) and \( b_s \in \mathbb{R}^m \) are the weights and biases, respectively, and \( m \) is the number of sine functions. The linear layer \( L \) maps the output of \( S \) to a scalar value:
 
-% \hl{MR-Net learns the decomposition of the signal as a projection into the coarse scale space and a sequence of finer detail spaces.}
+% \[
+% L(y) = W_l y + b_l, \quad W_l \in \mathbb{R}^{1 \times m}, \, b_l \in \mathbb{R}.
+% \]
+
+% This architecture acts as a spectral filter that selects specific frequencies from the input signal based on the initialization of \( W_s \).
+
+% \begin{figure}[!h]
+% \centering
+% \includegraphics[width=0.8\linewidth]{img/ch4/pure-sine.png}
+% \caption{Pure sine MR-Module.}
+% \label{f:pure-sine}
+% \end{figure}
+
+% ### 2. Modulated Sine MR-Module
+% The Modulated Sine MR-Module is a deeper variant defined as \( g_i = L \circ H \circ S \). The hidden layers in \( H \) consist of multiple sinusoidal transformations:
+
+% \[
+% H(x) = \sin(W x + b),
+% \]
+
+% where each transformation introduces nonlinearity and enhances the network’s expressivity. This depth allows the network to capture more complex signal patterns.
+
+% \begin{figure}[!h]
+% \centering
+% \includegraphics[width=0.9\linewidth]{img/ch4/modulated-sine.png}
+% \caption{Modulated sine MR-Module.}
+% \label{f:modulated}
+% \end{figure}
+
+% With these two types of modules, the MR-Net can effectively model signals with varying levels of detail, navigating through its multiresolution hierarchy using the scale parameter \( t \).
 
 
 \subsection{MR Module}
