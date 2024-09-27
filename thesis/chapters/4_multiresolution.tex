@@ -86,34 +86,45 @@ This structure aligns with the concept of Multiresolution Analysis (\cite{mallat
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=0.96\linewidth]{img/ch4/mr-net-stages-v2.png}
+\includegraphics[width=0.9\linewidth]{img/ch4/mr-net-stages-v2.png}
 \caption{Anatomy of the MR-Net Family.}
 \label{f:mrnet-arch}
 \end{figure}
 
 
-% ## MR Module
-% \label{s-mr-module}
+\subsection{MR-Module}
+\label{s-mr-module}
 
-% Each stage \( g_i \) in the MR-Net is a **Multiresolution (MR) Module**, defined as a sinusoidal MLP (Multilayer Perceptron) with induced frequency bands. An MR Module is constructed as a function \( g_i = L_i \circ H_i \circ S_i \), where:
+Each stage \( g_i \) in the MR-Net is a \textit{Multiresolution (MR) Module}, defined as a sinusoidal MLP with induced frequency bands. A MR-Module is constructed as a function \( g_i = L_i \circ H_i \circ S_i \), illustrated in the Figure \ref{f:mr-module}, where:
 
-% - **\( S_i \)**: The sinusoidal input layer that projects \( x \in \mathcal{D} \) into a list of sines, generating \( S_i(x) \).
-% - **\( H_i \)**: A sequence of hidden layers (optional), composing \( k \) intermediate transformations of the sines.
-% - **\( L_i \)**: The final linear layer that combines these transformations.
+\begin{itemize}
+    \item \( S_i \): The sinusoidal input layer that projects \( x \in \mathcal{D} \) into a list of sines, generating \( S_i(x) \).
+    \item \( H_i \): A sequence of hidden layers (optional), composing \( k \) intermediate transformations of the sines. The output $H_i\circ S_i(x)$ is a dictionary of sine combinations.
+    \item \( L_i \): The final linear layer that combines these transformations, the atoms of the dictionary.
+\end{itemize}
 
-% The specific choice and configuration of these layers define the two types of MR Modules:
 
-% 1. **Pure Sine MR-Module**: A shallow MLP with only the sinusoidal layer \( S \) and linear layer \( L \).
-% 2. **Modulated Sine MR-Module**: A deep MLP that includes one or more hidden layers \( H \).
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.9\linewidth]{img/ch4/diagram_mr_module.pdf}
+    \caption{General Anatomy of a MR-Module.}
+    \label{f:mr-module}
+\end{figure}
 
-% The control layer \( c_i(t) \) regulates the blending of the MR Modules at each level, allowing for continuous transitions between stages.
+The specific choice and configuration of these layers define the two types of MR-Modules:
 
-% ### 1. Pure Sine MR-Module
+i) \textbf{Pure Sine MR-Module}: A shallow MLP with only the sinusoidal layer \( S \) and linear layer \( L \);
+ii). \textbf{Modulated Sine MR-Module}: A deep MLP that includes one or more hidden layers \( H \).
+
+At the end of each level, the control layer \( c_i(t) \) regulates the blending of the MR-Modules, allowing for continuous transitions between stages.
+
+% \subsubsection{Pure Sine MR-Module}
+
 % The Pure Sine MR-Module is a basic building block defined as \( g_i = L \circ S \). The sinusoidal layer \( S \) has the form:
 
-% \[
-% S(x) = \sin(W_s x + b_s),
-% \]
+% \begin{align}
+%     S(x) = \sin(W_s x + b_s),
+% \end{align}
 
 % where \( W_s \in \mathbb{R}^{m \times d} \) and \( b_s \in \mathbb{R}^m \) are the weights and biases, respectively, and \( m \) is the number of sine functions. The linear layer \( L \) maps the output of \( S \) to a scalar value:
 
@@ -121,7 +132,12 @@ This structure aligns with the concept of Multiresolution Analysis (\cite{mallat
 % L(y) = W_l y + b_l, \quad W_l \in \mathbb{R}^{1 \times m}, \, b_l \in \mathbb{R}.
 % \]
 
-% This architecture acts as a spectral filter that selects specific frequencies from the input signal based on the initialization of \( W_s \).
+% As we saw in Chapter \ref{chap:sinusoidal}, this architecture acts as a spectral filter that selects specific frequencies from the input signal based on the initialization of \( W_s \).
+
+% The pure sine MR-Module is a shallow sinusoidal MLP defined as the composition $L\circ S$ of a sinusoidal layer $S$ with a linear layer $L$.
+% The layer $S\!:\!\R^2\!\to\! \R^m$ projects the input $x$ into a dictionary of $m$ sines of the form $S(x)=\sin\left(W_s x+ b_s\right)$, where $W_s\in \R^{m\times 2}$ and $b_s\in \R^{m}$ are the \textit{weight matrix} and \textit{bias}. The integer $m$ is the \textit{width} of the MR-Module.
+% The layer $L\!:\!\R^m\!\to\! \R$ is an affine map $L(x)=W_lx+b_l$, where $W_l\in \R^{1\times m} $ and $b_l\in \R$  are the final weight matrix and bias.
+% Hence, $L\circ S$ acts as a spectral filter controlled by the initialization of $W_s$.
 
 % \begin{figure}[!h]
 % \centering
@@ -130,12 +146,13 @@ This structure aligns with the concept of Multiresolution Analysis (\cite{mallat
 % \label{f:pure-sine}
 % \end{figure}
 
-% ### 2. Modulated Sine MR-Module
+% \subsubsection{Modulated Sine MR-Module}
+
 % The Modulated Sine MR-Module is a deeper variant defined as \( g_i = L \circ H \circ S \). The hidden layers in \( H \) consist of multiple sinusoidal transformations:
 
-% \[
-% H(x) = \sin(W x + b),
-% \]
+% \begin{align}
+%     H(x) = \sin(W x + b),
+% \end{align}
 
 % where each transformation introduces nonlinearity and enhances the network’s expressivity. This depth allows the network to capture more complex signal patterns.
 
@@ -148,63 +165,101 @@ This structure aligns with the concept of Multiresolution Analysis (\cite{mallat
 
 % With these two types of modules, the MR-Net can effectively model signals with varying levels of detail, navigating through its multiresolution hierarchy using the scale parameter \( t \).
 
-
-\subsection{MR Module}
-\label{s-mr-module}
-Each stage $g_i$ of the MR-Net $f$ is a sinusoidal MLP, called \textit{MR-Module}, that learns a signal representation as a combination of sinusoidal functions with induced frequency band.
-
-We write each stage as $g_i=L_i\circ H_i\circ S_i$. The first layer projects the input $x$ into a list of sines $S_i(x)$, which is the input of the composition $H_i$ of the MLP hidden layers. The output $H_i\circ S_i(x)$ is a dictionary of sine combinations that are passed to the linear layer $L_i$. Finally, the control layer $c_i(t)$, with $t\in[i,i+1]$, blends the stage $g_i$ with the level of detail $f(x,i-1)$. 
-
-There are two kinds of MR-Modules: \emph{Pure sine} MR-Module ($H_i=\emptyset$) and \emph{modulated sine} MR-Module ($H_i\neq\emptyset$). In the first case the network has only the first layer and the linear layer, and in the second case the network has the three blocks, including the hidden layers (see Fig~\ref{f:mr-module}).
-
-\begin{figure}[!h]
-\centering
-% \includesvg[width=\linewidth]{svg_figs/diagram_mrnet.svg}
-\includegraphics[width=\linewidth]{img/ch4/diagram_mr_module.pdf}
-\caption{General Anatomy of a MR-Module.}
-\label{f:mr-module}
-\end{figure}
-
-Without loss of generality, let us assume that the ground-truth signal is a grayscale image unless stated to the contrary. In this case, the stages of the MR-Net will have $\R^2$ and $\R$ as domain and codomain respectively. 
-Consequently, a MR-Net with $N$ stages $g_i:\R^2\to \R$ has the form $f:\R^2\times [0,N]\to \R$.
-Under this assumption, we present the building blocks of the MR-Net with details. 
-
-
 \subsubsection{Pure Sine MR-Module}
 
-The pure sine MR-Module is a shallow sinusoidal MLP defined as the composition $L\circ S$ of a sinusoidal layer $S$ with a linear layer $L$.
-The layer $S\!:\!\R^2\!\to\! \R^m$ projects the input $x$ into a dictionary of $m$ sines of the form $S(x)=\sin\left(W_s x+ b_s\right)$, where $W_s\in \R^{m\times 2}$ and $b_s\in \R^{m}$ are the \textit{weight matrix} and \textit{bias}. The integer $m$ is the \textit{width} of the MR-Module.
-The layer $L\!:\!\R^m\!\to\! \R$ is an affine map $L(x)=W_lx+b_l$, where $W_l\in \R^{1\times m} $ and $b_l\in \R$  are the final weight matrix and bias.
-Hence, $L\circ S$ acts as a spectral filter controlled by the initialization of $W_s$.
+The \textit{Pure Sine MR-Module} is a shallow sinusoidal multi-layer perceptron (MLP) that serves as a basic spectral filter. It is defined as the composition \( L \circ S \) of a sinusoidal layer \( S \) followed by a linear output layer \( L \). 
 
+The sinusoidal layer \( S\!:\!\mathbb{R}^d\!\to\! \mathbb{R}^m \) projects the input \( x \) into a dictionary of \( m \) sines of the form \( S(x) = \sin\left(W_s x + b_s\right) \), where \( W_s \in \mathbb{R}^{m \times d} \) is a weight matrix and \( b_s \in \mathbb{R}^m \) is a bias vector. The integer \( m \) is referred to as the \textit{width} of the MR-Module, controlling the number of sinusoidal basis functions used. The linear layer \( L\!:\!\mathbb{R}^m\!\to\! \mathbb{R} \) is an affine map defined as \( L(x) = W_l x + b_l \), where \( W_l \in \mathbb{R}^{1 \times m} \) and \( b_l \in \mathbb{R} \).
 
-Since the risk landscape for the network loss has many local minima, it is expected that the weights $W_s$ can’t move much further than their initialization. Therefore, $W_s$ determine the range of frequencies one can filter from the input signal. Fig~\ref{f:pure-sine} shows the structure of the $L\circ S$ and an example of a signal consisting of a linear combination of two frequencies. In this example, we have the layers $S\!:\!\R\!\to\! \R^2, S(x) = (sin(x), sin(5x))$ and $L\!:\!\R^2\!\to\! \R, L(x_1, x_2) = x_1 + x_2$.
+As we saw in Chapter \ref{chap:sinusoidal}, this architecture behaves as a spectral filter because the initialization of \( W_s \) determines the range of frequencies that the MR-Module can capture. 
+% Once the training begins, it is expected that \( W_s \) will not deviate significantly from its initialization, given the complex loss landscape. 
+Thus, \( W_s \) effectively defines the spectrum of frequencies the module is capable of learning, making it sensitive to the initial configuration of the sine functions.
+
+Fig.~\ref{f:pure-sine} illustrates the structure of a Pure Sine MR-Module and provides an example of a signal represented as a linear combination of two frequencies. In this example, the sinusoidal layer is defined as \( S(x) = (\sin(x), \sin(5x)) \) and the linear layer simply sums the two outputs, \( L(x_1, x_2) = x_1 + x_2 \).
 
 \begin{figure}[!h]
 \centering
 \includegraphics[width=0.8\linewidth]{img/ch4/pure-sine.png}
-\caption{Pure sine MR-Module.}
+\caption{Pure Sine MR-Module: Network structure and an example signal formed by a linear combination of two frequencies.}
 \label{f:pure-sine}
 \end{figure}
 
+\subsubsection{Modulated Sine MR-Module}
 
-\subsection{Modulated sine MR-Module}
+The \textit{Modulated Sine MR-Module} extends the capacity of the pure sine version by incorporating additional nonlinear transformations through a deep sinusoidal block. It is defined as a composition \( L \circ H \circ S \), where \( S \) is a sinusoidal layer, \( H \) is a hidden block of multiple sinusoidal transformations, and \( L \) is a linear output layer.
 
-The Modulated MR-Module is a deep sinusoidal MLP $L\circ H\circ S$ that considers a hidden sinusoidal layer block $H:\R^m\to~\R^m$. 
-This map is the composition of $k$ layers $H=H_k\circ \dots \circ H_1$ with $H_i(x_i)\!=\!\sin\left(W_i x_i \!+\! b_i\right)\!=\!x_{i+1}$ where $x_0\!\in\!\R^m$ is the input.
-The integers $m$ and $k+1$ are the \textit{width} and \textit{depth} of the MR-Module.  
+The hidden block \( H\!:\!\mathbb{R}^m\!\to\! \mathbb{R}^m \) is itself a composition of \( k \) sinusoidal layers \( H = H_k \circ \cdots \circ H_1 \), each of the form \( H_i(x_i) = \sin\left(W_i x_i + b_i\right) = x_{i+1} \) for \( i = 1, \dots, k \). Here, \( x_0 \in \mathbb{R}^m \) is the initial input to the hidden block, and the parameters \( m \) and \( k + 1 \) control the \textit{width} and \textit{depth} of the MR-Module. The output layer \( L \!:\! \mathbb{R}^m \!\to\! \mathbb{R} \) is similar to the one used in the Pure Sine MR-Module.
 
-The MR-Module $L\circ H\circ S$ is a linear combination of a dictionary of (spectral) atoms $H\circ S$ containing composition of sines. This fact has two consequences. First, the capacity of $L\circ H\circ S$ is greater than the capacity of $L\circ S$ with the same number of neurons~\cite{novello2022understanding}. Second, the initialization of $L\circ H\circ S$ does not directly control its frequency band as in the case of $L\circ S$.
+This deeper architecture has several implications. First, the Modulated Sine MR-Module has a higher representational capacity than its shallow counterpart for the same number of neurons, due to the hierarchical composition of sine functions (\cite{novello2022understanding}). Second, its frequency response is not straightforwardly controlled by the initial weights of \( W_s \), as the nested sinusoidal layers \( H \) create a more complex mapping. \red{The resulting spectral atoms, i.e., the output functions of \( H \circ S \), can adapt to fit local variations of the input signal's frequencies, enabling a semi-local representation of the signal in both space and frequency domains.}
 
-In terms of localization properties in space and frequency, we can say the spectral atoms of the Modulated MR-Module are semi-local in the sense that these functions are adapted by the learning process to fit local variations of the signal (i.e., frequencies) across its (spatial) domain. This characteristic is evident in Fig~\ref{f:modulated} that shows a network structure and the graph of $\sin\Big(3\sin\big(5\sin(1.9x)\big)\Big)$.
-In this example, the first layer is represented by $S(x)=\sin(1.9 x)$, the hidden block is the composition of two sine layers $H(x)=\sin\big(3\sin(5x)\big)$, and the linear layer is the identity function $L(x)=x$.
+Figure \ref{f:modulated} depicts a Modulated Sine MR-Module and an example of a nested sinusoidal function \( \sin\left( 3\sin\left(5\sin(1.9x)\right)\right) \), showcasing its ability to approximate complex frequency compositions. In this case, the initial sinusoidal layer is \( S(x) = \sin(1.9 x) \), the hidden block is \( H(x) = \sin\left(3\sin(5x)\right) \), and the output layer is simply the identity function \( L(x) = x \).
 
 \begin{figure}[!h]
 \centering
 \includegraphics[width=0.9\linewidth]{img/ch4/modulated-sine.png}
-\caption{Modulated sine MR-Module.}
+\caption{Modulated Sine MR-Module: Network structure and an example of a nested sinusoidal function.}
 \label{f:modulated}
 \end{figure}
+
+By combining these two types of MR-Modules at different stages of the MR-Net, we can control the approximation of details with varying levels of complexity. \red{The choice between *Pure* and *Modulated Sine* modules depends on the desired frequency resolution and localization properties of the signal, making the MR-Net a versatile tool for multiresolution representation.}
+
+
+% \subsection{MR Module}
+% \label{s-mr-module}
+% Each stage $g_i$ of the MR-Net $f$ is a sinusoidal MLP, called \textit{MR-Module}, that learns a signal representation as a combination of sinusoidal functions with induced frequency band.
+
+% We write each stage as $g_i=L_i\circ H_i\circ S_i$. The first layer projects the input $x$ into a list of sines $S_i(x)$, which is the input of the composition $H_i$ of the MLP hidden layers. The output $H_i\circ S_i(x)$ is a dictionary of sine combinations that are passed to the linear layer $L_i$. Finally, the control layer $c_i(t)$, with $t\in[i,i+1]$, blends the stage $g_i$ with the level of detail $f(x,i-1)$. 
+
+% There are two kinds of MR-Modules: \emph{Pure sine} MR-Module ($H_i=\emptyset$) and \emph{modulated sine} MR-Module ($H_i\neq\emptyset$). In the first case the network has only the first layer and the linear layer, and in the second case the network has the three blocks, including the hidden layers (see Fig~\ref{f:mr-module}).
+
+% \begin{figure}[!h]
+% \centering
+% % \includesvg[width=\linewidth]{svg_figs/diagram_mrnet.svg}
+% \includegraphics[width=\linewidth]{img/ch4/diagram_mr_module.pdf}
+% \caption{General Anatomy of a MR-Module.}
+% \label{f:mr-module}
+% \end{figure}
+
+% Without loss of generality, let us assume that the ground-truth signal is a grayscale image unless stated to the contrary. In this case, the stages of the MR-Net will have $\R^2$ and $\R$ as domain and codomain respectively. 
+% Consequently, a MR-Net with $N$ stages $g_i:\R^2\to \R$ has the form $f:\R^2\times [0,N]\to \R$.
+% Under this assumption, we present the building blocks of the MR-Net with details. 
+
+
+% \subsubsection{Pure Sine MR-Module}
+
+% The pure sine MR-Module is a shallow sinusoidal MLP defined as the composition $L\circ S$ of a sinusoidal layer $S$ with a linear layer $L$.
+% The layer $S\!:\!\R^2\!\to\! \R^m$ projects the input $x$ into a dictionary of $m$ sines of the form $S(x)=\sin\left(W_s x+ b_s\right)$, where $W_s\in \R^{m\times 2}$ and $b_s\in \R^{m}$ are the \textit{weight matrix} and \textit{bias}. The integer $m$ is the \textit{width} of the MR-Module.
+% The layer $L\!:\!\R^m\!\to\! \R$ is an affine map $L(x)=W_lx+b_l$, where $W_l\in \R^{1\times m} $ and $b_l\in \R$  are the final weight matrix and bias.
+% Hence, $L\circ S$ acts as a spectral filter controlled by the initialization of $W_s$.
+
+
+% Since the risk landscape for the network loss has many local minima, it is expected that the weights $W_s$ can’t move much further than their initialization. Therefore, $W_s$ determine the range of frequencies one can filter from the input signal. Fig~\ref{f:pure-sine} shows the structure of the $L\circ S$ and an example of a signal consisting of a linear combination of two frequencies. In this example, we have the layers $S\!:\!\R\!\to\! \R^2, S(x) = (sin(x), sin(5x))$ and $L\!:\!\R^2\!\to\! \R, L(x_1, x_2) = x_1 + x_2$.
+
+% \begin{figure}[!h]
+% \centering
+% \includegraphics[width=0.8\linewidth]{img/ch4/pure-sine.png}
+% \caption{Pure sine MR-Module.}
+% \label{f:pure-sine}
+% \end{figure}
+
+
+% \subsection{Modulated sine MR-Module}
+
+% The Modulated MR-Module is a deep sinusoidal MLP $L\circ H\circ S$ that considers a hidden sinusoidal layer block $H:\R^m\to~\R^m$. 
+% This map is the composition of $k$ layers $H=H_k\circ \dots \circ H_1$ with $H_i(x_i)\!=\!\sin\left(W_i x_i \!+\! b_i\right)\!=\!x_{i+1}$ where $x_0\!\in\!\R^m$ is the input.
+% The integers $m$ and $k+1$ are the \textit{width} and \textit{depth} of the MR-Module.  
+
+% The MR-Module $L\circ H\circ S$ is a linear combination of a dictionary of (spectral) atoms $H\circ S$ containing composition of sines. This fact has two consequences. First, the capacity of $L\circ H\circ S$ is greater than the capacity of $L\circ S$ with the same number of neurons~\cite{novello2022understanding}. Second, the initialization of $L\circ H\circ S$ does not directly control its frequency band as in the case of $L\circ S$.
+
+% In terms of localization properties in space and frequency, we can say the spectral atoms of the Modulated MR-Module are semi-local in the sense that these functions are adapted by the learning process to fit local variations of the signal (i.e., frequencies) across its (spatial) domain. This characteristic is evident in Fig~\ref{f:modulated} that shows a network structure and the graph of $\sin\Big(3\sin\big(5\sin(1.9x)\big)\Big)$.
+% In this example, the first layer is represented by $S(x)=\sin(1.9 x)$, the hidden block is the composition of two sine layers $H(x)=\sin\big(3\sin(5x)\big)$, and the linear layer is the identity function $L(x)=x$.
+
+% \begin{figure}[!h]
+% \centering
+% \includegraphics[width=0.9\linewidth]{img/ch4/modulated-sine.png}
+% \caption{Modulated sine MR-Module.}
+% \label{f:modulated}
+% \end{figure}
 
 
 
