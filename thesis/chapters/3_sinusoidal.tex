@@ -1,15 +1,12 @@
 \chapter{Frequency Dynamics in Sinusoidal Neural Networks}
 \label{chap:sinusoidal}
 
-% In this chapter, we explore the frequency dynamics within sinusoidal neural networks, laying the groundwork for designing architectures that can represent signals across multiple resolutions. While much of the research on sinusoidal neural networks has focused on their capacity to capture high-frequency details, the interplay between frequency initialization, network structure, and learned representations is still not fully understood. Our goal is to analyze these factors systematically and establish a deeper understanding of how frequency components propagate and interact in both shallow and deep sinusoidal architectures.
+In this chapter, we explore the frequency dynamics within sinusoidal neural networks, laying the groundwork for designing architectures that can represent signals across multiple resolutions. While much of the research on sinusoidal neural networks has focused on their capacity to capture high-frequency details, the interplay between frequency initialization, network structure, and learned representations is still not fully understood. Our goal is to analyze these factors systematically and establish a deeper understanding of how frequency components propagate and interact in both shallow and deep sinusoidal architectures.
 
-% We begin by studying simple, one-dimensional signals and progressively increase the complexity of our experiments to evaluate how different initializations and network capacities affect frequency learning. Through a series of controlled experiments, we demonstrate how the number of neurons, the inclusion of hidden layers, and specific initialization parameters impact the networks' ability to isolate and reconstruct frequency bands. We also address the phenomenon of capacity-based filtering, highlighting how network size and depth influence the learned signal spectrum. These findings are essential in preparing for more sophisticated architectures, where multiresolution properties and frequency control become the key elements in building neural representations for complex media.
+We begin by studying simple, one-dimensional signals and progressively increase the complexity of our experiments to evaluate how different initializations and network capacities affect frequency learning. Through a series of controlled experiments, we demonstrate how the number of neurons, the inclusion of hidden layers, and specific initialization parameters impact the networks' ability to isolate and reconstruct frequency bands. We also address the phenomenon of capacity-based filtering, highlighting how network size and depth influence the learned signal spectrum. These findings are essential in preparing for more sophisticated architectures, where multiresolution properties and frequency control become the key elements in building neural representations for complex media.
 
-We initially focus on representing one-dimensional signals using sinusoidal neural networks. This approach allows us to experiment on the control of signal frequencies, visualize them through their Fast Fourier Transform (FFT) plots, and validate our results against classical sampling theory.
+We initially focus on representing one-dimensional signals using sinusoidal neural networks. This approach allows us to experiment on the control of signal frequencies, visualize them through their Fast Fourier Transform (FFT) plots, and validate our results against classical sampling theory.Our architecture builds upon the Sinusoidal Representation Networks (SIREN) framework (\cite{sitzmann2019siren}), known for its ability to learn high-frequency signal details efficiently and model signal derivatives. We deeply investigate the network's initialization, exploring the interplay between its hyperparameters, the inherent frequencies of a signal, and the frequencies the network learns.
 
-Our architecture builds upon the Sinusoidal Representation Networks (SIREN) framework (\cite{sitzmann2019siren}), known for its ability to learn high-frequency signal details efficiently and model signal derivatives. We deeply investigate the network's initialization, exploring the interplay between its hyperparameters, the inherent frequencies of a signal, and the frequencies the network learns.
-
-For the multiresolution approach, we leverage classical structures of image and signal processing, such as Gaussian and Laplacian Pyramids. We use these ideas to develop a framework to train a multi-stage neural network using multiresolution structures in an efficient way. \red{Finally, we demonstrate that our model can achieve a comparable reconstruction quality to a simple SIREN model with the same number of parameters, while encoding multiple levels of detail. Esta frase deve ser movida para o capítulo seguinte, de aplicações em imagens. A conclusão desta parte será finalizada quando este capítulo estiver completo.}
 
 
 \section{Related Works}
@@ -30,8 +27,6 @@ In this context, we introduce \textit{Multiresolution Sinusoidal Neural Networks
 \section{Frequency Initialization}
 
 The correct initialization of sinusoidal neural networks is crucial for having stability during training and convergence to the expected result. According to \cite{sitzmann2019siren}, a SIREN model must be initialized so that for a uniform input in $[-1, 1]$ the outputs of each hidden layer before the sine nonlinearity are standard normal distributed. 
-
-% such that, for a uniform input in \([-1, 1]\), the outputs of each hidden layer before applying the sine nonlinearity are normally distributed with a mean of zero and a standard deviation of one. 
 
 Moreover, the authors of SIREN propose to initialize the first layer of the network so that the sine function $\sin(\omega_0 \cdot W x + b)$ spans multiple periods over $[-1, 1]$. They introduce $\omega_0$ as a hyperparameter that could be adjusted to each signal, while $W$ and $b$ are the weights and biases of a layer in the network. For the examples presented in their work, they used a fixed $\omega_0=30$ and found it to work well empirically, but they did not dive deeper on the \emph{why}.
 
@@ -82,8 +77,6 @@ We first tried to recover the lower frequencies using $\omega_0=10$. The reconst
 We believe this result is due to the network being initialized with frequencies lower than those present in the signal. Given that the sine function is periodic with a period of $2\pi$, we propose that the hyperparameter $\omega_0$ should always be multiplied by $2\pi$ to better establish a relationship between the initialization of the network's first layer and the range of frequencies represented by each atom in this layer.
 
 Repeating the experiment with $\omega_0 = 10$ Hz, that is $10*2\pi$, we observe the expected behavior: the predicted wave in Figure \ref{fig:rec-2pi-w0} approximates the low-frequency portion of the signal. Notice how the FFT plot (Figure \ref{fig:fft-low-4freqs}) matches the peaks at 2 Hz and 5Hz, while the high frequency tones are not learned.
-
-% Since the risk landscape for the SIREN loss has many local minima, is expected that these weights can’t move much further than their initialization, therefore controlling where the weights start should control the range of frequencies one can filter in from the ground truth wave.
 
 \begin{figure}[h!]
     \centering
@@ -223,8 +216,6 @@ These experiments validate our hypothesis that a shallow network with only one l
 
 Although the width of the network was kept constant at 64 neurons, adding a single hidden layer significantly increases the size of the model, and thus its capacity, which could explain why it fits the signal better, even though it was initialized with lower frequencies. For instance, a shallow model with 64 neurons per layer has $192$ parameters, while a model with 1 hidden layer and 64 neurons per layer has $4352$ parameters.
 
-
-
 To better understand the impact of the hidden layer, we conducted additional experiments, reducing the width of the networks with 1 hidden layer and increasing the width of those without hidden layers. For these experiments, all models were initialized with frequencies in the range $[-10*2\pi, 10*2\pi]$. Figure \ref{fig:rec-1hl-16hf-w10} shows the reconstruction of a model with 1 hidden layer and 16 neurons per layer, with a total of $320$ parameters. Note that this model still captures the high frequencies in the signal, although some noise is visible in its FFT (Figure \ref{fig:fft-1hl-16hf-w10}). However, the model with no hidden layers and 1024 neurons per layer is unable to capture any of the high frequencies (Figures \ref{fig:rec-0hl-1024-w10hf} and \ref{fig:fft-0hl-1024-w10hf}), despite having $3072$ parameters. We conclude that the hidden layer, rather than model size, is primarily responsible for this behavior.
 
 \begin{figure}[h!]
@@ -302,22 +293,7 @@ We conclude that a sinusoidal neural network with no hidden layers can effective
 
 \subsection{Learning and filtering stochastic signals}
 
-% except in special cases where the signal is simple and the initialization range is very close to the target.
-
-% 4 Multiresolution Sinusoidal Neural Networks
-
-% - Present the experiments in understanding the control of frequencies in a sinusoidal network:
-%     - Fitting a signal with few frequencies
-%     - Fitting a stochastic signal
-%     - Filtering a stochastic signal. Show how the network converges to a filtered version of the signal when initialized with low frequencies. Show the Fourier transform plot.
 %     - Diverging by using high frequencies. Show how the network diverges when initialized with very high frequencies.
-% - Present the experiments in fitting multiresolution signals
-%     - 1D Gaussian Tower
-%     - 1D Gaussian Pyramid
-%     - show that networks is well behaved between samples
-% - Present the MR-Net architecture
-%     - Discussion on Filtering, scheduling etc
-%     - show the atoms
 
 
 After experimenting with signals containing a few controlled frequencies, we procedurally generated stochastic signals using a technique known as Perlin Noise (\cite{perlin-1985}). This approach allows us to analyze how a sinusoidal model learns a distribution of frequencies across a broad range. For the following experiments, we sampled 2048 points uniformly from the interval $[-1, 1]$, yielding a sampling rate of 1/1024. According to the Shannon-Nyquist sampling theorem, this limits us to frequencies up to 512 Hz. The parameters for generating the Perlin Noise signal were: scale = 10; octaves = 16; persistence = 1.4.
@@ -391,352 +367,13 @@ As we increase $\omega_0$ to capture higher frequencies, we observe a phenomenon
     \label{f:rec-noise-shallow-hf512-w256}
 \end{figure}
 
-% We also observe that the loss function curve becomes bumpy (less smooth) in the experiments with larger frequencies. Figure \ref{f:loss-noise-comparison-hl0-hf512} shows the mean square error per epochs during the training of the network with $\omega_0=64$ and $\omega_0=256$. Based on that, we decreased the learning rate to 0.0001, increased the number of epochs to 400, and ran new experiments. Figure \ref{f:full-noise-hf4096-w512} shows the results of experiments with these new hyperparameters and 4096 neurons per layer; zoomed-in views are provided for better analysis. 
-
-We also noticed significant oscillations in the loss function curve in experiments involving larger frequencies. Figure \ref{f:loss-noise-comparison-hl0-hf512} presents the mean squared error per epoch during the training of networks with $\omega_0=64$ and $\omega_0=256$. Based on these observations, we reduced the learning rate to 0.0001, increased the number of training epochs to 400, and ran new experiments. Figure \ref{f:full-noise-hf4096-w512} shows the results from these updated experiments, using 4096 neurons per layer, with zoomed-in views for detailed analysis.
-
-
-\begin{figure}[h]
-    \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/loss-noise-hl0-hf512-w64.pdf}
-        \caption{$\omega_0=64$}
-        \label{fig:loss-hf512-w64}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/loss-noise-hl0-hf512-w256.pdf}
-        \caption{$\omega_0=256$}
-        \label{fig:loss-hf512-w256}
-    \end{subfigure}
-    \caption{Mean squared error per epoch.}
-    \label{f:loss-noise-comparison-hl0-hf512}
-\end{figure}
-
-
-\begin{figure}[h]
-    \centering
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/loss-noise-hf4096-w512.pdf}
-        \caption{Loss}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/pred-noise-hf4096-w512.pdf}
-        \caption{Reconstruction}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/fft-noise-hf4096-w512.pdf}
-        \caption{Frequencies}
-    \end{subfigure}
-
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/noise-4x-hf4096-w512.pdf}
-        \caption{4x zoom}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/noise-8x-hf4096-w512.pdf}
-        \caption{8x zoom}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/noise-16x-hf4096-w512.pdf}
-        \caption{16x zoom}
-    \end{subfigure}
-    \caption{Reconstruction results using a shallow network with 4096 neurons per layer and $\omega_0=512$}
-    \label{f:full-noise-hf4096-w512}
-\end{figure}
-
-
-In the following experiments, we employed sinusoidal neural networks with one hidden layer. The primary question we wanted to investigate was: \emph{can smaller, but deeper, networks learn bounded frequencies?} The answer is "yes", but it requires careful tuning.
-
-First, it is important to note that introducing a hidden layer greatly increases the network's capacity to generate higher frequencies. Figure \ref{f:rec-1hl-32hf-8hz} shows the reconstruction of the same Perlin noise used in previous experiments, but this time using a network with 1 hidden layer and 32 neurons per layer, initialized with $\omega_0=8$ Hz. As in the initial experiments with shallow networks, the model was trained for 200 epochs with a learning rate of 0.001.
-
-\begin{figure}[h]
-    \centering
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/pred-noise-1hl-32hf-w8.pdf}
-        \caption{}
-        \label{fig:pred-noise-1hl-32hf-w8}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/4x-zoom-noise-1hl-32hf-w8.pdf}
-        \caption{}
-        \label{fig:4x-zoom-noise-1hl-32hf-w8}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/fft-noise-1hl-32hf-w8.pdf}
-        \caption{}
-        \label{fig:fft-noise-1hl-32hf-w8}
-    \end{subfigure}
-    \caption{Smoothed reconstruction with 1 hidden layer}
-    \label{f:rec-1hl-32hf-8hz}
-\end{figure}
-
-The result in Figure \ref{fig:pred-noise-1hl-32hf-w8} resembles a smoothed version of the input signal, as expected, which is more evident in the zoomed-in view (Figure \ref{fig:4x-zoom-noise-1hl-32hf-w8}). However, the Fast Fourier Transform in Figure \ref{fig:fft-noise-1hl-32hf-w8} shows frequencies much higher than 8 Hz, in contrast to the shallow network experiments shown in Figures \ref{fig:rec-noise-shallow-w8} and \ref{fig:fft-noise-shallow-w8}. The FFT of the reconstructed signal aligns with that of the original signal up to around 30 Hz but fails to capture frequencies precisely within the range up to 100 Hz. Moreover, it does not show contributions from frequencies higher than 100 Hz.
-
-Decreasing the number of neurons per layer slightly reduces the highest frequencies learned by the network, while increasing the network width allows it to capture higher frequencies, as demonstrated in Figure \ref{f:comparison-16-32-64-hf}. This can be observed in the FFT plots (Figures \ref{fig:fft-noise-1hl-16hf-w8}, \ref{fig:fft-noise-1hl-32hf-w8} and \ref{fig:fft-noise-1hl-64hf-w8}), and can also be perceived in the most refined details in the spatial reconstruction of the signal (Figures \ref{fig:4x-zoom-noise-1hl-16hf-w8}, \ref{fig:comp-4x-zoom-noise-1hl-32hf-w8} and \ref{fig:4x-zoom-pred-noise-1hl-64hf-w8}).
-
-\begin{figure}[!h]
-    \centering
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/pred-noise-1hl-16hf-w8.pdf}
-        \caption{16 neurons}
-        \label{fig:pred-noise-1hl-16hf-w8}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/pred-noise-1hl-32hf-w8.pdf}
-        \caption{32 neurons}
-        \label{fig:comp-pred-noise-1hl-32hf-w8}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/pred-noise-1hl-64hf-w8.pdf}
-        \caption{64 neurons}
-        \label{fig:pred-noise-1hl-64hf-w8}
-    \end{subfigure}
-
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/4x-zoom-noise-1hl-16hf-w8.pdf}
-        \caption{16 neurons}
-        \label{fig:4x-zoom-noise-1hl-16hf-w8}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/4x-zoom-noise-1hl-32hf-w8.pdf}
-        \caption{32 neurons}
-        \label{fig:comp-4x-zoom-noise-1hl-32hf-w8}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/4x-zoom-noise-1hl-64hf-w8.pdf}
-        \caption{64 neurons}
-        \label{fig:4x-zoom-pred-noise-1hl-64hf-w8}
-    \end{subfigure}
-
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/fft-noise-1hl-16hf-w8.pdf}
-        \caption{16 neurons}
-        \label{fig:fft-noise-1hl-16hf-w8}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/fft-noise-1hl-32hf-w8.pdf}
-        \caption{32 neurons}
-        \label{fig:comp-fft-noise-1hl-32hf-w8}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/fft-noise-1hl-64hf-w8.pdf}
-        \caption{64 neurons}
-        \label{fig:fft-noise-1hl-64hf-w8}
-    \end{subfigure}
-    \caption{Comparison between different network widths}
-    \label{f:comparison-16-32-64-hf}
-\end{figure}
-
-If we keep the width of the network fixed and increase the range of frequencies used in the initialization, the network can gradually capture higher frequencies. This continues until the network reaches its capacity, after which performance degrades, and the output turns into noise. Figure \ref{f:comparison-8-to-256-hz} illustrates this phenomenon with a network of 32 neurons per layer. Notice that from 8 Hz to 64 Hz, the network gets better in capturing finer details of the signal. However, when $\omega_0=128$, the reconstruction presents peaks and valleys bigger than those present in the signal, an indicative of spurious frequencies. By $\omega_0=256$, the result totally degenerates into noise.
-
-\begin{figure}[h]
-    \centering
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/16x-zoom-1hl-32hf-8hz.pdf}
-        \caption{$\omega_0=8$}
-        \label{fig:16x-zoom-1hl-32hf-8hz}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/16x-zoom-1hl-32hf-16hz.pdf}
-        \caption{$\omega_0=16$}
-        \label{fig:16x-zoom-1hl-32hf-16hz}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/16x-zoom-1hl-32hf-32hz.pdf}
-        \caption{$\omega_0=32$}
-        \label{fig:16x-zoom-1hl-32hf-32hz}
-    \end{subfigure}
-
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/16x-zoom-1hl-32hf-64hz.pdf}
-        \caption{$\omega_0=64$}
-        \label{fig:16x-zoom-1hl-32hf-64hz}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/16x-zoom-1hl-32hf-128hz.pdf}
-        \caption{$\omega_0=128$}
-        \label{fig:16x-zoom-1hl-32hf-128hz}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/16x-zoom-1hl-32hf-256hz.pdf}
-        \caption{$\omega_0=256$}
-        \label{fig:16x-zoom-1hl-32hf-256hz}
-    \end{subfigure}
-    \caption{Comparison between different ranges of frequencies in initialization}
-    \label{f:comparison-8-to-256-hz}
-\end{figure}
-
-% REVISED UNTIL HERE
-
-\red{BEGIN: ESTA PARTE SERÁ REAVALIADA}
-Repeating this experiment with more neurons per layer, we observe that we can use higher values of $\omega_0$ to correctly learn to represent the input signal (Figure \ref{f:comparison-64-to-256-hf}).
-
-
-\begin{figure}[h]
-    \centering
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/16x-zoom-1hl-64hf-128hz.pdf}
-        \caption{64 neurons, $\omega_0=128$}
-        \label{fig:16x-zoom-1hl-64hf-128hz}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/16x-zoom-1hl-128hf-128hz.pdf}
-        \caption{128 neurons, $\omega_0=128$}
-        \label{fig:16x-zoom-1hl-128hf-128hz}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/16x-zoom-1hl-256hf-128hz.pdf}
-        \caption{256 neurons, $\omega_0=128$}
-        \label{fig:16x-zoom-1hl-256hf-128hz}
-    \end{subfigure}
-
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/16x-zoom-1hl-64hf-256hz.pdf}
-        \caption{64 neurons, $\omega_0=256$}
-        \label{fig:16x-zoom-1hl-64hf-256hz}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/16x-zoom-1hl-128hf-256hz.pdf}
-        \caption{128 neurons, $\omega_0=256$}
-        \label{fig:16x-zoom-1hl-128hf-256hz}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{img/ch3/16x-zoom-1hl-256hf-256hz.pdf}
-        \caption{256 neurons, $\omega_0=256$}
-        \label{fig:16x-zoom-1hl-256hf-256hz}
-    \end{subfigure}
-    \caption{Reconstruction of higher frequencies bigger capacity networks}
-    \label{f:comparison-64-to-256-hf}
-\end{figure}
-
-
-By comparing the Fast Fourier Transform of the learned signal and the target signal, we conclude that the network learned the low frequencies of the signal up to an unknown value that increases or decreases with $\omega_0$.
-
-\red{Investigate more the reconstruction quality in this case - maybe add some metrics?}
-
-\red{END: ESTA PARTE SERÁ REAVALIADA}
-
-% as if we were reconstructing only its low frequencies. Again, when we plot the Fast Fourier Transform of both the original signal and its reconstruction, we verify that the low frequencies match indeed (Figure \ref{fig:fft-smooth-noise1}).} 
-
-% \begin{figure}
-%     \centering
-%     \begin{subfigure}[b]{0.3\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/placeholder512.png}
-%         \caption{$Ground truth$}
-%         \label{fig:gt-noise1}
-%     \end{subfigure}
-%     \hfill
-%     \begin{subfigure}[b]{0.3\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/placeholder512.png}
-%         \caption{Reconstruction}
-%         \label{fig:rec-smooth-noise1}
-%     \end{subfigure}
-%     \hfill
-%     \caption{Reconstruction of a signal with high frequencies with a network inititialized with much lower frequencies}
-
-%     \begin{subfigure}[b]{0.6\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/placeholder512.png}
-%         \caption{Reconstruction in $[-1, 1]$}
-%         \label{fig:fft-smooth-noise1}
-%     \end{subfigure}
-
-%     \label{f:noise-smoothed-reconstruction}
-% \end{figure}
 
 % We observe that as we increase the value of $\omega_0$, meaning the frequency interval used in initialization of the first layer of the sinusoidal network, it becomes better in fitting fine details of the signal. Figure \ref{f:zoomed-views-noise} shows some zoomed views of the reconstruction. The grid where the network has been evaluated \red{has been refined XX, XXX and XXXX times}. Note that the model is well behaved in the points that were not given as supervision (not part of the training data), that is, it correctly interpolates the signal.
-
-% \begin{figure}
-%     \centering
-%     \begin{subfigure}[b]{0.3\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/placeholder512.png}
-%         \caption{$Ground truth$}
-%         % \label{fig:gt-noise1}
-%     \end{subfigure}
-%     \hfill
-%     \begin{subfigure}[b]{0.3\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/placeholder512.png}
-%         \caption{Reconstruction}
-%         % \label{fig:rec-smooth-noise1}
-%     \end{subfigure}
-%     \hfill
-%     \caption{Reconstruction of a signal with high frequencies with a network inititialized with much lower frequencies}
-%     \begin{subfigure}[b]{0.3\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/placeholder512.png}
-%         \caption{Reconstruction }
-%         % \label{fig:fft-smooth-noise1}
-%     \end{subfigure}
-%     \label{f:zoomed-views-noise}
-% \end{figure}
 
 
 % On the other hand, if $\omega_0$ is too high it may cause the training to diverge. \red{In the Figure \ref{f:diverging-omega0}, we show the evolution of the training loss (Figure \ref{fig:diverging-loss}) and the result (Figure \ref{fig:diverging-reconstruction}) after 200 epochs when we initialized the SIREN with $\omega_0=600$. Note that after about 50 epochs, the loss starts to increase and our final result bears no resemblance to the original signal.}
 
-% \begin{figure}
-%     \centering
-%     \begin{subfigure}[b]{0.3\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/placeholder512.png}
-%         \caption{$Loss function$}
-%         \label{fig:diverging-loss}
-%     \end{subfigure}
-%     \begin{subfigure}[b]{0.3\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/placeholder512.png}
-%         \caption{Reconstruction}
-%         \label{fig:diverging-reconstruction}
-%     \end{subfigure}
-%     \caption{Reconstruction of a signal with high frequencies with a network inititialized with much lower frequencies}
-%     \label{f:diverging-omega0}
-% \end{figure}
-
-% \red{To achieve the result shown in the first figure, where the signal is perfectly fitted, we used $\omega_0 = 200$. We found that a value between $100$ and $200$ converges to a good approximation quickly (around 200 epochs). 
-
-% \begin{figure}
-%     \includegraphics[width=0.3\linewidth]{img/placeholder512.png}
-%     \caption{Fitting of a regular signal using Siren initialization and their default suggested hyperparameters}
-% \end{figure}
-
-
 We conclude that the frequency initialization of the first layer, which depends on $\omega_0$, is of central importance in the convergence of network training and multiresolution learning. Ideally we should initialize the network with frequencies that match the frequency content of the target signal. However, as we do not have access to this information in many applications, we must guess a value for $\omega_0$. Here, the Shannon-Nyquist therorem may help us bound the value of $\omega_0$. For example, considering a sampling rate of 1024 Hz, we cannot represent frequencies higher than 512 (half the sampling rate), so it does not make sense to choose $\omega_0$ higher than this value. Also, since the composition of sines generates higher frequencies \cite{novello2022understanding}, it is reasonable to initialize the network with much lower frequencies than the Nyquist limit, and the experiments corroborate that.
-
 
 Another point worth noticing is that if the initialization frequencies are too high, the hidden layers may generate even higher frequencies, and even a model with high capacity will introducing noise into the model's reconstruction. This noise is not evident at the training coodinates, as the model overfits this data well, but it can be observed in a more refined grid \red{FIGURE XXXX}.
 
@@ -836,42 +473,14 @@ Previous work by \cite{Rahaman2018O} has demonstrated that during training, a Mu
     \label{f:capacity-filter-16hf-increasing-omega}
 \end{figure}
 
-% They also show that increasing the network depth (for fixed width) improves the network's ability to fit higher frequencies, while increasing the width (for fixed depth) also helps, but the effect is considerably weaker. 
- 
-
-% Experiments also showed that the capacity of the network can be used to filter the signal in some sense. A network with bigger capacity learns the higher frequencies quicker than a network with lower capacity. This way for the same value of $\omega_0$ and the same amount of epochs, the result of lower capacity network is a signal with lower frequencies. However, if the we try to reconstruct higher frequencies of a signal usin a network that does not have enough capacity to fully represent them, the result will degrade.
-
-
-% \section{The Multiresolution Module}
-
-% Our goal is to design a module capable of approximating a signal with multiple frequency bands. When we introduce hidden layers, we know, from previous experiments, that the model capacity increases and we can’t control the exact content of frequencies the network learns. This way, we aimed for a module with a single hidden layer and used Perlin Noises with 4 local extrema (Figure 17) as a perceptual indicator of ”limited frequency band”.
-
-% We did experiments with 1 and 2 hidden layers modules using 8, 16 or 32 computational units in each layer. After looking at the results, we chose a module with 1 hidden layer and 16 units in each layer as our MR-Module for most experiments.
-
-% \begin{figure}[h]
-%     \centering
-%     \begin{subfigure}[b]{0.3\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/placeholder512.png}
-%         % \caption{$Loss function$}
-%         % \label{fig:diverging-loss}
-%     \end{subfigure}
-%     \begin{subfigure}[b]{0.3\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/placeholder512.png}
-%         % \caption{Reconstruction}
-%         % \label{fig:diverging-reconstruction}
-%     \end{subfigure}
-%     \caption{Reconstruction of low frequency signals using a small size model}
-%     % \label{f:mr-module}
-% \end{figure}
-
-% We have not targeted the minimal module possible, as Figure XXX shows this module is able to approximate more complex signals up to a certain frequency. Having a small module with reasonable capacity gives us more flexibility in terms of level of detail strategy and helps to keep each stage of different MR-Net architectures uniformly as we will discuss on the next section. However, the breadth and depth of the MR-Module could be adapted to specific applications without compromising compatibility with the MR-Nets architectures.
-
-
 \section{Multiresolution Training}
 
 We have established that we can bound the frequencies learned by a sinusoidal neural network by adjusting the interval of frequencies sampled for initialization of its first layer, and also by adjusting the network capacity. That is, if the value of $\omega_0$ is too low, the network will learn the lower frequencies of the signal, fitting their intensities in the Fourier spectrum, but won't learn the higher frequencies, even if it has enough computational units to to do. On the other hand, if the capacity given by the computational units is too small, the result will also resemble a filtered version of the target signal.
+
+% - Present the experiments in fitting multiresolution signals
+%     - 1D Gaussian Tower
+%     - 1D Gaussian Pyramid
+%     - show that networks is well behaved between samples
 
 % \subsection{Gaussian Pyramid Training}
 
@@ -890,54 +499,6 @@ We have established that we can bound the frequencies learned by a sinusoidal ne
 % \caption{}
 % \endminipage
 % \end{figure}
-
-% For all the experiments until now, we used a SIREN with 3 hidden layers and 128 perceptrons in each layer, which seemed to be more than necessary to fit all signals we experimented. However, if we initialize the network with frequencies that are unsuitable for the signal, it will reflect on the quality of the regression. For instance, the figure below shows the difference between fitting a signal in the 6th scale using \omega_0=8 or \omega_0=16.
-
-% \begin{figure}[!htb]
-% \minipage{0.49\textwidth}
-% \includegraphics[width=\linewidth]{charts/Section-22-Panel-0-ulotlhctz}
-% \caption{}
-% \endminipage\hfill
-% \minipage{0.49\textwidth}
-% \includegraphics[width=\linewidth]{charts/Section-22-Panel-1-twwld6gku}
-% \caption{}
-% \endminipage
-% \end{figure}
-
-% \section{Minimal Module}
-% dsdsdsd
-
-% \begin{figure}[!htb]
-% \minipage{0.49\textwidth}
-% \includegraphics[width=\linewidth]{charts/Section-26-Panel-0-rpuua88ix}
-% \caption{}
-% \endminipage\hfill
-% \minipage{0.49\textwidth}
-% \includegraphics[width=\linewidth]{charts/Section-26-Panel-1-z4g8njbpz}
-% \caption{}
-% \endminipage
-% \end{figure}
-
-% If we train for more epochs, it approximates better
-% $\omega_0$ = 32
-% 1 hidden layer; 16 hidden features
-% Trained for 8 thousands epochs
-
-% \begin{figure}[!htb]
-% \minipage{0.49\textwidth}
-% \includegraphics[width=\linewidth]{charts/Section-30-Panel-0-rpuua88ix}
-% \caption{}
-% \endminipage\hfill
-% \minipage{0.49\textwidth}
-% \includegraphics[width=\linewidth]{charts/Section-30-Panel-1-z4g8njbpz}
-% \caption{}
-% \endminipage
-% \end{figure}
-
-% \section{Visualizing the basis functions}
-% dsdsdsdsdsdsdss
-% \section{To be investigated}
-% How should we connect the modules to train our network?
 
 
 % \chapter{Multiresolution Sinusoidal Neural Networks}
@@ -970,26 +531,4 @@ We have established that we can bound the frequencies learned by a sinusoidal ne
 % We describe three MR-Net subclasses: S-Net, L-Net and M-Net.
 % Finally, we present applications on antialiasing and level-of-detail reconstruction.
 
-% In summary, we make the following contributions:
-% \begin{itemize}
-%   \item We extend the sinusoidal neural networks and introduce a family of multiresolution coordinate-based networks, with unified architecture, that provides a continuous representation spatially and in scale. For this, we show how the initialization proposed for SIREN \cite{sitzmann2019siren} can be better explored to control the frequencies learned by the model, and how we can decompose a network in multiple stages, inspired by the multiresolution analysis.
-%   \item We develop a framework for imaging applications based on this architecture, leveraging classical multiresolution concepts such as pyramids. Also, we show that this approach can more faithfully represent the frequency spectra of multiresolution signals, avoiding artifacts present in BACON \cite{bacon2021} representation.
-%   \item We show that our architecture can represent images with good visual quality, being competitive with related methods in PSNR and number of parameters; we also demonstrate its use in applications of texture magnification and minification, and antialiasing. 
-% \end{itemize}
-
-
-% This paper is an extension of our previous work~\cite{paz2022}, where we introduced a class of neural networks called \textit{Multiresolution Neural Networks}~(MR-Net). In this work, we  present a complete description of this class of networks along with the motivations and a detailed mathematical model~(see Sec.~\ref{chap:mr_snn}). We added Section~\ref{sec:mrnet_detail}, which explains our framework in detail and should help the construction of an independent implementation. We expanded the comparisons to include an analysis of the frequency spectra of the representations provided by MR-Net and BACON (see Sec. \ref{sub:spectra-eval}). We also present a broader set of experiments (see Sec.~\ref{sub:kodak}), using the Kodak dataset~\cite{KodakDataset}, for comparison of the MR-Net with other network architectures. Finally, we added Section~\ref{sec:considerations}, which compares the different MR-Net subclasses~(S-Net, L-Net, and M-Net) in both qualitative and quantitative aspects.
-
 % - Related Works: Mip-Nerf; Bacon; 
-
-% \subsection{Signal Reconstruction from Multiresolution Representations }
-
-% We leverage the knowledge from sinusoidal networks initialization and multiresolution theory to devise a multi-stage architecture for neural networks. 
-
-% - Show how it is possible to reconstruct a signal from the Gaussian Pyramid using regular sampling.
-
-% - \red{TODO: Show how it is possible to reconstruct a signal from the Laplacian Pyramid using regular sampling.}
-
-% - Argument that we could build S-Net for completeness, which would be equivalent to a shallow sinusoidal network such as Bacon.
-
-% - Show that multi-stages neural networks are equivalent to deep sinusoidal neural networks.

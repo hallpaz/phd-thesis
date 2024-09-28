@@ -18,16 +18,13 @@ Key features of the MR-Net framework include:
 
 In the following sections, we describe the theoretical foundations, design principles, and architectural details of MR-Net, providing a comprehensive overview of the framework and its potential applications.
 
+% For the multiresolution approach, we leverage classical structures of image and signal processing, such as Gaussian and Laplacian Pyramids. We use these ideas to develop a framework to train a multi-stage neural network using multiresolution structures in an efficient way. \red{Finally, we demonstrate that our model can achieve a comparable reconstruction quality to a simple SIREN model with the same number of parameters, while encoding multiple levels of detail. Esta frase deve ser movida para o capítulo seguinte, de aplicações em imagens. A conclusão desta parte será finalizada quando este capítulo estiver completo.}
+
+
 \section{Multiscale Representation and Learning}
-% **"Multiresolution Signal Decomposition"**: Emphasizes the mathematical framework you’re presenting.
+% Título Alternativo "Multiresolution Signal Decomposition"
 \label{s-motivation}
 
-% ### Title Suggestions
-% Rather than "Motivation," a more fitting title could be:
-% - **"Multiresolution Signal Decomposition"**: Emphasizes the mathematical framework you’re presenting.
-% - **"Multiscale Representation and Learning"**: Highlights the hierarchical nature of the representation.
-% - **"Hierarchical Frequency Learning"**: Captures the progressive training aspect.
-% - **"Structured Signal Approximation"**: Suggests a systematic breakdown of the signal.
 
 Let $\gt{f}:\mathcal{D}\to \mathcal{C}$ be a \textit{ground-truth signal}, where $\mathcal{D}$ and $\mathcal{C}$ are finite-dimensional vector spaces representing the signal's domain and codomain, respectively. For instance, to represent an image, $\mathcal{D}$ can be set to $\R^2$ to define the spatial domain, while $\mathcal{C}=\R^3$ corresponds to the RGB color space. Throughout this text, we use a cursive font to denote ground-truth signals and a standard font for their corresponding neural network approximations.
 
@@ -118,53 +115,6 @@ ii). \textbf{Modulated Sine MR-Module}: A deep MLP that includes one or more hid
 
 At the end of each level, the control layer \( c_i(t) \) regulates the blending of the MR-Modules, allowing for continuous transitions between stages.
 
-% \subsubsection{Pure Sine MR-Module}
-
-% The Pure Sine MR-Module is a basic building block defined as \( g_i = L \circ S \). The sinusoidal layer \( S \) has the form:
-
-% \begin{align}
-%     S(x) = \sin(W_s x + b_s),
-% \end{align}
-
-% where \( W_s \in \mathbb{R}^{m \times d} \) and \( b_s \in \mathbb{R}^m \) are the weights and biases, respectively, and \( m \) is the number of sine functions. The linear layer \( L \) maps the output of \( S \) to a scalar value:
-
-% \[
-% L(y) = W_l y + b_l, \quad W_l \in \mathbb{R}^{1 \times m}, \, b_l \in \mathbb{R}.
-% \]
-
-% As we saw in Chapter \ref{chap:sinusoidal}, this architecture acts as a spectral filter that selects specific frequencies from the input signal based on the initialization of \( W_s \).
-
-% The pure sine MR-Module is a shallow sinusoidal MLP defined as the composition $L\circ S$ of a sinusoidal layer $S$ with a linear layer $L$.
-% The layer $S\!:\!\R^2\!\to\! \R^m$ projects the input $x$ into a dictionary of $m$ sines of the form $S(x)=\sin\left(W_s x+ b_s\right)$, where $W_s\in \R^{m\times 2}$ and $b_s\in \R^{m}$ are the \textit{weight matrix} and \textit{bias}. The integer $m$ is the \textit{width} of the MR-Module.
-% The layer $L\!:\!\R^m\!\to\! \R$ is an affine map $L(x)=W_lx+b_l$, where $W_l\in \R^{1\times m} $ and $b_l\in \R$  are the final weight matrix and bias.
-% Hence, $L\circ S$ acts as a spectral filter controlled by the initialization of $W_s$.
-
-% \begin{figure}[!h]
-% \centering
-% \includegraphics[width=0.8\linewidth]{img/ch4/pure-sine.png}
-% \caption{Pure sine MR-Module.}
-% \label{f:pure-sine}
-% \end{figure}
-
-% \subsubsection{Modulated Sine MR-Module}
-
-% The Modulated Sine MR-Module is a deeper variant defined as \( g_i = L \circ H \circ S \). The hidden layers in \( H \) consist of multiple sinusoidal transformations:
-
-% \begin{align}
-%     H(x) = \sin(W x + b),
-% \end{align}
-
-% where each transformation introduces nonlinearity and enhances the network’s expressivity. This depth allows the network to capture more complex signal patterns.
-
-% \begin{figure}[!h]
-% \centering
-% \includegraphics[width=0.9\linewidth]{img/ch4/modulated-sine.png}
-% \caption{Modulated sine MR-Module.}
-% \label{f:modulated}
-% \end{figure}
-
-% With these two types of modules, the MR-Net can effectively model signals with varying levels of detail, navigating through its multiresolution hierarchy using the scale parameter \( t \).
-
 \subsubsection{Pure Sine MR-Module}
 
 The \textit{Pure Sine MR-Module} is a shallow sinusoidal multi-layer perceptron (MLP) that serves as a basic spectral filter. It is defined as the composition \( L \circ S \) of a sinusoidal layer \( S \) followed by a linear output layer \( L \). 
@@ -204,134 +154,80 @@ Figure \ref{f:modulated} depicts a Modulated Sine MR-Module and an example of a 
 By combining these two types of MR-Modules at different stages of the MR-Net, we can control the approximation of details with varying levels of complexity. \red{The choice between *Pure* and *Modulated Sine* modules depends on the desired frequency resolution and localization properties of the signal, making the MR-Net a versatile tool for multiresolution representation.}
 
 
-% \subsection{MR Module}
-% \label{s-mr-module}
-% Each stage $g_i$ of the MR-Net $f$ is a sinusoidal MLP, called \textit{MR-Module}, that learns a signal representation as a combination of sinusoidal functions with induced frequency band.
-
-% We write each stage as $g_i=L_i\circ H_i\circ S_i$. The first layer projects the input $x$ into a list of sines $S_i(x)$, which is the input of the composition $H_i$ of the MLP hidden layers. The output $H_i\circ S_i(x)$ is a dictionary of sine combinations that are passed to the linear layer $L_i$. Finally, the control layer $c_i(t)$, with $t\in[i,i+1]$, blends the stage $g_i$ with the level of detail $f(x,i-1)$. 
-
-% There are two kinds of MR-Modules: \emph{Pure sine} MR-Module ($H_i=\emptyset$) and \emph{modulated sine} MR-Module ($H_i\neq\emptyset$). In the first case the network has only the first layer and the linear layer, and in the second case the network has the three blocks, including the hidden layers (see Fig~\ref{f:mr-module}).
-
-% \begin{figure}[!h]
-% \centering
-% % \includesvg[width=\linewidth]{svg_figs/diagram_mrnet.svg}
-% \includegraphics[width=\linewidth]{img/ch4/diagram_mr_module.pdf}
-% \caption{General Anatomy of a MR-Module.}
-% \label{f:mr-module}
-% \end{figure}
-
-% Without loss of generality, let us assume that the ground-truth signal is a grayscale image unless stated to the contrary. In this case, the stages of the MR-Net will have $\R^2$ and $\R$ as domain and codomain respectively. 
-% Consequently, a MR-Net with $N$ stages $g_i:\R^2\to \R$ has the form $f:\R^2\times [0,N]\to \R$.
-% Under this assumption, we present the building blocks of the MR-Net with details. 
-
-
-% \subsubsection{Pure Sine MR-Module}
-
-% The pure sine MR-Module is a shallow sinusoidal MLP defined as the composition $L\circ S$ of a sinusoidal layer $S$ with a linear layer $L$.
-% The layer $S\!:\!\R^2\!\to\! \R^m$ projects the input $x$ into a dictionary of $m$ sines of the form $S(x)=\sin\left(W_s x+ b_s\right)$, where $W_s\in \R^{m\times 2}$ and $b_s\in \R^{m}$ are the \textit{weight matrix} and \textit{bias}. The integer $m$ is the \textit{width} of the MR-Module.
-% The layer $L\!:\!\R^m\!\to\! \R$ is an affine map $L(x)=W_lx+b_l$, where $W_l\in \R^{1\times m} $ and $b_l\in \R$  are the final weight matrix and bias.
-% Hence, $L\circ S$ acts as a spectral filter controlled by the initialization of $W_s$.
-
-
-% Since the risk landscape for the network loss has many local minima, it is expected that the weights $W_s$ can’t move much further than their initialization. Therefore, $W_s$ determine the range of frequencies one can filter from the input signal. Fig~\ref{f:pure-sine} shows the structure of the $L\circ S$ and an example of a signal consisting of a linear combination of two frequencies. In this example, we have the layers $S\!:\!\R\!\to\! \R^2, S(x) = (sin(x), sin(5x))$ and $L\!:\!\R^2\!\to\! \R, L(x_1, x_2) = x_1 + x_2$.
-
-% \begin{figure}[!h]
-% \centering
-% \includegraphics[width=0.8\linewidth]{img/ch4/pure-sine.png}
-% \caption{Pure sine MR-Module.}
-% \label{f:pure-sine}
-% \end{figure}
-
-
-% \subsection{Modulated sine MR-Module}
-
-% The Modulated MR-Module is a deep sinusoidal MLP $L\circ H\circ S$ that considers a hidden sinusoidal layer block $H:\R^m\to~\R^m$. 
-% This map is the composition of $k$ layers $H=H_k\circ \dots \circ H_1$ with $H_i(x_i)\!=\!\sin\left(W_i x_i \!+\! b_i\right)\!=\!x_{i+1}$ where $x_0\!\in\!\R^m$ is the input.
-% The integers $m$ and $k+1$ are the \textit{width} and \textit{depth} of the MR-Module.  
-
-% The MR-Module $L\circ H\circ S$ is a linear combination of a dictionary of (spectral) atoms $H\circ S$ containing composition of sines. This fact has two consequences. First, the capacity of $L\circ H\circ S$ is greater than the capacity of $L\circ S$ with the same number of neurons~\cite{novello2022understanding}. Second, the initialization of $L\circ H\circ S$ does not directly control its frequency band as in the case of $L\circ S$.
-
-% In terms of localization properties in space and frequency, we can say the spectral atoms of the Modulated MR-Module are semi-local in the sense that these functions are adapted by the learning process to fit local variations of the signal (i.e., frequencies) across its (spatial) domain. This characteristic is evident in Fig~\ref{f:modulated} that shows a network structure and the graph of $\sin\Big(3\sin\big(5\sin(1.9x)\big)\Big)$.
-% In this example, the first layer is represented by $S(x)=\sin(1.9 x)$, the hidden block is the composition of two sine layers $H(x)=\sin\big(3\sin(5x)\big)$, and the linear layer is the identity function $L(x)=x$.
-
-% \begin{figure}[!h]
-% \centering
-% \includegraphics[width=0.9\linewidth]{img/ch4/modulated-sine.png}
-% \caption{Modulated sine MR-Module.}
-% \label{f:modulated}
-% \end{figure}
-
-
-
 \section{MR-Net Subclasses}
 
-Here, we describe three subclasses of the MR-Net: \emph{S-Net}, \emph{L-Net}, and \emph{M-Net}.
-The characteristics of their level of details depend on the configuration of their stages. %, as will be presented next.
-Recall, from Eq~\ref{e-mrnet}, that a MR-Net is a function $f:\R^2\times [0,N]\to \R$, expressed as:
-\begin{align*}
-f(x,t) = c_0(t)g_0(x) + \cdots + c_{N-1}(t)g_{N-1}(x).
-\end{align*}
-Therefore, to define the subclasses S-Net, L-Net, and M-Net, we only need to define the stages $g_i$.
+In this section, we define three subclasses of the MR-Net, namely, the \textbf{S-Net} (Shallow Network), \textbf{L-Net} (Laplacian Network), and \textbf{M-Net} (Modulated Network), which vary in complexity and representational power depending on the configuration of their stages. Recall from Equation ~\ref{e-mrnet} that a MR-Net is a function \( f : \mathbb{R}^2 \times [0, N] \to \mathbb{R} \) defined as a weighted sum of \( N \) individual stages:
+
+\[
+f(x, t) = c_0(t)g_0(x) + \cdots + c_{N-1}(t)g_{N-1}(x).
+\]
+
+Each stage \( g_i \) corresponds to a neural module that approximates a portion of the target signal at a specific resolution. To specify the subclasses S-Net, L-Net, and M-Net, we configure the internal structure of these stages using different types of sinusoidal MR-Modules, as described below.
+
+\subsection{S-Net: Shallow Sine Stages}
+
+The S-Net is the simplest form of MR-Net, where each stage \( g_i \) is constructed using a \textbf{pure sine MR-Module}. That is, \( g_i = L_i \circ S_i \), where \( S_i \) and \( L_i \) are the first and linear layers, respectively, of the sinusoidal network. Since \( g_i \) is a shallow module, it can be expressed directly as a sum of sine functions:
+
+\begin{align}
+    g_i(x) = a_0 + \sum_{j=1}^m a_j \sin\left(\omega_j x + \varphi_j\right),
+\end{align}
 
 
-\subsection{S-Net}
+where the \textit{frequencies} \( \omega_j \) and \textit{phase shifts} \( \varphi_j \) are defined by the weights and biases of the sinusoidal layer \( S_i \). The \textit{amplitudes} \( a_j \) are given by the linear layer \( L_i \).
 
-A S-Net is a MR-Net in which each stage $g_i$ is a pure sine MR-Module, i.e. $g_i=L_i\circ S_i$ where $S_i$ and $L_i$ are the first and the linear layers (see Fig~\ref{f:s-net}).
-%
-For this reason, each stage $g_i$ can be  
-% consists of a learned ``sine transform'', with its layers corresponding, respectively, to the direct and inverse sine transform. Specifically, 
-expressed as a sum of sine functions
-$$g_i(x)=a_0+\sum_{j=1}^m a_j \sin\left(\omega_j x+\varphi_j\right),$$ where the \textit{frequencies} $\omega_j$ and \textit{phase-shifts} $\varphi_j$ are given by the weights and bias of the first layer $S_i$. The \textit{amplitudes} $a_j$ are given by the linear layer $L_i$.
-%
-As a consequence, the resulting S-Net $f$ can provide level of detail based on the controlled initialization of frequency band of each stage $g_i$ (see Sec~\ref{s-frequency-control}).
+This structure allows each stage \( g_i \) to serve as a basic spectral filter that captures different frequency components of the input signal. Consequently, the S-Net can control its level of detail by adjusting the frequency bands of each stage (see Sec.~\ref{s-frequency-control}). The overall architecture of the S-Net is illustrated in Figure \ref{f:s-net}.
+
 \begin{figure}[!h]
 \centering
 \includegraphics[width=0.58\linewidth]{img/ch4/snet.pdf}
-\caption{S-Net architecture.}
+\caption{S-Net architecture: Each stage is a pure sine MR-Module acting as a localized spectral filter.}
 \label{f:s-net}
 \end{figure}
 
-\subsection{L-Net}
+\subsection{L-Net: Independent Modulated Sine Stages}
 \label{s-lnet}
-A L-Net is a MR-Net $f$ in which each stage $g_i=L_i\circ H_i\circ S_i$ is an independent modulated sine MR-Module: $S_i$, $H_i$, $L_i$ are the first, hidden, and linear blocks (see Fig~\ref{f:l-net}).
-%
-For this reason, the level of detail capacity of $f$ is determined by the width and depth of each stage $g_i$.
-% The first stage $g_0$ is the coarsest approximation of the underlying function.
+
+The L-Net extends the S-Net by using a deeper module for each stage \( g_i \). In this configuration, each stage is a \textbf{modulated sine MR-Module} defined as \( g_i = L_i \circ H_i \circ S_i \), where \( S_i \), \( H_i \), and \( L_i \) are the sinusoidal, hidden, and linear layers, respectively (see Fig.~\ref{f:l-net}).
+
 \begin{figure}[!h]
-\centering
-\includegraphics[width=0.7\linewidth]{img/ch4/lnet.pdf}
-% \vspace{-0.4cm}
-\caption{L-Net architecture. Note that the stages are independent of each other.}
-\label{f:l-net}
+    \centering
+    \includegraphics[width=0.7\linewidth]{img/ch4/lnet.pdf}
+    \caption{L-Net architecture: Each stage is an independent modulated sine MR-Module, allowing for increased complexity and expressiveness.}
+    \label{f:l-net}
 \end{figure}
 
+The key difference in the L-Net is the increased expressiveness due to the added depth of each stage. By incorporating the hidden block \( H_i \), each stage can model more complex compositions of sinusoidal functions, allowing the L-Net to capture finer details of the input signal quicker. As a result, the overall level of detail depends on the width and depth of the hidden block in each stage. 
+% On the other hand, since the composition of sines generates much higher frequencies, it is not straightforward to bound the frequencies learned by the network.
 
-The $N$th level $f(\cdot, N)$ of a L-Net is an example of a sinusoidal MLP.
-Without loss of generality, let $f(\cdot, t)=~c_0(t)g_0+c_1(t)g_1$ be a L-Net with two stages having the same architecture with a single hidden layer. We show that $f(\cdot, 2)\!=\!L\!\circ\! H\!\circ\! S$.
-For this, define the matrices of $S$, $H$, and $L$, respectively, using $W_s\!=\!\begin{psmallmatrix}W_s^0\\W_s^1\end{psmallmatrix}$, 
+An interesting property of the L-Net is that when considering the final stage at level \( N \), the function \( f(\cdot, N) \) \textit{behaves like a single deep sinusoidal} MLP. Without loss of generality, let \( f(x, t) = c_0(t)g_0(x) + c_1(t)g_1(x) \) be a two-stage L-Net with the same architecture for each stage, with a single hidden layer. Then, at \( t = 2 \), we show that the L-Net can be represented as \( f(x, 2) = L \circ H \circ S \), where \( L \), \( H \), and \( S \) combine the corresponding matrices of the stages. For this, define the matrices of $S$, $H$, and $L$, respectively, using $W_s\!=\!\begin{psmallmatrix}W_s^0\\W_s^1\end{psmallmatrix}$, 
 $W_h\!=\!\begin{psmallmatrix}W_h^0& 0\\0&W_h^1\end{psmallmatrix}$, 
-$W_l\!=\!\begin{psmallmatrix}W_l^0 & W_l^1\end{psmallmatrix}$, where $W_s^j$, $W_h^j$, $W_l^j$ are the matrices of the stages~$g_j$. The biases are defined in a similar way. Such procedure can be extended to a sum of $N$ stages in a analogous way.
-Thus, the L-Net gives us a controllable way of increasing the \textit{width} of a sinuoisal MLP during training.
+$W_l\!=\!\begin{psmallmatrix}W_l^0 & W_l^1\end{psmallmatrix}$, where $W_s^j$, $W_h^j$, $W_l^j$ are the matrices of the stages~$g_j$. The biases are defined similarly. This process generalizes to any \( N \)-stage L-Net in an analogous way, providing a controllable method to increase the effective \textit{width} of a sinusoidal MLP.
 
-
-\subsection{M-Net}
+\subsubsection{M-Net: Hierarchical Modulated Stages}
 \label{s-mnet}
-While the stages of S-Nets and L-Nets are independent, with M-Net we propose a way to reuse information learned at previous stages.
-A M-Net is a MR-Net where each stage $g_i$ is a modulated MR-Module linked to its subsequent stage $g_{i+1}$.
-That~is, $H_i\circ  S_i$ is composed both with the linear layer $L_i$, producing the stage $g_i\! =\! L_i\!\circ\! H_i\!\circ\!  S_i$, and the hidden block $H_{i+1}$ resulting in $g_{i+1}\! =\! L_{i+1}\!\circ H_{i+1}\!\circ\left(S_{i+1}, H_i\circ  S_i\right)$ (Fig~\ref{f:m-net}).
-This way, the hidden block has the form $H_{i+1}\!:\!\R^{2m}\!\to\! \R^m$; $m$ is the number of neurons.
+
+Unlike the S-Net and L-Net, in which the stages are independent of each other, the M-Net introduces a hierarchical structure that reuses information learned at earlier stages. In the M-Net, each stage \( g_i \) is a modulated sine MR-Module that is \textit{directly linked to the subsequent stage} \( g_{i+1} \) through its hidden block as illustrated in Figure \ref{f:m-net}.
+
 \begin{figure}[!h]
-\centering
-\includegraphics[width=0.75\linewidth]{img/ch4/mnet.pdf}
-% \vspace{-0.4cm}
-\caption{M-Net architecture. Notice how the hidden-layers blocks of adjacent MR-Modules are connected.}
-\label{f:m-net}
+    \centering
+    \includegraphics[width=0.75\linewidth]{img/ch4/mnet.pdf}
+    \caption{M-Net architecture: Hierarchical connection between hidden layers allows for reuse of information and progressively refined representations.}
+    \label{f:m-net}
 \end{figure}
+    
+Specifically, $H_i\circ  S_i$ is composed both with the linear layer $L_i$, producing the stage $g_i\! =\! L_i\!\circ\! H_i\!\circ\!  S_i$, and the hidden block $H_{i+1}$ resulting in $g_{i+1}\! =\! L_{i+1}\!\circ H_{i+1}\!\circ\left(S_{i+1}, H_i\circ  S_i\right)$. This way, the the hidden block has the form $H_{i+1}\!:\!\R^{2m}\!\to\! \R^m$; $m$ is the number of neurons. \red{m pode ser variável; variar entre os estágios e variar no próprio estágio. vale a pena especificar isso na notação?}
 
-The hidden block of a stage of the M-Net is composed~with~a sequence of hidden blocks coming from previous stages.~That~is, the M-Net contains a deep MLP $L_{N-1} \circ \overline{H_{N-1}} \circ \cdots \circ \overline{H_1}\circ H_0 \circ S_0$ with $N$ hidden blocks; $\overline{H_i}$ is the part of $H_i$ connecting to the stage $g_{i+1}$.
-Thus, the M-Net also allows us to increase the \textit{depth} of a sinusoidal MLP during training implying that the capacity of each stage increases with its depth in the hierarchy.
-This feature makes the M-Net a suitable and compact architecture for  multiresolution training, as discussed in Sec~\ref{sec:considerations}, and we will utilize this subclass in the applications of Sec~\ref{s:img}.
+This sequential linkage creates a hierarchical representation in which each stage can build upon and refine the features captured by previous stages. The overall M-Net can thus be viewed as a deep sinusoidal MLP with \( N \) hidden blocks:
 
+\begin{align}
+    f = L_{N-1} \circ \overline{H_{N-1}} \circ \cdots \circ \overline{H_1} \circ H_0 \circ S_0,
+\end{align}
+
+where \( \overline{H_i} \) represents the part of \( H_i \) that connects to stage \( g_{i+1} \).
+
+This architecture provides a controllable way to increase the effective \textit{depth} of the sinusoidal MLP during training, making the M-Net particularly suitable for applications requiring compact multiresolution representations (see Sec.~\ref{sec:considerations} and the applications in Sec.~\ref{s:img}).
+
+\section{MR-Training}
 
 \subsection{Frequency Control}
 \label{s-frequency-control}
@@ -791,3 +687,52 @@ These characteristics are very important in media applications. In particular, t
 The MR-Net architecture subsumes a model that incorporates filtering of the signal's frequency content in a controlled manner. This capability is crucial for antialiasing, necessary to avoid visual artifacts when rendering the signal.
 
 The MR-Net representation as a hierarchy of levels of detail has implications for transmission and processing of the signal. On one hand, regarding the former, it is possible to send coarse versions of the signal, quickly through a channel and subsequently update the level of detail for progressive renderings. On the other hand, concerning the latter, level of detail facilitates data caching using the different memory structures of the GPU.
+
+% - Present the MR-Net architecture
+%     - Discussion on Filtering, scheduling etc
+%     - show the atoms
+
+
+% \section{The Multiresolution Module}
+
+% Our goal is to design a module capable of approximating a signal with multiple frequency bands. When we introduce hidden layers, we know, from previous experiments, that the model capacity increases and we can’t control the exact content of frequencies the network learns. This way, we aimed for a module with a single hidden layer and used Perlin Noises with 4 local extrema (Figure 17) as a perceptual indicator of ”limited frequency band”.
+
+% We did experiments with 1 and 2 hidden layers modules using 8, 16 or 32 computational units in each layer. After looking at the results, we chose a module with 1 hidden layer and 16 units in each layer as our MR-Module for most experiments.
+
+% \begin{figure}[h]
+%     \centering
+%     \begin{subfigure}[b]{0.3\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{img/placeholder512.png}
+%         % \caption{$Loss function$}
+%         % \label{fig:diverging-loss}
+%     \end{subfigure}
+%     \begin{subfigure}[b]{0.3\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{img/placeholder512.png}
+%         % \caption{Reconstruction}
+%         % \label{fig:diverging-reconstruction}
+%     \end{subfigure}
+%     \caption{Reconstruction of low frequency signals using a small size model}
+%     % \label{f:mr-module}
+% \end{figure}
+
+% We have not targeted the minimal module possible, as Figure XXX shows this module is able to approximate more complex signals up to a certain frequency. Having a small module with reasonable capacity gives us more flexibility in terms of level of detail strategy and helps to keep each stage of different MR-Net architectures uniformly as we will discuss on the next section. However, the breadth and depth of the MR-Module could be adapted to specific applications without compromising compatibility with the MR-Nets architectures.
+
+% \subsection{Signal Reconstruction from Multiresolution Representations }
+
+% We leverage the knowledge from sinusoidal networks initialization and multiresolution theory to devise a multi-stage architecture for neural networks. 
+
+% - Show how it is possible to reconstruct a signal from the Gaussian Pyramid using regular sampling.
+
+% - \red{TODO: Show how it is possible to reconstruct a signal from the Laplacian Pyramid using regular sampling.}
+
+% - Argument that we could build S-Net for completeness, which would be equivalent to a shallow sinusoidal network such as Bacon.
+
+% - Show that multi-stages neural networks are equivalent to deep sinusoidal neural networks.
+
+
+% \section{Visualizing the basis functions}
+% dsdsdsdsdsdsdss
+% \section{To be investigated}
+% How should we connect the modules to train our network?
