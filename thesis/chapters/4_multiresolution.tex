@@ -227,36 +227,158 @@ where \( \overline{H_i} \) represents the part of \( H_i \) that connects to sta
 
 This architecture provides a controllable way to increase the effective \textit{depth} of the sinusoidal MLP during training, making the M-Net particularly suitable for applications requiring compact multiresolution representations (see Sec.~\ref{sec:considerations} and the applications in Sec.~\ref{s:img}).
 
-\section{MR-Training}
+
+
+\section{Multiresolution Training}\label{sec:mr_training}
+\label{s:training}
+
+Tre training of the MR-Net $f$ aligns closely with the hierarchical nature of the network's architecture, where each stage $g_i$ is tasked with learning a specific level of detail in the signal $\gt{f}$. 
+
+In a typical MR-Net training regimen, the process unfolds sequentially, beginning with the lowest frequency stage and progressively moving towards higher frequency stages. This stage-wise learning strategy allows the model to construct a comprehensive representation of the signal, starting from coarse details and gradually incorporating finer nuances. To maintain the integrity of the multiresolution representation, MR-Net training often employs a progressive learning approach. Once a stage is trained to capture a certain level of detail, its weights are typically "frozen." This strategy ensures that the details are added incrementally from coarse to fine, preserving the hierarchical nature of the learned representation.
+
+The training process offers flexibility in terms of input processing. It can work directly with the original signal or utilize a pre-processed version using low-pass filters, accommodating different multiresolution schemes. This adaptability makes the MR-Net framework suitable for a wide range of signal types and applications.
+
+The capacity of $g_i$ to represent the underlying ground-truth stage $\gt{g}_i$ can be achieved by initializing its first layer, adjusting its width and depth, or by using the values $\gt{g}_i$ in training as explained in Section~\ref{s-frequency-control}. The input to the MR-Net during training can either be the original ground-truth signal or a pre-processed version using a low-pass filter, depending on the desired frequency characteristics for each stage.
+
+As each stage is trained, it uses an adaptive loss functional that compares the network's output at that particular stage with the corresponding level of detail in the ground truth signal.
+
+The MR-Stages $\{g_i\}$ are the build blocks of the MR-Net $f$. They constitute a stack of MR-Modules that are interconnected according to the chosen MR-Net subclass as illustrated on Figures ~\ref{f:s-net}, \ref{f:l-net}, and \ref{f:m-net}.
+
+% \begin{figure}[!h]
+% \centering
+% \includegraphics[width=0.3\linewidth]{img/ch4/mr-stages.png}
+% \caption{MR-Stages}
+% \label{f:stages}
+% \end{figure}
+
+The MR-Net configuration is given by the 
+parameters of the MR-Stages: number of stages, depth and width of the stages.
+
+
+% The training of the MR-Net $f$ must consider the mechanisms for learning different levels of detail at each stage $g_i$ of $f$. 
+
+.
+% Regarding the network input, we can either use the original signal, or pre-process the signal with a low-pass filter.
+% ddddddd
+% The training process for a Multiresolution Network (MR-Net) is a sophisticated approach designed to capture the intricate details of a signal across various scales. At its core, MR-Net training aligns closely with the hierarchical nature of the network's architecture, where each stage is tasked with learning a specific level of detail in the signal.
+
+
+A key aspect of MR-Net training is the careful control of frequency representation at each stage. This is achieved through specialized initialization techniques or by fine-tuning the width and depth of the network layers. Such control ensures that each stage can effectively capture the appropriate frequency band of the signal.
+
+
+
+% Throughout the training process, a dedicated logger monitors progress, while a scheduler manages the progression through stages and epochs. This systematic approach to training allows the MR-Net to effectively capture and represent signals at various scales, providing a powerful framework for signal reconstruction and analysis.
+
+% The MR-Training incorporates a \textit{loss functional}, a \textit{logger} to monitor the training, as well as, a \textit{scheduler} (see Fig~\ref{f:training}). We describe each of these components, as well as the multiresolution regime in the following sections. 
+
+% \begin{figure}[!h]
+% \centering
+% \includegraphics[width=0.89\linewidth]{img/ch4/training.png}
+% \caption{MR-Training.}
+% \label{f:training}
+% \end{figure}
+
+\subsection{Level of Detail Schemes}
+\label{s:lod}
+
+By combining the different aspects discussed in the previous sections we can define various schemes for learning level of detail representations using MR-Nets. The main ones are: capacity based with original signal; filtering with Gaussian/Laplacian tower; and filtering with Gaussian/Laplacian pyramid.
+
+\subsubsection{Capacity Based with Original Signal}
+In this scheme, we train each stage $g_i$ of the MR-Net $f$ on the same sampling of the ground-truth signal $\gt{f}$ which we consider to have
+no frequency higher than a bandlimit $\omega$.  That is, the input multi-stage stack $\{x_j, y_j\}_i$ is composed of $N$ copies of a sample $\{x_j, y_j\}$ of $\gt{f}$. Thus, the training of each stage $g_i$ receives the same input. This scheme is based on the fact that even when $f$ does not have enough capacity to fit $\gt{f}$, it still can learn its lowest frequencies and represent a filtered version of $\gt{f}$ when initialized properly as seen in Section \ref{sec-module-capacity}. 
+
+\red{Figure \ref{f:capacity-filtering} illustrates this phenomenon by showing the reconstruction in 1D example. The MR-Net used in this case has a single stage with width $16$ and a single layer in all blocks.}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=\linewidth]{img/ch4/capacity-filtering.png}
+% \vspace{-0.4cm}
+\caption{Capacity-filtering in the reconstruction of a 1D signal.}
+\label{f:capacity-filtering}
+\end{figure}
+
+To initialize the $N$ stages ${g_i}$ of $f$, we follow the scheme presented in Section~\ref{s-frequency-initialization}. We initialize the rows of the first matrix of each stage $g_i$ with values in $\Omega_i=[-\omega_i, \omega_i]^2$, where ${\omega_i}$ is a partition of the interval $[0,\omega]$, and $\omega$ is the bandlimit of $\gt{f}$. Consequently, $g_0$ is initialized and trained to learn the lowest frequencies of $\gt{f}$ up to a limit determined by its capacity. We then add stage $g_1$ to the network to learn more details of $\gt{f}$, and continue adding stages until the $N$th stage is reached.
+
+Note that, in this scheme, the training data and the test data for each level of detail is the original signal. This way, we can also stop adding stages if a desired error tolerance is achieved.
+
+
+\subsubsection{Filtering with Gaussian / Laplacian Tower}
+
+To have better control over the frequencies present in the signal $\gt{f}$, we sample a filtered multi-stage stack $\{x_j, y_j\}_i$ and train the stages $g_i$ of MR-Net $f$ to approximate each level $i$ of this stack.
+
+We start by feeding our model with a \textit{Gaussian tower}, that is, a multi-stage stack $\{x_j, y_j\}_i$ where each level $i$ is a version of the level $i+1$ filtered by a low-pass filter. 
+Precisely, the Gaussian tower $\{x_j, y_j\}_i$ is defined recursively by convolving the \textit{level of detail} $\gt{f}_i$ of $\gt{f}$ with a Gaussian kernel $K$:
+\begin{align*}
+    \gt{f}_i(x_j)&=\left(K*\gt{f}_{i+1}\right)(x_j),\\
+    \gt{f}_{N-1}&=\gt{f}.
+\end{align*}
+Thus, we define $y_j=\gt{f}_i(x_j)$.
+This way, each level $i$ is reconstructed with the same amount of samples. The MR-Net $f$ must be trained from the less detailed scale to the most detailed one using the loss $\mathcal{L}_i$ that minimizes the differences $\norm{f_i(x_j)-y_j}^2$, where $f_i=g_0+\dots+g_{i}$.
+
+Similarly, we could represent the multi-stage stack $\{x_j, y_j\}_i$ as a \textit{Laplacian tower} $\{\gt{g}_i\}$ by using:
+\begin{align*}
+    \gt{g}_i(x_j)&=\left(\gt{f}_{i}-K*\gt{f}_{i}\right)(x_j),\\
+    \gt{g}_0(x_j)&=\left(K*\gt{f}_{1}\right)(x_j).
+\end{align*}
+Thus, we define $y_j=\gt{g}_i(x_j)$ and train the MR-Net $f$ using the loss $\mathcal{L}_i$ that minimizes the differences $\norm{g_i(x_j)-y_j}^2$.
+
+
+\paragraph{Filtering with Gaussian / Laplacian Pyramid}
+The \textit{Gaussian pyramid} is a classical multiscale representation of uniformly sampled signals. Based on the Shannon sampling theorem, the Gaussian tower is a highly redundant multiscale representation. On the other hand, the Gaussian pyramid is ``critically sampled'', i.e., it has the minimum number of samples required to represent each frequency band. 
+
+Precisely, the Gaussian pyramid $\{x_{k,l}, y_{k,l}\}_i$ is defined by recursively downsampling the above Gaussian tower of the signal $\gt{f}$ by a factor 2.
+As in Section~\ref{sec:mr_struct}, we are assuming that the sampled points $\{x_{k,l}\}$ forms a grid of size $2^k\times 2^k$ for some integer $k>N$.
+% Thus each dimension of a stage grid $\{x_{k,l}\}_i$ has twice the size of the previous one
+Similarly, the Laplacian pyramid is defined using the Laplacian tower of $\gt{f}$. 
+
+While the reconstruction of signals using the Gaussian tower is perfect, it is also wasteful if 
+
+As we have seen in Section \ref{sec:generalization}, we can generalize correctly the model based only on the samples of a Gaussian pyramid. In terms of efficiency, it's faster to train the model on fewer samples, aligned with classical sampling theory results. 
+
+
+When training with a multi-stage stack with grids of different resolutions such as a Gaussian pyramid, we can build another multi-stage stack where each level has the same resolution as the original signal and use it as test data. In this case, this second multi-stage stack, a tower, should have each level filtered accordingly to its corresponding level in the pyramid, so that they are separated in similar frequency bands. With this pre-processing, we can train the network on the multiresolution pyramid data, and evaluate it on the original signal resolution, comparing it against the multiresolution tower data to check if it's generalizing as expected.
+
+% In practice, we assume that the data is given as a regular sample (digital image) of size $2^{k}\times 2^k$
+% of the ground-truth signal~$\gt{f}$.
+% We abuse the notation by denoting this digital image by~$\gt{f}$.
+% To train the MR-Net stages~$\{g_i\}$, we use the (discrete) \textit{Gaussian} and \textit{Laplacian} pyramids of $\gt{f}$, both with $N<k$ levels.
+% Precisely, the Gaussian pyramid $\{\gt{f}_i\}$ is defined recursively by convolving the \textit{level of detail} $\gt{f}_i$ with a Gaussian kernel $K$ and downsampling the result by a factor 2:
+% \begin{align*}
+%     \gt{f}_i(k,l)&=\left(K*\gt{f}_{i+1}\right)(2k,2l)\,\, \text{with} \,\, k,l\in \left\{1,\ldots, 2^{k-N+1+i}\right\},\\
+%     \gt{f}_{N-1}&=\gt{f}.
+% \end{align*}
+% $\gt{f}_i(k,l)$ denotes the digital image $\gt{f}_i$ evaluated at the pixel $(k,l)$.
+% Similarly, the Laplacian pyramid $\{\gt{g}_i\}$ is defined using
+% \begin{align*}
+%     \gt{g}_i(k,l)&=\left(\gt{f}_{i}-K*\gt{f}_{i}\right)(2k,2l)\,\, \text{with} \,\, k,l\in \left\{1,\ldots, 2^{k-N+1+i}\right\}\\ \gt{g}_0(k,l)&=\left(K*\gt{f}_{1}\right)(2k,2l).
+% \end{align*}
+
+The training of the MR-Net stages $g_i$ using Gaussian/Laplacian is analogous to the tower's case.
+Regarding the initialization of $g_i$, observe that $2^{k-N+1+i}$ is the height and width of the $i$th stack $\{x_{k,l}, y_{k,l}\}_i$, thus it cannot contain frequencies higher than $\omega_i=2^{k-N+i}$. 
+Thus we propose to initialize the frequencies of $\{g_i\}$ following a dyadic sequence of frequency bands 
+$\omega_{N-1}, \omega_{N-2}, \ldots, \omega_{0},$
+which is equivalent to $$\omega_{N-1}, \frac{\omega_{N-1}}{2}, \ldots, \frac{\omega_{N-1}}{2^{N-1}} \text{ with } \omega_{N-1}= 2^{k-1}.$$
+These are the bandlimits used to define the sets $\Omega_i=\left[-\omega_i, \omega_i\right]^2$ to initialize the frequencies of the first layer of each stage $g_i$.
 
 \subsection{Frequency Control}
 \label{s-frequency-control}
-
-Let $\gt{f}=\gt{g}_0+\cdots+\gt{g}_{N-1}$ be the ground-truth signal in multiresolution, and $f:\R^2\times [0,N]\to \R$ be a MR-Net with $N$ stages. To train each stage $g_i$, we propose to initiate its parameters based on the frequency content of $\gt{g}_i$.
-There are two ways to control the frequency band of $g_i$. First, we can initialize the weight matrix of the first layer of $g_i$. Second, we can vary its width and depth. Moreover, these mechanisms can be combined.
 
 
 \subsubsection{Frequency Initialization}
 \label{s-frequency-initialization}
 
-
-Training sinusoidal MLPs can be challenging  as periodic activation functions may lead to instability in deep architectures~\cite{taming2017}. \citet{sitzmann2019siren} propose an initialization scheme that guarantee stability during training. 
-They initialize the weights $W=\omega \, \tilde{W}$ of the MLP first layer $ \sin\left(Wx + b\right)$ such that $\tilde{W}$ is uniformly sampled in $[-1,1]$ and the number $\omega$ controls the range of frequencies. That is, the layer projects the input $x$ in a list of sines with frequencies in $[-\omega, \omega]$. 
-They empirically choose $\omega=30$ in their experiments. For the hidden layers, they choose the weights distributed uniformly in $\left(-\sqrt{6/m}, \sqrt{6/m}\right)$, where $m$ is the width of the layer. See \cite{sitzmann2019siren} for the details.
+Let $\gt{f}=\gt{g}_0+\cdots+\gt{g}_{N-1}$ be the ground-truth signal in multiresolution, and $f:\R^2\times [0,N]\to \R$ be a MR-Net with $N$ stages. To train each stage $g_i$, we propose to initiate its parameters based on the frequency content of $\gt{g}_i$.
+There are two ways to control the frequency band of $g_i$. First, we can initialize the weight matrix of the first layer of $g_i$. Second, we can vary its width and depth. Moreover, these mechanisms can be combined.
 
 Regarding the initialization of the MR-Net $f$, let $g_i=L_i\circ H_i\circ S_i$ be its $i$th stage, where $S_i$, $H_i$, and $L_i$ are its first, hidden, and linear blocks.
-Observe that each coordinate of the sinusoidal layer $S_i(x)=\sin\left(W_{s_i} x+b_{s_i}\right)$ has the form $\sin(\omega_1 x_1 +\omega_2 x_2 + \varphi)$, where the \textit{frequencies} $\omega_1$ and $\omega_2$ form a line of the matrix $W_{s_i}$, $x=(x_1,x_2)$ is the input, and the \textit{phase-shift} $ \varphi$ is a coordinate of the bias $b_{s_i}$. We follow the above initialization approach to initialize $g_{i}$. However, instead of using $\omega=30$ we consider it to be a \textit{bandlimit frequency} on the ground-truth stage $\gt{g}_i$.
+Observe that each coordinate of the sinusoidal layer $S_i(x)=\sin\left(W_{s_i} x+b_{s_i}\right)$ has the form $\sin(\omega_1 x_1 +\omega_2 x_2 + \varphi)$, where the \textit{frequencies} $\omega_1$ and $\omega_2$ form a line of the matrix $W_{s_i}$, $x=(x_1,x_2)$ is the input, and the \textit{phase-shift} $ \varphi$ is a coordinate of the bias $b_{s_i}$. 
 
-% The initialization of the elements of the matrix $W_{s_i}$ in the sinusoidal layer $S_i(x)=\sin\left(W_{s_i} x+b_{s_i}\right)$ is of central importance in the training convergence of $f$.
+Following the experiments and conclusion presented in Chapter \ref{chap:sinusoidal}, we initialize the first sinusoidal layer of each stage using a value of $\omega_0$ that determines a \textit{bandlimit frequency} related to the ground-truth stage $\gt{g}_i$. The weights of the hidden block $H_i$ are initialized following the same scheme in \cite{sitzmann2019siren}.
 
-Ideally, the initialization of frequencies in $g_i$ should match the frequency content of the ground-truth signal at the stage $\gt{g}_i$. 
-However, as we usually don't have access to this information, we opt to use an upper bound. 
-Specifically, we assume that $\gt{g}_i$ has no frequency higher than a \textit{bandlimit} $B_i$. The Nyquist–Shannon sampling theorem says that we can reconstruct $\gt{g}_i$ from a sample $\{\gt{g}_i(x_{kl})\}$, where the regular grid $x_{kl}$ has points spaced with size $\frac{1}{r_i}<\frac{1}{2B_i}$. The number $r_i$ is the \textit{sample rate}. Fig~\ref{f:nyquist} illustrates such requirement using the frequency rate notation.  
-% Assuming that the signal has been properly sampled, the ``Nyquist limit'' gives the maximum frequency contained in the signal, which is $\frac{1}{2} f_s$, where $f_s$ is the sampling rate (see Fig~\ref{f:niquist}).
+Ideally, the initialization of frequencies in $g_i$ should match the frequency content of the ground-truth signal at the stage $\gt{g}_i$. However, as we usually don't have access to this information, we opt to use an upper bound. Specifically, we assume that $\gt{g}_i$ has no frequency higher than a \textit{bandlimit} $B_i$. The Nyquist–Shannon sampling theorem says that we can reconstruct $\gt{g}_i$ from a sample $\{\gt{g}_i(x_{kl})\}$, where the regular grid $x_{kl}$ has points spaced with size $\frac{1}{r_i}<\frac{1}{2B_i}$. The number $r_i$ is the \textit{sample rate}. Figure \ref{f:nyquist} illustrates such requirement using the frequency rate notation.  
+
 \begin{figure}[!h]
 \centering
 \includegraphics[width=0.7\linewidth]{img/ch4/nyquist.png}
-\vspace{-0.3cm}
 \caption{Nyquist Limit.}
 \label{f:nyquist}
 \end{figure}
@@ -264,7 +386,85 @@ Specifically, we assume that $\gt{g}_i$ has no frequency higher than a \textit{b
 
 Therefore, to fit the stage $g_i$ to the sample $\{\gt{g}_i(x_{kl})\}$, we opt to initialize $g_i$ such that it can represent frequencies up to $\omega_i:=\frac{r_i}{2}$.
 For this, we initialize the lines of the first matrix $W_{s_i}$ of $g_i$ uniformly in the set $\Omega_i=\left[-\omega_i, \omega_i\right]^2$.
-Thus, the sinusoidal layer $S_i$ may contain frequencies already initialized at previous stages because $\{\gt{g}_i\}$ is a Laplacian pyramid of $\gt{f}$, thus, $\Omega_0\subset \cdots \subset \Omega_{N-1}$. The weights of the hidden block $H_i$ are initialized following the same scheme in \cite{sitzmann2019siren}.
+Thus, the sinusoidal layer $S_i$ may contain frequencies already initialized at previous stages because $\{\gt{g}_i\}$ is a Laplacian pyramid of $\gt{f}$, thus, $\Omega_0\subset \cdots \subset \Omega_{N-1}$. 
+
+\subsubsection{Scheduler}
+
+Since a MR-Net $f$ has $N$ stages $g_i$, each learning a level of detail of the ground-truth signal $\gt{f}$, one important aspect is their training schedule. 
+If the input multi-stage stack $\{x_j, y_j\}_i$ is organized as a Laplacian pyramid and $f$ is a L-Net, it is possible to train all stages in parallel by summing the loss functions $\mathcal{L}_i$ of the MR-stages. However, in general, it may be beneficial to train each stage sequentially, from the lowest to the highest level. This scheduling is our choice and a common strategy in the traditional multiresolution analysis of signals.
+
+Furthermore, we adopt a progressive learning strategy by "freezing” the weights of a stage once it is trained in the scheduled sequence. This strategy guarantees that the details are added to the representation incrementally from coarse to fine.
+
+We also employ an adaptive training scheme for each stage optimization combining both accuracy loss thresholds and convergence rates. The training process is outlined in Algorithm~\ref{alg:mr-training}.
+
+% \begin{algorithm}[hbt!]
+% \caption{MR-Net training.}\label{alg:mr-training}
+% \KwData{A multi-stage stack $\{x_j, y_j\}_i$ with $N$ levels.}
+% \KwResult{A MR-Net $f$ with $N$ stages $g_i$.}
+%     Initialize a MR-Net model with a single stage $g_0$\;
+%     Notify Logger that network training will start\;
+%     \For{$stage\gets0$ \KwTo $N-1$}{
+%         \If{$stage\neq~0$}
+%         {
+%             Create a new stage $g_{stage}$ and add it to the model\;
+%             Freeze the parameters of the stage $g_{stage-1}$\;
+%         }
+%         Notify Logger that stage training will start\;
+%         $\texttt{current\_traindata}~\!\!\gets~\!\!\texttt{multires\_stack}[stage]$\;
+%         \For{\normalfont $epoch\gets 0$ \KwTo \texttt{current\_limit\_of\_epochs}}{
+%             \For{\normalfont \textit{batch} in \texttt{current\_traindata}}{
+%                 Train $g_{stage}$ using the loss $\mathcal{L}_{stage}$ (Eq~\ref{e-loss}) \;
+%                 Notify Logger that batch training has finished\;
+%             }
+%             Notify Logger that epoch training has finished\;
+%             \If{\normalfont\texttt{convergence\_criteria\_reached()}}
+%                 {\textbf{break}\;}
+%         }
+%         Notify Logger that stage training has finished\;
+%     }
+%     Notify Logger that network training has finished\;
+% \end{algorithm}
+
+\subsection{Loss Functional}
+
+Signal reconstruction is related to interpolation and fitting. We would like to fit the MR-Net $f$ to the ground-truth signal $\gt{f}$ using a given sample of $\gt{f}$.
+For this, we observe that training $f$ is related to a \textit{regression} in multi-scale. This means that: i) the approximation should take into account a multiresolution $\gt{f}=\gt{g}_0+\cdots+\gt{g}_{N-1}$ of the ground-truth signal; and ii) each MR-Net stage $g_i$ should fit to a sample of $\gt{g}_i$.
+
+To accomplish these goals above, we define a \emph{loss functional} $\mathcal{L}_i$ to train each stage $g_i$ of the MR-Net $f$. For this, we assume that the signal $\gt{f}$ was sampled and organized in a \textit{multi-stage stack} $\{x_j, y_j\}_i$ such that $y_j=\gt{g}_i(x_j)$.
+ Thus $\mathcal{L}_i$ is defined by minimizing the differences between the true values $y_j$ at the sample points $x_j$ and the predicted values $g(x_j)$ at the $i$th stage: 
+\begin{align}\label{e-loss}
+    \mathcal{L}_i(\theta_i)=\frac{1}{K_i}\sum \norm{g_i(x_j)-y_j}^2.
+\end{align}
+Where $\theta_i$ are the parameters of $g_i$ and $K_i$ is the size of $\{x_j, y_j\}_i$.
+
+When the multi-stage stack $\{x_j, y_j\}_i$ is constructed by filtering $\gt{f}$ using a Gaussian filter (Eq~\ref{e-gaussian-filter}), we should replace $\norm{g_i(x_j)-y_j}$ by $\norm{f_i(x_j)-y_j}$ in Eq~\ref{e-loss}, recall that $f_i$ is the $i$th level of detail of the MR-Net $f$, i.e. $f_i=g_0+\dots+g_{i}$.
+
+% Consequently, a good loss function bridges the gap between the data and the functional model.
+% The most common \textit{norms} for regression problems use the $L^1$ and $L^2$ norms.
+
+During training, the network can be over-fitted to the data. To avoid this, we explore regularization strategies such as defining convergence criteria for early stopping to fit the network to the data. In the future, we plan to enhance these strategies by adding \textit{regularization terms} based on network derivatives. 
+
+
+% Notice that we are working with representational neural networks, that is, a neural network that is trained to represent a single signal. This way, the over-fitting and generalization problem.
+
+\section{Multiresolution Inference}
+
+Arguably, the primordial purpose of a signal representation is to provide an accurate reconstruction of the underlying data. Moreover, in the ideal case, the reconstruction method should be able to work with a continuous model of the signal, generating signal values at arbitrary points of its domain.
+
+In that respect, coordinate-based neural networks features a compact model of the signal as a continuous function. Additionally, our MR-Net architecture gives a representation that is continuous both at space and scale. 
+Therefore, it can reconstruct the signal zooming in and out at any desired level of detail by specifying a value $t$ to adjust the control layer coefficients, during the inference, according to Equations \ref{e-mrnet} and \ref{e-control}.
+
+These characteristics are very important in media applications. In particular, there is a need to control the signal reconstruction for rendering, thus making it adapted to display resolution.
+
+
+\subsection{Antialiasing and Progressive Processing}
+
+The MR-Net architecture subsumes a model that incorporates filtering of the signal's frequency content in a controlled manner. This capability is crucial for antialiasing, necessary to avoid visual artifacts when rendering the signal.
+
+The MR-Net representation as a hierarchy of levels of detail has implications for transmission and processing of the signal. On one hand, regarding the former, it is possible to send coarse versions of the signal, quickly through a channel and subsequently update the level of detail for progressive renderings. On the other hand, concerning the latter, level of detail facilitates data caching using the different memory structures of the GPU.
+
+\section{MR-Framework}
+
 
 % \vspace{0.2cm}
 % {\color{red}
@@ -445,248 +645,11 @@ Similarly, the $i$th band-pass stage $\gt{g}_i=\gt{f}_i-\gt{f}_{i-1}$ is defined
 \label{f:filter}
 \end{figure}
 
-
-% % \subsubsection{Sampling}
-% % The input for the neural network is a discrete representation. In this sense,} sampling is a way to create a representation of a function based on its values at certain points of the domain. From the point of view of Representation Theory, we can interpret this as a projection of the function onto the primal Shannon basis (i.e., Dirac delta distribution). In the context of signal processing, this basis is a sampling grid of impulses and the representation consists of the sequence of signal values at the grid locations.
-
-% % One important aspect of sampling for learning signals with coordinate-based neural network is the structure of the sampling grid. In that respect, it is instrumental to consider two types of grid structures: Regular and Irregular. See Fig~\ref{f:sampling}. {\color{red}The sampling mode is stored in the MR-Structure, so it can be taken into account when doing operations that modify the sampling grid.}
-
-% % \begin{figure}[!h]
-% % \centering
-% % \includegraphics[width=0.42\linewidth]{img/ch4/regular.png}
-% % \hfil
-% % \includegraphics[width=0.42\linewidth]{img/ch4/poisson.png}
-% % \\
-% % {\hfil (regular grid) \hfil\hfil (irregular grid) \hfil}
-% % \caption{Sampling Modes}
-% % \label{f:sampling}
-% % \end{figure}
-
-
-% % \subsubsection{Filtering}
-
-% % The input of signal values to the network can be filtered to separate it into different frequency bands. In this sense, we can use the unfiltered signal, a low-pass version of the signal or a band-pass version of the signal. See Fig~\ref{f:filter}.
-
-% % It is common to employ a Gaussian Kernel as the low-pass Kernel and a Difference of Gaussians as the band-pass kernel.
-
-% % \begin{figure}[!h]
-% % \centering
-% % \includegraphics[width=0.30\linewidth]{img/ch4/signal.png}
-% % \includegraphics[width=0.30\linewidth]{img/ch4/gaussian.png}
-% % \includegraphics[width=0.30\linewidth]{img/ch4/laplacian.png}\\
-% % {\hfil \hfil signal \hfil \hfil \hfil low-pass \hfil \hfil \hfil band-pass \hfil}
-% % \caption{Filter Types}
-% % \label{f:filter}
-% % \end{figure}
-
-% % \subsubsection{multi-stage stack}
-
-% % A Multiresolution Stack consists of a hierarchy of sampling grids with different resolutions. The standard grid structure form a dyadic lattice of regular grids obeying the $2^j$ rule, i.e., each level of the grid has twice the size of the previous one. 
-% % Nonetheless, it is also possible to define a irregular multiresolution grid structure. In this case, each resolution level has approximately twice the number of random sample points of the previous level (see Fig~\ref{f:multi}(b)).
-% % On the other hand, it is possible to have a stack of sampling grid with the same resolution, in which the signal is the same at each level or is filtered (see Fig~\ref{f:multi}(a)). Section~\ref{s:lod} gives more details on this option.
-% % \begin{figure}[!h]
-% % \centering
-% % \includegraphics[width=0.45\linewidth]{img/ch4/tower.png}
-% % \includegraphics[width=0.45\linewidth]{img/ch4/pyramid.png}\\
-% % {\hfil tower \hfil \hfil \hfil pyramid \hfil}
-% % \vspace{-0.2cm}
-% % \caption{\hl{Multiresolution Hierarchies}}
-% % \label{f:multi}
-% % \end{figure}
-
-
-\subsection{MR-Stages}\label{sec:mr_stages}
-
-The MR-Stages $\{g_i\}$ are the build blocks of the MR-Net $f$. They constitute a stack of MR-Modules that are interconnected according to the chosen MR-Net subclass as illustrated on Figures ~\ref{f:s-net}, \ref{f:l-net}, and \ref{f:m-net}.
-
-% \begin{figure}[!h]
-% \centering
-% \includegraphics[width=0.3\linewidth]{img/ch4/mr-stages.png}
-% \caption{MR-Stages}
-% \label{f:stages}
-% \end{figure}
-
-The MR-Net configuration is given by the 
-parameters of the MR-Stages: number of stages, depth and width of the stages.
-
-
-\subsection{MR-Training}\label{sec:mr_training}
-\label{s:training}
-
-The training of the MR-Net $f$ must consider the mechanisms for learning different levels of detail at each stage $g_i$ of $f$. 
-The capacity of $g_i$ to represent the underlying ground-truth stage  $\gt{g}_i$ can be achieved by initializing its first layer or adjusting its width and depth, as explained in Section~\ref{s-frequency-control}
-.
-Regarding the network input, we can either use the original signal, or pre-process the signal with a low-pass filter.
-
-
-The MR-Training incorporates a \textit{loss functional}, a \textit{logger} to monitor the training, as well as, a \textit{scheduler} (see Fig~\ref{f:training}). We describe each of these components, as well as the multiresolution regime in the following sections. 
-
-\begin{figure}[!h]
-\centering
-\includegraphics[width=0.89\linewidth]{img/ch4/training.png}
-\caption{MR-Training.}
-\label{f:training}
-\end{figure}
-
-\subsubsection{Loss Functional}
-
-Signal reconstruction is related to interpolation and fitting. We would like to fit the MR-Net $f$ to the ground-truth signal $\gt{f}$ using a given sample of $\gt{f}$.
-For this, we observe that training $f$ is related to a \textit{regression} in multi-scale. This means that: i) the approximation should take into account a multiresolution $\gt{f}=\gt{g}_0+\cdots+\gt{g}_{N-1}$ of the ground-truth signal; and ii) each MR-Net stage $g_i$ should fit to a sample of $\gt{g}_i$.
-
-To accomplish these goals above, we define a \emph{loss functional} $\mathcal{L}_i$ to train each stage $g_i$ of the MR-Net $f$. For this, we assume that the signal $\gt{f}$ was sampled and organized in a \textit{multi-stage stack} $\{x_j, y_j\}_i$ such that $y_j=\gt{g}_i(x_j)$.
- Thus $\mathcal{L}_i$ is defined by minimizing the differences between the true values $y_j$ at the sample points $x_j$ and the predicted values $g(x_j)$ at the $i$th stage: 
-\begin{align}\label{e-loss}
-    \mathcal{L}_i(\theta_i)=\frac{1}{K_i}\sum \norm{g_i(x_j)-y_j}^2.
-\end{align}
-Where $\theta_i$ are the parameters of $g_i$ and $K_i$ is the size of $\{x_j, y_j\}_i$.
-
-When the multi-stage stack $\{x_j, y_j\}_i$ is constructed by filtering $\gt{f}$ using a Gaussian filter (Eq~\ref{e-gaussian-filter}), we should replace $\norm{g_i(x_j)-y_j}$ by $\norm{f_i(x_j)-y_j}$ in Eq~\ref{e-loss}, recall that $f_i$ is the $i$th level of detail of the MR-Net $f$, i.e. $f_i=g_0+\dots+g_{i}$.
-
-% Consequently, a good loss function bridges the gap between the data and the functional model.
-% The most common \textit{norms} for regression problems use the $L^1$ and $L^2$ norms.
-
-During training, the network can be over-fitted to the data. To avoid this, we explore regularization strategies such as defining convergence criteria for early stopping to fit the network to the data. In the future, we plan to enhance these strategies by adding \textit{regularization terms} based on network derivatives. 
-
-
-% Notice that we are working with representational neural networks, that is, a neural network that is trained to represent a single signal. This way, the over-fitting and generalization problem.
-
 \subsubsection{Logger}
 
 The training of the MR-Net $f$ is monitored by a logging module that helps to visualize the learning progress. During training, the logger receives messages when the network training starts and ends, when a stage training starts and ends, when a epoch training ends, and when a batch training ends. 
 
 This architecture allows the logger to be customized to accommodate different MR-Net configurations and different actions for visualizing the training progress. For instance, it is possible to write a logger to save partial results to the disk, display~them in a development environment, or send them to a cloud based~service.
-
-
-\subsubsection{Scheduler}
-
-Since a MR-Net $f$ has $N$ stages $g_i$, each learning a level of detail of the ground-truth signal $\gt{f}$, one important aspect is their training schedule. 
-If the input multi-stage stack $\{x_j, y_j\}_i$ is organized as a Laplacian pyramid and $f$ is a L-Net, it is possible to train all stages in parallel by summing the loss functions $\mathcal{L}_i$ of the MR-stages. However, in general, it may be beneficial to train each stage sequentially, from the lowest to the highest level. This scheduling is our choice and a common strategy in the traditional multiresolution analysis of signals.
-
-Furthermore, we adopt a progressive learning strategy by "freezing” the weights of a stage once it is trained in the scheduled sequence. This strategy guarantees that the details are added to the representation incrementally from coarse to fine.
-
-We also employ an adaptive training scheme for each stage optimization combining both accuracy loss thresholds and convergence rates. The training process is outlined in Algorithm~\ref{alg:mr-training}.
-
-% \begin{algorithm}[hbt!]
-% \caption{MR-Net training.}\label{alg:mr-training}
-% \KwData{A multi-stage stack $\{x_j, y_j\}_i$ with $N$ levels.}
-% \KwResult{A MR-Net $f$ with $N$ stages $g_i$.}
-%     Initialize a MR-Net model with a single stage $g_0$\;
-%     Notify Logger that network training will start\;
-%     \For{$stage\gets0$ \KwTo $N-1$}{
-%         \If{$stage\neq~0$}
-%         {
-%             Create a new stage $g_{stage}$ and add it to the model\;
-%             Freeze the parameters of the stage $g_{stage-1}$\;
-%         }
-%         Notify Logger that stage training will start\;
-%         $\texttt{current\_traindata}~\!\!\gets~\!\!\texttt{multires\_stack}[stage]$\;
-%         \For{\normalfont $epoch\gets 0$ \KwTo \texttt{current\_limit\_of\_epochs}}{
-%             \For{\normalfont \textit{batch} in \texttt{current\_traindata}}{
-%                 Train $g_{stage}$ using the loss $\mathcal{L}_{stage}$ (Eq~\ref{e-loss}) \;
-%                 Notify Logger that batch training has finished\;
-%             }
-%             Notify Logger that epoch training has finished\;
-%             \If{\normalfont\texttt{convergence\_criteria\_reached()}}
-%                 {\textbf{break}\;}
-%         }
-%         Notify Logger that stage training has finished\;
-%     }
-%     Notify Logger that network training has finished\;
-% \end{algorithm}
-
-
-\subsubsection{Level of Detail Schemes}
-\label{s:lod}
-
-By combining the different aspects discussed in the previous sections we can define various schemes for learning level of detail representations using MR-Nets. The main ones are: capacity based with original signal; filtering with Gaussian/Laplacian tower; and filtering with Gaussian/Laplacian pyramid.
-
-\paragraph{Capacity Based with Original Signal}~\\
-In this scheme, we train each stage $g_i$ of the MR-Net $f$ on the same sampling of the ground-truth signal $\gt{f}$ which we consider to have
-no frequency higher than a bandlimit $\omega$.  That is, the input multi-stage stack $\{x_j, y_j\}_i$ is composed of $N$ copies of a sample $\{x_j, y_j\}$ of $\gt{f}$. Thus, the training of each stage $g_i$ receives the same input. This scheme is based on the fact that even when $f$ does not have enough capacity to fit $\gt{f}$, it can learn its lowest frequencies and represent a filtered version of $\gt{f}$. Section \ref{sec-module-capacity} describes the frequency control by network capacity, and Figure \ref{f:capacity-filtering} illustrates this phenomenon by showing the reconstruction in 1D example. The MR-Net used in this case has a single stage with width $16$ and a single layer in all blocks.
-\begin{figure}[!h]
-\centering
-\includegraphics[width=\linewidth]{img/ch4/capacity-filtering.png}
-% \vspace{-0.4cm}
-\caption{Capacity-filtering in the reconstruction of a 1D signal.}
-\label{f:capacity-filtering}
-\end{figure}
-
-To initialize the $N$ stages ${g_i}$ of $f$, we follow the scheme presented in Section~\ref{s-frequency-initialization}. We initialize the rows of the first matrix of each stage $g_i$ with values in $\Omega_i=[-\omega_i, \omega_i]^2$, where ${\omega_i}$ is a partition of the interval $[0,\omega]$, and $\omega$ is the bandlimit of $\gt{f}$. Consequently, $g_0$ is initialized and trained to learn the lowest frequencies of $\gt{f}$ up to a limit determined by its capacity. We then add stage $g_1$ to the network to learn more details of $\gt{f}$, and continue adding stages until the $N$th stage is reached. 
-
-Note that, in this scheme, the training data and the test data for each level of detail is the original signal. This way, we can also stop adding stages if a desired error tolerance is achieved.
-
-
-\paragraph{Filtering with Gaussian / Laplacian Tower}~\\
-To have control over the frequencies present in the signal $\gt{f}$, we sample a filtered multi-stage stack $\{x_j, y_j\}_i$ and train the stages $g_i$ of MR-Net $f$ to approximate each level $i$ of this stack.
-
-We start by feeding our model with a \textit{Gaussian tower}, that is, a multi-stage stack $\{x_j, y_j\}_i$ where each level $i$ is a version of the level $i+1$ filtered by a low-pass filter. 
-Precisely, the Gaussian tower $\{x_j, y_j\}_i$ is defined recursively by convolving the \textit{level of detail} $\gt{f}_i$ of $\gt{f}$ with a Gaussian kernel $K$:
-\begin{align*}
-    \gt{f}_i(x_j)&=\left(K*\gt{f}_{i+1}\right)(x_j),\\
-    \gt{f}_{N-1}&=\gt{f}.
-\end{align*}
-Thus, we define $y_j=\gt{f}_i(x_j)$.
-This way, each level $i$ is reconstructed with the same amount of samples. The MR-Net $f$ must be trained from the less detailed scale to the most detailed~one using the loss $\mathcal{L}_i$ that minimizes the differences $\norm{f_i(x_j)-y_j}^2$, where $f_i=g_0+\dots+g_{i}$.
-
-Similarly, we could represent the multi-stage stack $\{x_j, y_j\}_i$ as a \textit{Laplacian tower} $\{\gt{g}_i\}$ by using:
-\begin{align*}
-    \gt{g}_i(x_j)&=\left(\gt{f}_{i}-K*\gt{f}_{i}\right)(x_j),\\
-    \gt{g}_0(x_j)&=\left(K*\gt{f}_{1}\right)(x_j).
-\end{align*}
-Thus, we define $y_j=\gt{g}_i(x_j)$ and train the MR-Net $f$ using the loss $\mathcal{L}_i$ that minimizes the differences $\norm{g_i(x_j)-y_j}^2$.
-
-
-\paragraph{Filtering with Gaussian / Laplacian Pyramid}~\\
-The \textit{Gaussian pyramid} is a classical multiscale representation of uniformly sampled signals. Based on the Shannon sampling theorem, the Gaussian tower is a highly redundant multiscale representation. On the other hand, the Gaussian pyramid is ``critically sampled'', i.e., it has the minimum number of samples required to represent each frequency band. 
-
-Precisely, the Gaussian pyramid $\{x_{k,l}, y_{k,l}\}_i$ is defined by recursively downsampling the above Gaussian tower of the signal $\gt{f}$ by a factor 2.
-As in Section~\ref{sec:mr_struct}, we are assuming that the sampled points $\{x_{k,l}\}$ forms a grid of size $2^k\times 2^k$ for some integer $k>N$.
-% Thus each dimension of a stage grid $\{x_{k,l}\}_i$ has twice the size of the previous one
-Similarly, the Laplacian pyramid is defined using the Laplacian tower of $\gt{f}$. 
-
-While the reconstruction of signals using the Gaussian tower is perfect, it is also wasteful if we can generalize correctly the model based only on the samples of a Gaussian pyramid. In terms of efficiency, it's faster to train the model on fewer samples, aligned with classical sampling theory results. 
-
-
-When training with a multi-stage stack with grids of different resolutions such as a Gaussian pyramid, we can build another multi-stage stack where each level has the same resolution as the original signal and use it as test data. In this case, this second multi-stage stack, a tower, should have each level filtered accordingly to its corresponding level in the pyramid, so that they are separated in similar frequency bands. With this pre-processing, we can train the network on the multiresolution pyramid data, and evaluate it on the original signal resolution, comparing it against the multiresolution tower data to check if it's generalizing as expected.
-
-% In practice, we assume that the data is given as a regular sample (digital image) of size $2^{k}\times 2^k$
-% of the ground-truth signal~$\gt{f}$.
-% We abuse the notation by denoting this digital image by~$\gt{f}$.
-% To train the MR-Net stages~$\{g_i\}$, we use the (discrete) \textit{Gaussian} and \textit{Laplacian} pyramids of $\gt{f}$, both with $N<k$ levels.
-% Precisely, the Gaussian pyramid $\{\gt{f}_i\}$ is defined recursively by convolving the \textit{level of detail} $\gt{f}_i$ with a Gaussian kernel $K$ and downsampling the result by a factor 2:
-% \begin{align*}
-%     \gt{f}_i(k,l)&=\left(K*\gt{f}_{i+1}\right)(2k,2l)\,\, \text{with} \,\, k,l\in \left\{1,\ldots, 2^{k-N+1+i}\right\},\\
-%     \gt{f}_{N-1}&=\gt{f}.
-% \end{align*}
-% $\gt{f}_i(k,l)$ denotes the digital image $\gt{f}_i$ evaluated at the pixel $(k,l)$.
-% Similarly, the Laplacian pyramid $\{\gt{g}_i\}$ is defined using
-% \begin{align*}
-%     \gt{g}_i(k,l)&=\left(\gt{f}_{i}-K*\gt{f}_{i}\right)(2k,2l)\,\, \text{with} \,\, k,l\in \left\{1,\ldots, 2^{k-N+1+i}\right\}\\ \gt{g}_0(k,l)&=\left(K*\gt{f}_{1}\right)(2k,2l).
-% \end{align*}
-
-The training of the MR-Net stages $g_i$ using Gaussian/Laplacian is analogous to the tower's case.
-Regarding the initialization of $g_i$, observe that $2^{k-N+1+i}$ is the height and width of the $i$th stack $\{x_{k,l}, y_{k,l}\}_i$, thus it cannot contain frequencies higher than $\omega_i=2^{k-N+i}$. 
-Thus we propose to initialize the frequencies of $\{g_i\}$ following a dyadic sequence of frequency bands 
-$\omega_{N-1}, \omega_{N-2}, \ldots, \omega_{0},$
-which is equivalent to $$\omega_{N-1}, \frac{\omega_{N-1}}{2}, \ldots, \frac{\omega_{N-1}}{2^{N-1}} \text{ with } \omega_{N-1}= 2^{k-1}.$$
-These are the bandlimits used to define the sets $\Omega_i=\left[-\omega_i, \omega_i\right]^2$ to initialize the frequencies of the first layer of each stage $g_i$.
-
-
-\subsection{MR-Inference}
-
-Arguably, the primordial purpose of a signal representation is to provide an accurate reconstruction of the underlying data. Moreover, in the ideal case, the reconstruction method should be able to work with a continuous model of the signal, generating signal values at arbitrary points of its domain.
-
-In that respect, coordinate-based neural networks features a compact model of the signal as a continuous function. Additionally, our MR-Net architecture gives a representation that is continuous both at space and scale. 
-Therefore, it can reconstruct the signal zooming in and out at any desired level of detail by specifying a value $t$ to adjust the control layer coefficients, during the inference, according to Equations \ref{e-mrnet} and \ref{e-control}.
-
-These characteristics are very important in media applications. In particular, there is a need to control the signal reconstruction for rendering, thus making it adapted to display resolution.
-
-
-\subsubsection{Antialiasing and Progressive Processing}
-
-The MR-Net architecture subsumes a model that incorporates filtering of the signal's frequency content in a controlled manner. This capability is crucial for antialiasing, necessary to avoid visual artifacts when rendering the signal.
-
-The MR-Net representation as a hierarchy of levels of detail has implications for transmission and processing of the signal. On one hand, regarding the former, it is possible to send coarse versions of the signal, quickly through a channel and subsequently update the level of detail for progressive renderings. On the other hand, concerning the latter, level of detail facilitates data caching using the different memory structures of the GPU.
 
 % - Present the MR-Net architecture
 %     - Discussion on Filtering, scheduling etc
