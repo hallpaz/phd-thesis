@@ -473,9 +473,21 @@ Previous work by \cite{Rahaman2018O} has demonstrated that during training, a Mu
     \label{f:capacity-filter-16hf-increasing-omega}
 \end{figure}
 
-\section{Multiresolution Training}
+\section{Training, Generalization and Representation}
 
-We have established that we can bound the frequencies learned by a sinusoidal neural network by adjusting the interval of frequencies sampled for initialization of its first layer, and also by adjusting the network capacity. That is, if the value of $\omega_0$ is too low, the network will learn the lower frequencies of the signal, fitting their intensities in the Fourier spectrum, but won't learn the higher frequencies, even if it has enough computational units to to do. On the other hand, if the capacity given by the computational units is too small, the result will also resemble a filtered version of the target signal.
+% \red{We have established that we can bound the frequencies learned by a sinusoidal neural network by adjusting the interval of frequencies sampled for initialization of its first layer, and also by adjusting the network capacity. That is, if the value of $\omega_0$ is too low, the network will learn the lower frequencies of the signal, fitting their intensities in the Fourier spectrum, but won't learn the higher frequencies, even if it has enough computational units to to do. On the other hand, if the capacity given by the computational units is too small, the result will also resemble a filtered version of the target signal. TALVEZ MOVER PARA O CHAPTER 4 - MR-TRAINING}
+
+Neural networks have been extensively used as analysis tools, as models trained in large datasets to recognize patterns and construct features to specific data types. However, we are using coordinate-based neural networks to represent signals. Our dataset is only 1 signal, or better saying, it is a set of samples of this signal, for example, a discrete set of coordinates and values. 
+
+Some people say \red{trazer referências} that this is equivalennt to overfit a neural network to the signal, but we do not think this is the appropriate way to frame the problem. We want the neural network to be a continuous representation of a signal for which we only know a limited amount of samples. We actually need to solve a problem of  sampling and reconstruction, a classical problem in signal processing, guaranteeing that the neural representation contains the samples but also that it is "well behaved" in between. That means that when thinking of overfitting and generalization, we should borrow the perspective of regression problems and interpolation. For example, in polynomial interpolation it is known that high-degree polynomials will oscilate a lot, inclusing in regions between the interpolated points.
+
+In this section, we investigate how well sinusoidal neural networks generalize to represent signals. To this end, we run experiments trying to reconstruct a signal from a critically sampled representation. For this, we take an input signal and we compute its Gaussian pyramid representation, that is, we filter the signal with a low-pass filter and subsample it by a factor of 2, repeating this procedure several times. We use these subsampled signals as training data for our experiments. 
+
+On the other hand, additionally, we build a Gaussian Tower, that is, a filtered representation without decimation. To compensate for the lack of subsampling, we double the window of the filter for each level of the tower. This way, for a signal like a high frequency Perlin noise, the original signal is critically sampled, but the other levels of the Gaussian Tower are oversampled. According to the signal processing theory, for each level, it should be possible to perfectly reconstruct teh signal using only the samples in the Gaussian Pyramid. This way, we train the network in a Gaussian pyramid signal and we evaluate it against its correspondent in the Gaussian Tower. By sampling the network in a much more refined grid, and having a baseline to compare, we can verify if it is accuratelly representing the signal or if it is overfitting, that is, learning how to perfectly fit the samples, but introducing spurious frequencies and oscilating in between the supervised points.
+
+For the next experiments, we generate another Perlin noise with the following parameters: scale: 10; octaves: 8; persistence: 0.9.
+
+
 
 % - Present the experiments in fitting multiresolution signals
 %     - 1D Gaussian Tower
