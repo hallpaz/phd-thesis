@@ -232,17 +232,31 @@ This architecture provides a controllable way to increase the effective \textit{
 \section{Multiresolution Training}\label{sec:mr_training}
 \label{s:training}
 
-Tre training of the MR-Net $f$ aligns closely with the hierarchical nature of the network's architecture, where each stage $g_i$ is tasked with learning a specific level of detail in the signal $\gt{f}$. 
+The training of the MR-Net $f$ is inherently aligned with the hierarchical nature of its architecture, where each stage $g_i$ should contribute in representing a specific level of detail in the target signal $\gt{f}$. In a typical training strategy, MR-Net proceeds sequentially, starting with the lowest-frequency stage and gradually incorporating higher-frequency stages. This stage-wise learning approach allows the network to build a complete representation of the signal, beginning with coarse details and progressively refining the model with finer nuances. To ensure the integrity of the multiresolution representation, Once a stage is trained to capture a particular level of detail, its weights are "frozen", preserving the learned coarse features as finer features are added incrementally.
 
-In a typical MR-Net training regimen, the process unfolds sequentially, beginning with the lowest frequency stage and progressively moving towards higher frequency stages. This stage-wise learning strategy allows the model to construct a comprehensive representation of the signal, starting from coarse details and gradually incorporating finer nuances. To maintain the integrity of the multiresolution representation, MR-Net training often employs a progressive learning approach. Once a stage is trained to capture a certain level of detail, its weights are typically "frozen." This strategy ensures that the details are added incrementally from coarse to fine, preserving the hierarchical nature of the learned representation.
+The MR-Stages $\{g_i\}$ are the building blocks of the MR-Net $f$. They form a stack of MR-Modules that are interconnected according to the specific MR-Net subclass. The representation capacity of each stage $g_i$ can be fine-tuned by initializing its first layer to specific frequencies, adjusting the depth and width of the network, or incorporating ground-truth values $\gt{g}_i$ during training. The overall MR-Net configuration is defined by the parameters of its stages, including the number of stages, as well as the depth and width of each stage.
 
-The training process offers flexibility in terms of input processing. It can work directly with the original signal or utilize a pre-processed version using low-pass filters, accommodating different multiresolution schemes. This adaptability makes the MR-Net framework suitable for a wide range of signal types and applications.
 
-The capacity of $g_i$ to represent the underlying ground-truth stage $\gt{g}_i$ can be achieved by initializing its first layer, adjusting its width and depth, or by using the values $\gt{g}_i$ in training as explained in Section~\ref{s-frequency-control}. The input to the MR-Net during training can either be the original ground-truth signal or a pre-processed version using a low-pass filter, depending on the desired frequency characteristics for each stage.
+The MR-Net training process offers flexibility in terms of signal processing. Depending on the desired frequency characteristics for each stage, the input to MR-Net can either 
+be the original ground-truth signal or a low-pass filtered version, supporting diverse multiresolution schemes.
+
+% directly operate on the original signal or employ a pre-processed version filtered through a low-pass filter, supporting diverse multiresolution schemes.
+
+% Depending on the desired frequency characteristics for each stage, the input to MR-Net can either be the original ground-truth signal or a low-pass filtered version, allowing the network to focus on different levels of granularity.
+
+% A key aspect of MR-Net training is the careful control of frequency representation at each stage. This control is achieved through specialized initialization techniques or by fine-tuning the width and depth of the network layers, ensuring that each stage captures its intended frequency band effectively.
+
+
+% The training process offers flexibility in terms of input processing. It can work directly with the original signal or utilize a pre-processed version using low-pass filters, accommodating different multiresolution schemes. 
+% This adaptability makes the MR-Net framework suitable for a wide range of signal types and applications.
+
+% The capacity of $g_i$ to represent the underlying ground-truth stage $\gt{g}_i$ can be achieved by initializing its first layer, adjusting its width and depth, or by using the values $\gt{g}_i$ in training as explained in Section~\ref{s-frequency-control}. The input to the MR-Net during training can either be the original ground-truth signal or a pre-processed version using a low-pass filter, depending on the desired frequency characteristics for each stage.
 
 As each stage is trained, it uses an adaptive loss functional that compares the network's output at that particular stage with the corresponding level of detail in the ground truth signal.
 
-The MR-Stages $\{g_i\}$ are the build blocks of the MR-Net $f$. They constitute a stack of MR-Modules that are interconnected according to the chosen MR-Net subclass as illustrated on Figures ~\ref{f:s-net}, \ref{f:l-net}, and \ref{f:m-net}.
+% A key aspect of MR-Net training is the careful control of frequency representation at each stage. This is achieved through specialized initialization techniques or by fine-tuning the width and depth of the network layers. Such control ensures that each stage can effectively capture the appropriate frequency band of the signal.
+
+% as illustrated on Figures ~\ref{f:s-net}, \ref{f:l-net}, and \ref{f:m-net}.
 
 % \begin{figure}[!h]
 % \centering
@@ -251,8 +265,7 @@ The MR-Stages $\{g_i\}$ are the build blocks of the MR-Net $f$. They constitute 
 % \label{f:stages}
 % \end{figure}
 
-The MR-Net configuration is given by the 
-parameters of the MR-Stages: number of stages, depth and width of the stages.
+
 
 
 % The training of the MR-Net $f$ must consider the mechanisms for learning different levels of detail at each stage $g_i$ of $f$. 
@@ -261,11 +274,6 @@ parameters of the MR-Stages: number of stages, depth and width of the stages.
 % Regarding the network input, we can either use the original signal, or pre-process the signal with a low-pass filter.
 % ddddddd
 % The training process for a Multiresolution Network (MR-Net) is a sophisticated approach designed to capture the intricate details of a signal across various scales. At its core, MR-Net training aligns closely with the hierarchical nature of the network's architecture, where each stage is tasked with learning a specific level of detail in the signal.
-
-
-A key aspect of MR-Net training is the careful control of frequency representation at each stage. This is achieved through specialized initialization techniques or by fine-tuning the width and depth of the network layers. Such control ensures that each stage can effectively capture the appropriate frequency band of the signal.
-
-
 
 % Throughout the training process, a dedicated logger monitors progress, while a scheduler manages the progression through stages and epochs. This systematic approach to training allows the MR-Net to effectively capture and represent signals at various scales, providing a powerful framework for signal reconstruction and analysis.
 
