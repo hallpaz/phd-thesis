@@ -203,7 +203,7 @@ An interesting property of the L-Net is that when considering the final stage at
 $W_h\!=\!\begin{psmallmatrix}W_h^0& 0\\0&W_h^1\end{psmallmatrix}$, 
 $W_l\!=\!\begin{psmallmatrix}W_l^0 & W_l^1\end{psmallmatrix}$, where $W_s^j$, $W_h^j$, $W_l^j$ are the matrices of the stages~$g_j$. The biases are defined similarly. This process generalizes to any \( N \)-stage L-Net in an analogous way, providing a controllable method to increase the effective \textit{width} of a sinusoidal MLP.
 
-\subsubsection{M-Net: Hierarchical Modulated Stages}
+\subsection{M-Net: Hierarchical Modulated Stages}
 \label{s-mnet}
 
 Unlike the S-Net and L-Net, in which the stages are independent of each other, the M-Net introduces a hierarchical structure that reuses information learned at earlier stages. In the M-Net, each stage \( g_i \) is a modulated sine MR-Module that is \textit{directly linked to the subsequent stage} \( g_{i+1} \) through its hidden block as illustrated in Figure \ref{f:m-net}.
@@ -232,7 +232,7 @@ This architecture provides a controllable way to increase the effective \textit{
 \section{Multiresolution Training}\label{sec:mr_training}
 \label{s:training}
 
-The training of the MR-Net $f$ is inherently aligned with the hierarchical nature of its architecture, where each stage $g_i$ should contribute in representing a specific level of detail in the target signal $\gt{f}$. In a typical training strategy, MR-Net proceeds sequentially, starting with the lowest-frequency stage and gradually incorporating higher-frequency stages. This stage-wise learning approach allows the network to build a complete representation of the signal, beginning with coarse details and progressively refining the model with finer nuances. To ensure the integrity of the multiresolution representation, Once a stage is trained to capture a particular level of detail, its weights are "frozen", preserving the learned coarse features as finer features are added incrementally.
+The training of the MR-Net $f$ is inherently aligned with the hierarchical nature of its architecture, where each stage $g_i$ should contribute in representing a specific level of detail in the target signal $\gt{f}$. In a typical training strategy, MR-Net proceeds sequentially, starting with the lowest-frequency stage and gradually incorporating higher-frequency stages. This stage-wise learning approach allows the network to build a complete representation of the signal, beginning with coarse details and progressively refining the model with finer nuances. To ensure the integrity of the multiresolution representation, once a stage is trained to capture a particular level of detail, its weights are "frozen", preserving the learned coarse features as finer features are added incrementally.
 
 The MR-Stages $\{g_i\}$ are the building blocks of the MR-Net $f$. They form a stack of MR-Modules that are interconnected according to the specific MR-Net subclass. The representation capacity of each stage $g_i$ can be fine-tuned by initializing its first layer to specific frequencies, adjusting the depth and width of the network, or incorporating ground-truth values $\gt{g}_i$ during training. The overall MR-Net configuration is defined by the parameters of its stages, including the number of stages, as well as the depth and width of each stage.
 
@@ -240,19 +240,16 @@ The MR-Stages $\{g_i\}$ are the building blocks of the MR-Net $f$. They form a s
 The MR-Net training process offers flexibility in terms of signal processing. Depending on the desired frequency characteristics for each stage, the input to MR-Net can either 
 be the original ground-truth signal or a low-pass filtered version, supporting diverse multiresolution schemes.
 
-% directly operate on the original signal or employ a pre-processed version filtered through a low-pass filter, supporting diverse multiresolution schemes.
+As each stage is trained, it uses an adaptive loss functional that compares the network's output at that particular stage with the corresponding level of detail in the ground truth signal.
 
-% Depending on the desired frequency characteristics for each stage, the input to MR-Net can either be the original ground-truth signal or a low-pass filtered version, allowing the network to focus on different levels of granularity.
+In this section we describe each of these components in detail.
 
 % A key aspect of MR-Net training is the careful control of frequency representation at each stage. This control is achieved through specialized initialization techniques or by fine-tuning the width and depth of the network layers, ensuring that each stage captures its intended frequency band effectively.
-
 
 % The training process offers flexibility in terms of input processing. It can work directly with the original signal or utilize a pre-processed version using low-pass filters, accommodating different multiresolution schemes. 
 % This adaptability makes the MR-Net framework suitable for a wide range of signal types and applications.
 
 % The capacity of $g_i$ to represent the underlying ground-truth stage $\gt{g}_i$ can be achieved by initializing its first layer, adjusting its width and depth, or by using the values $\gt{g}_i$ in training as explained in Section~\ref{s-frequency-control}. The input to the MR-Net during training can either be the original ground-truth signal or a pre-processed version using a low-pass filter, depending on the desired frequency characteristics for each stage.
-
-As each stage is trained, it uses an adaptive loss functional that compares the network's output at that particular stage with the corresponding level of detail in the ground truth signal.
 
 % A key aspect of MR-Net training is the careful control of frequency representation at each stage. This is achieved through specialized initialization techniques or by fine-tuning the width and depth of the network layers. Such control ensures that each stage can effectively capture the appropriate frequency band of the signal.
 
@@ -270,11 +267,6 @@ As each stage is trained, it uses an adaptive loss functional that compares the 
 
 % The training of the MR-Net $f$ must consider the mechanisms for learning different levels of detail at each stage $g_i$ of $f$. 
 
-.
-% Regarding the network input, we can either use the original signal, or pre-process the signal with a low-pass filter.
-% ddddddd
-% The training process for a Multiresolution Network (MR-Net) is a sophisticated approach designed to capture the intricate details of a signal across various scales. At its core, MR-Net training aligns closely with the hierarchical nature of the network's architecture, where each stage is tasked with learning a specific level of detail in the signal.
-
 % Throughout the training process, a dedicated logger monitors progress, while a scheduler manages the progression through stages and epochs. This systematic approach to training allows the MR-Net to effectively capture and represent signals at various scales, providing a powerful framework for signal reconstruction and analysis.
 
 % The MR-Training incorporates a \textit{loss functional}, a \textit{logger} to monitor the training, as well as, a \textit{scheduler} (see Fig~\ref{f:training}). We describe each of these components, as well as the multiresolution regime in the following sections. 
@@ -286,10 +278,148 @@ As each stage is trained, it uses an adaptive loss functional that compares the 
 % \label{f:training}
 % \end{figure}
 
+\subsection{Input Data}
+
+% The training of MR-Net stage $g_i$ receives pairs $\{x_j, y_j\}$ as input, with points $x_j$ sampled in the domain $\mathcal{D}$ of $\gt{f}$ and $y_j=\gt{f}(x_j)\in~\mathcal{C}$, the contradomain. For instance, for a squared image, we could have $\mathcal{D}=[-1, 1]^2 \subset \R^{2}$. Note that, in general, spatial media objects like images or 3D models may be embedded in any region of their space. During training, we consider an image signal $\gt{f}$ to have codomain in a monochromatic ($\mathcal{C}=\R$) or trichromatic (eg. RGB) color space ($\mathcal{C}=\R^3$). Depending on the application, other color spaces or additional attributes, such as masks and features, could be used. We will explore other attributes in Chapter \ref{chap:seamless-textures}. Figure \ref{f:ex-signal-attributes} illustrate some of these attributes.
+
+% The data input for the training of each of the $N$ stages $g_i$ is organized in a \textit{multi-stage stack} $\{x_j, y_j\}_i$. Specifically, for each $i$, the set of pairs $\{x_j, y_j\}_i$ is a sample of the $i$th level of detail $\gt{f}_i$ of the signal $\gt{f}$ or a sample of the original signal $\gt{f}$, with $\{x_j\}_i\subset \mathcal{D}$ and $\{y_j\}_i=\{\gt{f}_i(x_j)\}$. 
+% From the point of view of \textit{representation theory}, we can interpret this as a projection of the function $\gt{f}_i$ onto the primal \textit{Shannon basis} (i.e., Dirac delta distribution). In the context of signal processing, this basis is a sampling grid of impulses and the representation consists of the sequence $\{y_j\}_i$ at the grid locations $\{x_j\}_i$.
+
+% The type of sampling used to extract the multi-stage stack $\{x_j, y_j\}_i$ from the signal $\gt{f}$ is an important aspect in the MR-Net training. In that respect, it is instrumental to consider two types of samplings: \textit{regular} and \textit{irregular}. We will focus on the regular sampling, or uniform sampling, for which we have a well stablished and classic theory for sampling and reconstrcution. However, Chapter \ref{chap:future} briefly discusses some aspects that make irregular sampling interesting and could have more investigation.
+
+Each MR-Net stage \( g_i \) is trained using pairs of samples \(\{x_j, y_j\}\), where \( x_j \) are points sampled from the domain \(\mathcal{D}\) of the ground-truth function \(\gt{f}\), and \( y_j = \gt{f}(x_j) \in \mathcal{C} \) are corresponding values in the codomain. For example, for a square image, the domain could be defined as \(\mathcal{D} = [-1, 1]^2 \subset \mathbb{R}^{2}\). Note that spatial media objects, such as images or 3D models, may be embedded in any region of their respective spaces. During training, an image signal \(\gt{f}\) can have codomains in a monochromatic space (\(\mathcal{C} = \mathbb{R}\)) or a trichromatic color space (\(\mathcal{C} = \mathbb{R}^3\)) as the RGB. Depending on the application, alternative color spaces or additional attributes, such as segmentation masks or feature maps, may also be used. We will explore these additional attributes in Chapter \ref{chap:seamless-textures}. Figure \ref{f:ex-signal-attributes} illustrates some possible attributes.
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{RGB values}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Monochromatic}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Mask}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/placeholder512.png}
+        \caption{Edges}
+    \end{subfigure}
+    \caption{Example of attributes and features that can be used in training}
+    \label{f:ex-signal-attributes}
+\end{figure}
+
+For the training of each of the \( N \) stages \( g_i \), the input data is organized into a \textit{multi-stage stack} \(\{x_j, y_j\}_i\). Specifically, for each \( i \), the set of pairs \(\{x_j, y_j\}_i\) represents a sample from either the \( i \)-th level of detail \(\gt{f}_i\) of the signal \(\gt{f}\) or from the original signal \(\gt{f}\) itself, with \(\{x_j\}_i \subset \mathcal{D}\) and \(\{y_j\}_i = \{\gt{f}_i(x_j)\}\). From the perspective of *representation theory*, this setup can be interpreted as projecting the function \(\gt{f}_i\) onto the primal *Shannon basis* (i.e., a grid of Dirac delta distributions). In the context of signal processing, this basis is a sampling grid of impulses, and the function is represented as the sequence \(\{y_j\}_i\) at the corresponding grid locations \(\{x_j\}_i\).
+
+
+\subsubsection{Sampling Strategies}
+
+The choice of sampling strategy to generate the multi-stage stack \(\{x_j, y_j\}_i\) from the signal \(\gt{f}\) is an important consideration in MR-Net training. There are two primary sampling strategies: \textit{regular} and \textit{irregular} sampling. I this work, we focus on regular sampling, also known as uniform sampling, which is more commonly used and is supported by a well-established theoretical foundation for sampling and reconstruction. However, Chapter \ref{chap:future} briefly discusses some intriguing aspects of irregular sampling and highlights areas for future exploration.
+
+In regular sampling, the points are arranged in a uniform grid \(\{x_{k,l}\}\) that discretizes the domain \(\mathcal{D}\). The multi-stage grids \(\{x_{k,l}\}_i\) follow a dyadic lattice structure governed by the \( 2^i \) rule:
+
+\begin{align}
+    \{x_{k,l}\}_i = \{x_{2k, 2l}\}_{i+1}, \quad \text{where} \quad \{x_{k,l}\}_N = \{x_{k,l}\}.
+\end{align}
+
+At the highest resolution, the points are structured in a square grid of size \( 2^k \) for some integer \( k > N \). This formulation ensures that each dimension of the grid \(\{x_{k,l}\}_i\) has twice the size of the previous stage grid (see Figure~\ref{f:multi}(a)).
+
+\red{Alternatively, we can consider a fixed resolution for the sampling grids \(\{x_{k,l}\}_i\), where the signal \(\gt{f}\) is sampled at its highest level, or directly at the level of detail \(\gt{f}_i\) for each stage grid \(\{x_{k,l}\}_i\) (see Figure~\ref{f:multi}(b)). More details on this approach are provided in Section~\ref{s:lod}.}
+
+% In the regular sampling case, the sampled points are organized in a regular grid discretization $\{x_{k,l}\}$ of the domain $\mathcal{D}$. 
+% For the regular case where the sampled points are organized in a regular grid $\{x_{k,l}\}$ (the highest resolution), we can structure the multi-stages in dyadic lattice following the $2^i$ rule: 
+
+% \begin{align}
+% \{x_{k,l}\}_i=\{x_{2k,2l}\}_{i+1}\text{ with }\{x_{k,l}\}_N=\{x_{k,l}\}.
+% \end{align}
+
+
+% Here we are assuming that $\{x_{k,l}\}$ is a grid of size $2^k\times 2^k$ for some integer $k>N$. Thus each dimension of a stage grid $\{x_{k,l}\}_i$ has twice the size of the previous one (Fig~\ref{f:multi}(a)). 
+% On the other hand, we could consider that the sampling grids $\{x_{k,l}\}_i$ have a fixed resolution, and sample the signal $\gt{f}$ on its highest level or consider the level of detail $\gt{f}_i$ for each grid stage $\{x_{k,l}\}_i$ (Fig~\ref{f:multi}(b)). See Section~\ref{s:lod} for more details.
+
+\begin{figure}[!h]
+\centering
+\begin{subfigure}{0.49\linewidth}
+\includegraphics[width=\linewidth]{img/ch4/pyramid.png}
+\caption{Pyramid Configuration}
+\end{subfigure}
+\begin{subfigure}{0.49\linewidth}
+\includegraphics[width=\linewidth]{img/ch4/tower.png}    
+\caption{Tower Configuration}
+\end{subfigure}
+\caption{Examples of multi-stage stack configurations.}
+\label{f:multi}
+\end{figure}
+
+\subsubsection{Filtering Strategies}
+
+Each level $i$ of the multi-stage stack can be filtered to separate the level of detail $\gt{f}_{i+1}$ into different frequency bands. In this context, we can use different variations of the signal \(\gt{f}\) for the stages, such as the unfiltered signal, a low-pass filtered version of \(\gt{f}_{i+1}\), or a band-pass filtered version of \(\gt{f}_{i+1}\). Typically, a Gaussian kernel is used for low-pass filtering, while a *difference of Gaussians* (DoG) kernel is used for band-pass filtering (see Figure~\ref{f:filter}).
+
+The filtering operation is defined as follows: for a low-pass version of stage \(\gt{f}_{i+1}\), we convolve \(\gt{f}_{i+1}\) with a Gaussian kernel \( K \):
+\begin{align}\label{e-gaussian-filter}
+    \gt{f}_i(k,l) &= \left( K * \gt{f}_{i+1} \right)(k, l).
+\end{align}
+
+We abuse the notation slighly by denoting $\gt{f}_i(k,l)$ as the function $\gt{f}_i$ evaluated at the point $x_{k,l}$.
+Similarly, the band-pass filtered stage \(\gt{g}_i\) is defined as the difference between the stage \(\gt{f}_i\) and its low-pass filtered version:
+\begin{align}
+    \gt{g}_i(k,l) = \left( \gt{f}_{i} - K * \gt{f}_{i} \right)(k, l).
+\end{align}
+
+% Each level \( i \) of the multi-stage stack can be filtered to isolate specific frequency bands, thereby refining the level of detail \(\gt{f}_{i+1}\) represented at that stage. In this sense, we can use the unfiltered signal $\gt{f}$, a low-pass version of $\gt{f}_{i+1}$ or a band-pass version of $\gt{f}_{i+1}$. For this, it is common to employ a Gaussian kernel as the low-pass kernel and a difference of Gaussians as the band-pass kernel (see Fig~\ref{f:filter}).
+
+% Precisely, we can filter $\gt{f}_{i+1}$ by convolving it with a Gaussian kernel $K$:
+% % and downsampling the result by a factor 2:
+% \begin{align}\label{e-gaussian-filter}
+%     \gt{f}_i(k,l)&=\left(K*\gt{f}_{i+1}\right)(k,l)
+% \end{align}
+% Here, we abuse the notation slightly by denoting \(\gt{f}_i(k,l)\) as the function \(\gt{f}_i\) evaluated at the point \( x_{k,l} \).
+
+% Similarly, the $i$th band-pass stage $\gt{g}_i=\gt{f}_i-\gt{f}_{i-1}$ is defined using $\gt{g}_i(k,l)=\left(\gt{f}_{i}-K*\gt{f}_{i}\right)(k,l)$.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.32\linewidth]{img/ch4/signal.png}
+    \includegraphics[width=0.32\linewidth]{img/ch4/gaussian.png}
+    \includegraphics[width=0.32\linewidth]{img/ch4/laplacian.png}\\
+    {\hfil \hfil signal \hfil \hfil \hfil low-pass \hfil \hfil \hfil band-pass \hfil}
+    \caption{Examples of filter types.}
+    \label{f:filter}
+\end{figure}
+
+% ---
+
+% I've streamlined the text for clarity and conciseness, enhanced transitions between concepts, and added more structure to help the reader follow the logical flow. Let me know what you think!
+
+%
+
+
+% \begin{figure}[!h]
+% \centering
+% \begin{subfigure}{0.49\linewidth}
+% \includegraphics[width=\linewidth]{img/ch4/pyramid.png}
+% \caption{Pyramid}
+% \end{subfigure}
+% \begin{subfigure}{0.49\linewidth}
+% \includegraphics[width=\linewidth]{img/ch4/tower.png}    
+% \caption{Tower}
+% \end{subfigure}
+% \caption{Examples of multi-stage stacks.}
+% \label{f:multi}
+% \end{figure}
+
+\pagebreak
+
 \subsection{Level of Detail Schemes}
 \label{s:lod}
 
-By combining the different aspects discussed in the previous sections we can define various schemes for learning level of detail representations using MR-Nets. The main ones are: capacity based with original signal; filtering with Gaussian/Laplacian tower; and filtering with Gaussian/Laplacian pyramid.
+By combining the different aspects discussed in the previous section, we can define various schemes for learning level of detail representations using MR-Nets. The main ones are: capacity based with original signal; filtering with Gaussian/Laplacian tower; and filtering with Gaussian/Laplacian pyramid.
 
 \subsubsection{Capacity Based with Original Signal}
 In this scheme, we train each stage $g_i$ of the MR-Net $f$ on the same sampling of the ground-truth signal $\gt{f}$ which we consider to have
@@ -330,7 +460,7 @@ Similarly, we could represent the multi-stage stack $\{x_j, y_j\}_i$ as a \texti
 Thus, we define $y_j=\gt{g}_i(x_j)$ and train the MR-Net $f$ using the loss $\mathcal{L}_i$ that minimizes the differences $\norm{g_i(x_j)-y_j}^2$.
 
 
-\paragraph{Filtering with Gaussian / Laplacian Pyramid}
+\subsubsection{Filtering with Gaussian / Laplacian Pyramid}
 The \textit{Gaussian pyramid} is a classical multiscale representation of uniformly sampled signals. Based on the Shannon sampling theorem, the Gaussian tower is a highly redundant multiscale representation. On the other hand, the Gaussian pyramid is ``critically sampled'', i.e., it has the minimum number of samples required to represent each frequency band. 
 
 Precisely, the Gaussian pyramid $\{x_{k,l}, y_{k,l}\}_i$ is defined by recursively downsampling the above Gaussian tower of the signal $\gt{f}$ by a factor 2.
@@ -344,6 +474,15 @@ As we have seen in Section \ref{sec:generalization}, we can generalize correctly
 
 
 When training with a multi-stage stack with grids of different resolutions such as a Gaussian pyramid, we can build another multi-stage stack where each level has the same resolution as the original signal and use it as test data. In this case, this second multi-stage stack, a tower, should have each level filtered accordingly to its corresponding level in the pyramid, so that they are separated in similar frequency bands. With this pre-processing, we can train the network on the multiresolution pyramid data, and evaluate it on the original signal resolution, comparing it against the multiresolution tower data to check if it's generalizing as expected.
+
+
+The training of the MR-Net stages $g_i$ using Gaussian/Laplacian is analogous to the tower's case.
+Regarding the initialization of $g_i$, observe that $2^{k-N+1+i}$ is the height and width of the $i$th stack $\{x_{k,l}, y_{k,l}\}_i$, thus it cannot contain frequencies higher than $\omega_i=2^{k-N+i}$. 
+Thus we propose to initialize the frequencies of $\{g_i\}$ following a dyadic sequence of frequency bands 
+$\omega_{N-1}, \omega_{N-2}, \ldots, \omega_{0},$
+which is equivalent to $$\omega_{N-1}, \frac{\omega_{N-1}}{2}, \ldots, \frac{\omega_{N-1}}{2^{N-1}} \text{ with } \omega_{N-1}= 2^{k-1}.$$
+These are the bandlimits used to define the sets $\Omega_i=\left[-\omega_i, \omega_i\right]^2$ to initialize the frequencies of the first layer of each stage $g_i$.
+
 
 % In practice, we assume that the data is given as a regular sample (digital image) of size $2^{k}\times 2^k$
 % of the ground-truth signal~$\gt{f}$.
@@ -359,13 +498,6 @@ When training with a multi-stage stack with grids of different resolutions such 
 % \begin{align*}
 %     \gt{g}_i(k,l)&=\left(\gt{f}_{i}-K*\gt{f}_{i}\right)(2k,2l)\,\, \text{with} \,\, k,l\in \left\{1,\ldots, 2^{k-N+1+i}\right\}\\ \gt{g}_0(k,l)&=\left(K*\gt{f}_{1}\right)(2k,2l).
 % \end{align*}
-
-The training of the MR-Net stages $g_i$ using Gaussian/Laplacian is analogous to the tower's case.
-Regarding the initialization of $g_i$, observe that $2^{k-N+1+i}$ is the height and width of the $i$th stack $\{x_{k,l}, y_{k,l}\}_i$, thus it cannot contain frequencies higher than $\omega_i=2^{k-N+i}$. 
-Thus we propose to initialize the frequencies of $\{g_i\}$ following a dyadic sequence of frequency bands 
-$\omega_{N-1}, \omega_{N-2}, \ldots, \omega_{0},$
-which is equivalent to $$\omega_{N-1}, \frac{\omega_{N-1}}{2}, \ldots, \frac{\omega_{N-1}}{2^{N-1}} \text{ with } \omega_{N-1}= 2^{k-1}.$$
-These are the bandlimits used to define the sets $\Omega_i=\left[-\omega_i, \omega_i\right]^2$ to initialize the frequencies of the first layer of each stage $g_i$.
 
 \subsection{Frequency Control}
 \label{s-frequency-control}
@@ -563,37 +695,6 @@ The MR-Structure is a data structure that encapsulates the input data $\gt{f}$. 
 \label{f:structure}
 \end{figure}
 
-% \subsubsection{Input Data}
-
-The training of MR-Net stage $g_i$ receives pairs $\{x_j, y_j\}$ as input, with points $x_j$ sampled in the domain $\mathcal{D}$ of $\gt{f}$ and $y_j=\gt{f}(x_j)\in~\mathcal{C}$. For a squared image, we could have $\mathcal{D}=[-1, 1]^2 \subset \R^{2}$. During training, we consider the signal $\gt{f}$ to have codomain in monochromatic ($\mathcal{C}=\R$) or RGB color ($\mathcal{C}=\R^3$) (see Fig~\ref{f:values}). 
-Depending on the application, other color spaces or additional attributes, such as masks and features, could be used (see Fig~\ref{f:attributes}). 
-\begin{figure}[!h]
-\centering
-\includegraphics[width=0.8\linewidth]{img/ch4/attrib-d0-d1.png}
-\caption{Image values (RGB and monochromatic).}
-\label{f:values}
-\end{figure}
-
-\begin{figure}[!h]
-\centering
-\includegraphics[width=0.8\linewidth]{img/ch4/attrib-mask.png}
-\caption{Examples of image attributes (mask and edges).}
-\label{f:attributes}
-\end{figure}
-
-
-The data input for the training of each of the $N$ stages $g_i$ is organized in a \textit{multi-stage stack} $\{x_j, y_j\}_i$.
-% consisting of a hierarchy of sampling grids. 
-Specifically, for each $i$, the set of pairs $\{x_j, y_j\}_i$ is a sample of the $i$th level of detail $\gt{f}_i$ of the signal $\gt{f}$ or a sample of the original signal $\gt{f}$, with $\{x_j\}_i\subset \mathcal{D}$ and $\{y_j\}_i=\{\gt{f}_i(x_j)\}$. 
-From the point of view of \textit{representation theory}, we can interpret this as a projection of the function $\gt{f}_i$ onto the primal \textit{Shannon basis} (i.e., Dirac delta distribution). In the context of signal processing, this basis is a sampling grid of impulses and the representation consists of the sequence $\{y_j\}_i$ at the grid locations $\{x_j\}_i$.
-
-The type of sampling used to extract the multi-stage stack $\{x_j, y_j\}_i$ from the signal $\gt{f}$ is an important aspect in the MR-Net training. In that respect, it is instrumental to consider two types of samplings: \textit{regular} and \textit{irregular} (Fig~\ref{f:sampling}). 
-%
-In the regular case, the sampled points are organized in a regular grid discretization $\{x_{k,l}\}$ of the domain $\mathcal{D}$. 
-
-% The irregular sampling consider the points $\{x_i\}$ to be uniformly sampled from $\mathcal{D}$.
-% , i.e. for each pair $k,l$ we have $\norm{x_{k,l}-x_{k+1,l}}=\norm{x_{k,l}-x_{k,l+1}}=\Delta$ with $\Delta$ being a constant. 
-%
 For flexibility, we implement a sampler module that take regular samples or stochastic samples using the Poisson disk sampling~\cite{stochastic_cook, poisson_bridson}. 
 The sampler could be extended to work with different sampling patterns. 
 The sampling mode is stored in the MR-Structure, so it can be taken into account when doing operations that modify the sampling grid.
@@ -605,53 +706,11 @@ The sampling mode is stored in the MR-Structure, so it can be taken into account
 \includegraphics[width=0.45\linewidth]{img/ch4/poisson.png}
 \\
 {\small\hfil (regular grid) \hfil\hfil\hfil (irregular grid) \hfil}
-\vspace{-0.2cm}
 \caption{Sampling modes.}
 \label{f:sampling}
 \end{figure}
 
-
-The multi-stage stack of the input signal $\gt{f}$ could have different resolutions.
-For the regular case where the sampled points are organized in a regular grid $\{x_{k,l}\}$ (the highest resolution), we can structure the multi-stages in dyadic lattice following the $2^i$ rule: 
-\begin{align*}
-\{x_{k,l}\}_i=\{x_{2k,2l}\}_{i+1}\text{ with }\{x_{k,l}\}_N=\{x_{k,l}\}.
-\end{align*}
-Here we are assuming that $\{x_{k,l}\}$ is a grid of size $2^k\times 2^k$ for some integer $k>N$.
-Thus each dimension of a stage grid $\{x_{k,l}\}_i$ has twice the size of the previous one (Fig~\ref{f:multi}(a)). 
-On the other hand, we could consider that the sampling grids $\{x_{k,l}\}_i$ have a fixed resolution, and sample the signal $\gt{f}$ on its highest level or consider the level of detail $\gt{f}_i$ for each grid stage $\{x_{k,l}\}_i$ (Fig~\ref{f:multi}(b)). See Section~\ref{s:lod} for more details.
 % Nonetheless, it is also possible to define a irregular multiresolution grid structure. In this case, each resolution level has approximately twice the number of random sample points of the previous level .
-\begin{figure}[!h]
-\centering
-\begin{subfigure}{0.49\linewidth}
-\includegraphics[width=\linewidth]{img/ch4/pyramid.png}
-\caption{Pyramid}
-\end{subfigure}
-\begin{subfigure}{0.49\linewidth}
-\includegraphics[width=\linewidth]{img/ch4/tower.png}    
-\caption{Tower}
-\end{subfigure}
-\caption{Examples of multi-stage stacks.}
-\label{f:multi}
-\end{figure}
-
-Each level $i$ of the multi-stage stack can be filtered to separate the level of detail $\gt{f}_{i+1}$ into different frequency bands. In this sense, we can use the unfiltered signal $\gt{f}$, a low-pass version of $\gt{f}_{i+1}$ or a band-pass version of $\gt{f}_{i+1}$. For this, it is common to employ a Gaussian kernel as the low-pass kernel and a difference of Gaussians as the band-pass kernel (see Fig~\ref{f:filter}).
-Precisely, we can filter $\gt{f}_{i+1}$ by convolving it with a Gaussian kernel $K$:
-% and downsampling the result by a factor 2:
-\begin{align}\label{e-gaussian-filter}
-    \gt{f}_i(k,l)&=\left(K*\gt{f}_{i+1}\right)(k,l)
-\end{align}
-We abuse the notation and denote by $\gt{f}_i(k,l)$ the function $\gt{f}_i$ evaluated at  $x_{k,l}$.
-Similarly, the $i$th band-pass stage $\gt{g}_i=\gt{f}_i-\gt{f}_{i-1}$ is defined using $\gt{g}_i(k,l)=\left(\gt{f}_{i}-K*\gt{f}_{i}\right)(k,l)$.
-
-\begin{figure}[!h]
-\centering
-\includegraphics[width=0.32\linewidth]{img/ch4/signal.png}
-\includegraphics[width=0.32\linewidth]{img/ch4/gaussian.png}
-\includegraphics[width=0.32\linewidth]{img/ch4/laplacian.png}\\
-{\hfil \hfil signal \hfil \hfil \hfil low-pass \hfil \hfil \hfil band-pass \hfil}
-\caption{Examples of filter types.}
-\label{f:filter}
-\end{figure}
 
 \subsubsection{Logger}
 
