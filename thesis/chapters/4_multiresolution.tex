@@ -20,6 +20,13 @@ In the following sections, we describe the theoretical foundations, design princ
 
 % For the multiresolution approach, we leverage classical structures of image and signal processing, such as Gaussian and Laplacian Pyramids. We use these ideas to develop a framework to train a multi-stage neural network using multiresolution structures in an efficient way. \red{Finally, we demonstrate that our model can achieve a comparable reconstruction quality to a simple SIREN model with the same number of parameters, while encoding multiple levels of detail. Esta frase deve ser movida para o capítulo seguinte, de aplicações em imagens. A conclusão desta parte será finalizada quando este capítulo estiver completo.}
 
+\section{Related Works}
+
+\cite{bacon2021} introduced the Band-Limited Coordinate Network (BACON), an MFN that produces intermediate outputs with an analytically specified spectral bandwidth, achieving multiresolution representations of underlying signals. While its structure allows BACON to be expressed as a linear combinations of sines, avoiding the composition of sines present in deep sinusoidal MLPs, it creates multiresolution representations by truncating the frequency spectra of the signals at a specific value. This approach produces ringing artifacts in some levels of detail, and becomes evident when we look at the Fourier transform of images reconstructed using this network (see Chapter \ref{ch:imaging}).
+
+The ability to control frequency bands in representation is closely tied to the capability of adaptively reconstructing signals at multiple detail levels. \citet{mueller2022instant} developed a multiresolution neural network architecture based on hash encoding, while \citet{martel2021acorn} designed an adaptive coordinate network for neural signals.
+
+In this context, we introduce \textit{Multiresolution Sinusoidal Neural Networks} (MR-Net) \cite{paz2022,paz2023mr} based on classical signal multiresolution representations. Our results in imaging applications, discussed in Chapter \ref{ch:imaging}, demonstrate that MR-Net outperforms the previous state-of-the-art technique, BACON, while utilizing a smaller number of parameters.
 
 \section{Multiscale Representation and Learning}
 % Título Alternativo "Multiresolution Signal Decomposition"
