@@ -471,21 +471,12 @@ Here, $y_j = \gt{g}_i(x_j)$, and we train the MR-Net $f$ to minimize $\mathcal{L
 \subsubsection{Filtering with Gaussian / Laplacian Pyramid}
 
 Unlike the Gaussian tower, which is a highly redundant representation, the Gaussian pyramid is ``critically sampled,'' i.e., it uses the minimum number of samples necessary to represent each frequency band.
-% The \textit{Gaussian pyramid} is a classical multiscale representation of uniformly sampled signals. Based on the Shannon sampling theorem, the Gaussian tower is a highly redundant multiscale representation. On the other hand, the Gaussian pyramid is ``critically sampled'', i.e., it has the minimum number of samples required to represent each frequency band. 
+
 The Gaussian pyramid $\{x_{k,l}, y_{k,l}\}_i$ is defined by recursively downsampling each level of the Gaussian tower of $\gt{f}$ by a factor of 2. We assume the sampled points $\{x_{k,l}\}$ form a grid of size $2^k$ for some integer $k>N$. Thus, each dimension of a stage grid $\{x_{k,l}\}_i$ is half the size of the previous level's grid.
-% As in Section~\ref{sec:mr_struct}, we are assuming that the sampled points $\{x_{k,l}\}$ forms a grid of size $2^k\times 2^k$ for some integer $k>N$.
-% Thus each dimension of a stage grid $\{x_{k,l}\}_i$ has twice the size of the previous one
 
 Similarly, the \textit{Laplacian pyramid} is built using the Laplacian tower of $\gt{f}$, applying downsampling to the residual components.
 
-
-
 As we have seen in Section \ref{sec:generalization}, we can generalize correctly the model based only on the samples of a Gaussian pyramid. In terms of efficiency, it's faster to train the model on fewer samples, aligned with classical sampling theory results. This way, the Gaussian pyramid representation is more efficient and compact than the Gaussian tower. 
-% As shown in Section~\ref{sec:generalization}, a model can generalize correctly when trained on the Gaussian pyramid's fewer samples, 
-% making it ideal for tasks requiring a reduced dataset size while retaining frequency information. 
-
-% To evaluate performance on the original signal, we can generate a multi-stage stack where each level has the same resolution as $\gt{f}$ and use it as the test data. This test stack, known as a Gaussian/Laplacian tower, is obtained by applying the corresponding filtering operations to each level of the pyramid. By training on the multi-resolution pyramid and testing on the reconstructed tower, we can validate whether the MR-Net is correctly generalizing to the full-resolution signal.
-
 
 When training with a multi-stage stack with grids of different resolutions such as a Gaussian pyramid, we can build another multi-stage stack where each level has the same resolution as the original signal and use it as test data. In this case, this second multi-stage stack, a tower, should have each level filtered accordingly to its corresponding level in the pyramid, so that they are separated in similar frequency bands. With this pre-processing, we can train the network on the multiresolution pyramid data, and evaluate it on the original signal resolution, comparing it against the multiresolution tower data to check if it's generalizing as expected.
 
@@ -494,6 +485,17 @@ When training with a Gaussian/Laplacian pyramid, we initialize the stages $g_i$ 
 \omega_{N-1}, \frac{\omega_{N-1}}{2}, \ldots, \frac{\omega_{N-1}}{2^{N-1}},
 \]
 where $\omega_{N-1} = 2^{k-1}$. Each stage $g_i$ is initialized using the set $\Omega_i = \left[-\omega_i, \omega_i\right]^2$ for the first layer of $g_i$, ensuring that the frequency ranges align with the pyramid structure and maintain the desired resolution properties.
+
+% The \textit{Gaussian pyramid} is a classical multiscale representation of uniformly sampled signals. Based on the Shannon sampling theorem, the Gaussian tower is a highly redundant multiscale representation. On the other hand, the Gaussian pyramid is ``critically sampled'', i.e., it has the minimum number of samples required to represent each frequency band. 
+
+% As in Section~\ref{sec:mr_struct}, we are assuming that the sampled points $\{x_{k,l}\}$ forms a grid of size $2^k\times 2^k$ for some integer $k>N$.
+% Thus each dimension of a stage grid $\{x_{k,l}\}_i$ has twice the size of the previous one
+
+% As shown in Section~\ref{sec:generalization}, a model can generalize correctly when trained on the Gaussian pyramid's fewer samples, 
+% making it ideal for tasks requiring a reduced dataset size while retaining frequency information. 
+
+% To evaluate performance on the original signal, we can generate a multi-stage stack where each level has the same resolution as $\gt{f}$ and use it as the test data. This test stack, known as a Gaussian/Laplacian tower, is obtained by applying the corresponding filtering operations to each level of the pyramid. By training on the multi-resolution pyramid and testing on the reconstructed tower, we can validate whether the MR-Net is correctly generalizing to the full-resolution signal.
+
 
 % The training of the MR-Net stages $g_i$ using Gaussian/Laplacian is analogous to the tower's case.
 % Regarding the initialization of $g_i$, observe that $2^{k-N+1+i}$ is the height and width of the $i$th stack $\{x_{k,l}, y_{k,l}\}_i$, thus it cannot contain frequencies higher than $\omega_i=2^{k-N+i}$. 
