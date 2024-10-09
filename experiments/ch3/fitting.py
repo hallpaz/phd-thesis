@@ -81,7 +81,7 @@ def make_noise(hyper):
 #                                             optim_handler=optim_handler)
 #         mrtrainer.train(hyper['device'])
 
-def training_pipeline(hyper):
+def training_pipeline(hyper, name):
     project_name = hyper['project_name']
     scale, octaves, p = hyper['scale'], hyper['octaves'], hyper['p']
     # name = f"fit-s{scale}-o{octaves}-p{p}"
@@ -101,7 +101,24 @@ def training_pipeline(hyper):
     # you can substitute this line by your custom handler class
     optim_handler = get_optim_handler(hyper.get('optim_handler', 'regular'))
         
-    current_train = [train_dataset[NUM_LEVELS-1]]
+    # signal = test_dataset[NUM_LEVELS-1]
+    # subdata = signal.data[:, 0::8]
+    # subdata = torch.cat((subdata, signal.data[:, -1:]), dim=-1)
+    # subsignal = Signal1D(subdata, signal.domain)
+    # current_train = [subsignal]
+
+    # ALTERNATIVA INTERPOLANDO
+    import numpy as np
+    signal = test_dataset[NUM_LEVELS-1]
+    fullsize = signal.size()[-1]
+    subdata = np.interp(np.linspace(signal.domain[0], signal.domain[1], 
+                                    fullsize // (2**(NUM_LEVELS-1))),
+              signal.coords.view(-1),
+              signal.data.view(-1))
+    subsignal = Signal1D(torch.Tensor(subdata).view(1, -1), signal.domain)
+    current_train = [subsignal]
+    # embed()
+    # current_train = [train_dataset[NUM_LEVELS-1]]
     # current_train = [test_dataset[NUM_LEVELS-1]]
     current_test = [test_dataset[NUM_LEVELS-1]]
     hyper['nsamples'] = current_train[0].size()[-1]
@@ -116,8 +133,6 @@ def training_pipeline(hyper):
     mrmodel = MRFactory.from_dict(hyper)
     print("Model: ", type(mrmodel))
     print(mrmodel)
-    name = "fit" + ''.join(
-        random.choices(string.ascii_uppercase + string.digits, k=4))
     training_listener = TrainingListener(project_name,
                                 f"{name}{hyper['model']}",
                                 hyper,
@@ -133,10 +148,12 @@ def training_pipeline(hyper):
 
 
 if __name__ == '__main__':
-    nfeatures = [32]
+    nfeatures = [64]
     h_layers = [1]
     device = "cuda" if torch.cuda.is_available() else "cpu"
     torch.manual_seed(777)
+    name = "fit" + ''.join(
+        random.choices(string.ascii_uppercase + string.digits, k=4))
     for features in nfeatures:
         for layers in h_layers:
             #-- hyperparameters in configs --#
@@ -145,4 +162,4 @@ if __name__ == '__main__':
             hyper['hidden_features'] = features
             hyper['hidden_layers'] = layers
 
-            training_pipeline(hyper)
+            training_pipeline(hyper, name)

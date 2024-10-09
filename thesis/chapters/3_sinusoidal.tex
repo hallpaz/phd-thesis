@@ -302,6 +302,7 @@ We conclude that a sinusoidal neural network with no hidden layers can effective
 \pagebreak
 
 \subsection{Learning and filtering stochastic signals}
+\label{sec:learning-stochastic}
 
 %     - Diverging by using high frequencies. Show how the network diverges when initialized with very high frequencies.
 
@@ -686,18 +687,76 @@ Previous work by \cite{Rahaman2018O} has demonstrated that during training, a Mu
 \section{Training, Generalization and Representation}
 \label{sec:generalization}
 
-% \red{We have established that we can bound the frequencies learned by a sinusoidal neural network by adjusting the interval of frequencies sampled for initialization of its first layer, and also by adjusting the network capacity. That is, if the value of $\omega_0$ is too low, the network will learn the lower frequencies of the signal, fitting their intensities in the Fourier spectrum, but won't learn the higher frequencies, even if it has enough computational units to to do. On the other hand, if the capacity given by the computational units is too small, the result will also resemble a filtered version of the target signal. TALVEZ MOVER PARA O CHAPTER 4 - MR-TRAINING}
+Neural networks have traditionally been used as tools for data analysis, trained on large datasets to recognize patterns and extract features for specific data types. This is also true in a generative context, as the model must be trained in a dataset with sufficient examples to allow it to model or sample the data distribution. In contrast, we employ coordinate-based neural networks to \textit{represent} signals. Instead of training a network on a diverse dataset, we focus on fitting it to a single object, aiming to construct a continuous function that represents a given signal.
 
-Neural networks have been extensively used as analysis tools, as models trained in large datasets to recognize patterns and construct features to specific data types. However, we are using coordinate-based neural networks to represent signals. Our dataset is only 1 signal, or better saying, it is a set of samples of this signal, for example, a discrete set of coordinates and values. 
+From this perspective, \cite{davies2021effectivenessweightencodedneuralimplicit} used neural networks to encode a single 3D shape, suggesting that this could serve as an efficient representation for these objects. In their work, they describe this process as overfitting to a single shape, which emphasizes the fact that the network "memorizes" the object’s geometry. However, we believe this framing is somewhat misleading. Our objective is not mere memorization, but rather to build a continuous representation of a signal based on a limited set of samples. This approach is applicable to a variety of domains, including one-dimensional signals like audio, two-dimensional images, and three-dimensional meshes or video data.
 
-Some people say \red{trazer referências} that this is equivalennt to overfit a neural network to the signal, but we do not think this is the appropriate way to frame the problem. We want the neural network to be a continuous representation of a signal for which we only know a limited amount of samples. We actually need to solve a problem of  sampling and reconstruction, a classical problem in signal processing, guaranteeing that the neural representation contains the samples but also that it is "well behaved" in between. That means that when thinking of overfitting and generalization, we should borrow the perspective of regression problems and interpolation. For example, in polynomial interpolation it is known that high-degree polynomials will oscilate a lot, inclusing in regions between the interpolated points.
+The problem at hand is a classic problem in signal processing: \textbf{sampling and reconstruction}. We aim to ensure that the neural network accurately represents the given samples while behaving smoothly in regions between them. Therefore, when discussing overfitting and generalization in this context, it is more appropriate to adopt the viewpoint of regression and interpolation. Rather than considering our dataset as a single signal, we view it as a discrete set of samples from a continuous function. Similarly to a polynomial interpolation scenario, where high-degree polynomials are prone to oscillations between sample points, we should avoid configurations where the network contains the training points but oscillates in between them.
 
-In this section, we investigate how well sinusoidal neural networks generalize to represent signals. To this end, we run experiments trying to reconstruct a signal from a critically sampled representation. For this, we take an input signal and we compute its Gaussian pyramid representation, that is, we filter the signal with a low-pass filter and subsample it by a factor of 2, repeating this procedure several times. We use these subsampled signals as training data for our experiments. 
+In this section, we evaluate the generalization capacity of sinusoidal neural networks in representing signals. We conduct experiments to reconstruct a signal from a critically sampled set of observations by generating distinct training and test signals. For these experiments, we use a Perlin noise with 2048 samples in the range $[-1, 1]$, configured with the following parameters: scale = 10, octaves = 8, and persistence = 0.9.
 
-On the other hand, additionally, we build a Gaussian Tower, that is, a filtered representation without decimation. To compensate for the lack of subsampling, we double the window of the filter for each level of the tower. This way, for a signal like a high frequency Perlin noise, the original signal is critically sampled, but the other levels of the Gaussian Tower are oversampled. According to the signal processing theory, for each level, it should be possible to perfectly reconstruct teh signal using only the samples in the Gaussian Pyramid. This way, we train the network in a Gaussian pyramid signal and we evaluate it against its correspondent in the Gaussian Tower. By sampling the network in a much more refined grid, and having a baseline to compare, we can verify if it is accuratelly representing the signal or if it is overfitting, that is, learning how to perfectly fit the samples, but introducing spurious frequencies and oscilating in between the supervised points.
+The \textit{test signal} is is created by iteratively filtering the input signal with a Gaussian kernel, a low-pass filter, where each filtering step doubles the kernel window size. As a result, the test signal retains 2048 samples but has a reduced frequency band, making it oversampled. The \textit{training signal}, on the other hand, is generated by subsampling the test signal by a factor of $2^N$, where \(N\) is the number of filtering steps applied. For example, if the signal is filtered four times, the subsampling factor is 16, resulting in 128 training samples extracted from the original 2048 samples.
 
-For the next experiments, we generate another Perlin noise with the following parameters: scale: 10; octaves: 8; persistence: 0.9.
+We assume that the initial input signal, the Perlin noise, is band-limited. Moreover, as observed in the FFT plots in Section \ref{sec:learning-stochastic}, the higher frequencies have significantly lower amplitudes, allowing us to disregard potential aliasing effects caused by the Gaussian filter not being an ideal filter. Based on this premisse, according to signal processing theory, it should be possible to reconstruct the entire test signal using only the training samples by applying an ideal \textit{sinc} interpolation ($sinc(x) = \frac{sin(x)}{x}$). 
 
+Although we are not using the sinc basis for reconstruction, we evaluate the generalization capacity of our \textit{representational neural network} by training it on the training signal and then evaluate it against the test signal. By sampling the network at a much higher resolution and comparing it to the ground-truth test signal, we can analyze whether the network accurately reconstructs the signal or exhibits overfitting, characterized by oscillations or spurious frequencies between the supervised points.
+
+As a sanity check, in Figure \ref{f:pred-256samples-shallow-deep}, we show the reconstruction of a test signal, generated after three filtering steps, using both a shallow network (top) and a deep sinusoidal network with a single hidden layer (bottom). The shallow network has 2048 neurons per layer and \(\omega_0 = 96\), while the deep network has 64 neurons per layer and \(\omega_0 = 32\). Both networks were trained using all 2048 points. 
+
+\begin{figure}[!h]
+    \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/pred-2048hf-0hl-96w-filter3.pdf}
+        \caption{Reconstruction - no hidden layers}
+        % \label{fig:pred-1hl-16hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/16x-2048hf-0hl-96w-filter3.pdf}
+        \caption{16x Zoomed-in - no hidden layers}
+        % \label{fig:16x-zoom-1hl-16hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/fft-2048hf-0hl-96w-filter3.pdf}
+        \caption{FFT - no hidden layers}
+        % \label{fig:fft-1hl-16hf-2hz}
+    \end{subfigure}
+
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/pred-64hf-1hl-32w-filter3.pdf}
+        \caption{Reconstruction - 1 hidden layer}
+        % \label{fig:pred-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/16x-64hf-1hl-32w-filter3.pdf}
+        \caption{16x Zoomed-in - 1 hidden layer}
+        % \label{fig:16x-zoom-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/fft-64hf-1hl-32w-filter3.pdf}
+        \caption{FFT - 1 hidden layer}
+        % \label{fig:pred-1hl-16hf-64hz}
+    \end{subfigure}
+    \caption{Reconstruction of the test signal using a shallow network (top) and a one hidden layer network (bottom)}
+    \label{f:pred-256samples-shallow-deep}
+\end{figure}
+
+\red{Note that the reconstructions looks fine as expected.}
+
+
+Next, we train each network with 4 times less points. The same configuration of networks generated high-oscilating results as shown in Figure XXXX. However, after adjusting the networks width and initialization we reached reasonable approximations of the signals as display in Figure XXXXX.
+
+\red{FIGURA}
+
+\red{FIGURA}
+
+
+Analysing Figure XXXX, we judge that the reconstruction is good as a lossy compression. In fact, the PSNR value for the shallow network is XXXXX and for the deep one, XXXXXX.The maximim difference is XXX and XXXXX. Since we are not using the sinc function to reconstruct the signal, we were not expecting the reconstruction to be perfect.
 
 
 % - Present the experiments in fitting multiresolution signals

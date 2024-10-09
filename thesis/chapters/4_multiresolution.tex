@@ -1,6 +1,9 @@
 \chapter{Multiresolution Sinusoidal Neural Networks}
 \label{chap:mr_snn}
 
+
+% \red{We have established that we can bound the frequencies learned by a sinusoidal neural network by adjusting the interval of frequencies sampled for initialization of its first layer, and also by adjusting the network capacity. That is, if the value of $\omega_0$ is too low, the network will learn the lower frequencies of the signal, fitting their intensities in the Fourier spectrum, but won't learn the higher frequencies, even if it has enough computational units to to do. On the other hand, if the capacity given by the computational units is too small, the result will also resemble a filtered version of the target signal. TALVEZ MOVER PARA O CHAPTER 4 - MR-TRAINING}
+
 In this chapter, we present a novel neural network architecture designed to efficiently encode signals at multiple scales. Our objective is to construct a continuous, compact, and high-fidelity representation of scalar and vector fields, making it applicable to a variety of media such as audio, images, shapes, and complex spatiotemporal data. These media object, interpreted as signals, can be given explicitly as attributes of space-time coordinates or implicitly as level sets of functions.
 
 This chapter builds upon our exploration of sinusoidal neural networks, where we analyzed how frequency capacity and initialization schemes influence the network's ability to represent diverse signal frequencies. Drawing on these insights, we propose a multiresolution neural network (MR-Net) architecture that combines classical multi-scale signal processing techniques with modern deep learning methodologies to address the limitations of existing coordinate-based models.
