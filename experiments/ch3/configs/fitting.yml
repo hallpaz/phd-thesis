@@ -18,7 +18,7 @@ pmode: wrap
 domain: [-1, 1]
 
 # Frequency Initialization
-omega_0: 16
+omega_0: 8
 hidden_omega_0: 30
 superposition_w0: True
 

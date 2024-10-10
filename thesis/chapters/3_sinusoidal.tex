@@ -687,7 +687,7 @@ Previous work by \cite{Rahaman2018O} has demonstrated that during training, a Mu
 \section{Training, Generalization and Representation}
 \label{sec:generalization}
 
-Neural networks have traditionally been used as tools for data analysis, trained on large datasets to recognize patterns and extract features for specific data types. This is also true in a generative context, as the model must be trained in a dataset with sufficient examples to allow it to model or sample the data distribution. In contrast, we employ coordinate-based neural networks to \textit{represent} signals. Instead of training a network on a diverse dataset, we focus on fitting it to a single object, aiming to construct a continuous function that represents a given signal.
+Neural networks have traditionally been used as tools for data analysis, trained on large datasets to recognize patterns and extract features for specific data types. This is also true in a generative context, as the model must be trained in a dataset with sufficient examples to allow it to model or sample the data distribution. These are \textit{data-based neural networks}. In contrast, we employ coordinate-based neural networks to \textit{represent} signals. Instead of training a network on a diverse dataset, we focus on fitting it to a single object, aiming to construct a continuous function that represents a given signal.
 
 From this perspective, \cite{davies2021effectivenessweightencodedneuralimplicit} used neural networks to encode a single 3D shape, suggesting that this could serve as an efficient representation for these objects. In their work, they describe this process as overfitting to a single shape, which emphasizes the fact that the network "memorizes" the object’s geometry. However, we believe this framing is somewhat misleading. Our objective is not mere memorization, but rather to build a continuous representation of a signal based on a limited set of samples. This approach is applicable to a variety of domains, including one-dimensional signals like audio, two-dimensional images, and three-dimensional meshes or video data.
 
@@ -701,7 +701,7 @@ We assume that the initial input signal, the Perlin noise, is band-limited. More
 
 Although we are not using the sinc basis for reconstruction, we evaluate the generalization capacity of our \textit{representational neural network} by training it on the training signal and then evaluate it against the test signal. By sampling the network at a much higher resolution and comparing it to the ground-truth test signal, we can analyze whether the network accurately reconstructs the signal or exhibits overfitting, characterized by oscillations or spurious frequencies between the supervised points.
 
-As a sanity check, in Figure \ref{f:pred-256samples-shallow-deep}, we show the reconstruction of a test signal, generated after three filtering steps, using both a shallow network (top) and a deep sinusoidal network with a single hidden layer (bottom). The shallow network has 2048 neurons per layer and \(\omega_0 = 96\), while the deep network has 64 neurons per layer and \(\omega_0 = 32\). Both networks were trained using all 2048 points. 
+As a sanity check, in Figure \ref{f:pred-2048samples-shallow-deep}, we show the reconstruction of a test signal, generated after three filtering steps, using both a shallow network (top) and a deep sinusoidal network with a single hidden layer (bottom). The shallow network has 2048 neurons per layer and \(\omega_0 = 96\), while the deep network has 64 neurons per layer and \(\omega_0 = 32\). Both networks were trained using all 2048 points. 
 
 \begin{figure}[!h]
     \centering
@@ -743,74 +743,187 @@ As a sanity check, in Figure \ref{f:pred-256samples-shallow-deep}, we show the r
         % \label{fig:pred-1hl-16hf-64hz}
     \end{subfigure}
     \caption{Reconstruction of the test signal using a shallow network (top) and a one hidden layer network (bottom)}
+    \label{f:pred-2048samples-shallow-deep}
+\end{figure}
+
+Note that Figure \ref{f:pred-2048samples-shallow-deep} displays good qualitative reconstructions for both models. Quantitatively, the reconstruction of the shallow network yields a Peak to Noise Signal Ratio (PSNR) of 72.46 db, while the one of the deep networks is of 61.06 db. We apply the same hyperparameters to train these models using the training signal, that has 8 times less points than the test signal. Figure \ref{f:pred-256samples-shallow-deep} shows the resultant reconstruction.
+
+
+\begin{figure}[!h]
+    \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/pred-2048hf-0hl-96w-sub3.pdf}
+        \caption{Reconstruction - no hidden layers}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/16x-2048hf-0hl-96w-sub3.pdf}
+        \caption{16x Zoomed-in - no hidden layers}
+        % \label{fig:16x-zoom-1hl-16hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/fft-2048hf-0hl-96w-sub3.pdf}
+        \caption{FFT - no hidden layers}
+        % \label{fig:fft-1hl-16hf-2hz}
+    \end{subfigure}
+
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/pred-64hf-1hl-32w-sub3.pdf}
+        \caption{Reconstruction - 1 hidden layer}
+        % \label{fig:pred-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/16x-64hf-1hl-32w-sub3.pdf}
+        \caption{16x Zoomed-in - 1 hidden layer}
+        % \label{fig:16x-zoom-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/fft-64hf-1hl-32w-sub3.pdf}
+        \caption{FFT - 1 hidden layer}
+        % \label{fig:pred-1hl-16hf-64hz}
+    \end{subfigure}
+    \caption{Reconstruction training on the training signal and evaluating against the test signal. Shallow network (top) and a one hidden layer network (bottom)}
     \label{f:pred-256samples-shallow-deep}
 \end{figure}
 
-\red{Note that the reconstructions looks fine as expected.}
+Although the reconstruction looks reasonably close to the ground-truth signal, it is possible to note that the model reconstruction exhibits some oscilations. The PSNR of the shallow model decreased to 32.36 db, while the PSNR for the other model decreased to 35.76 db. These oscillations suggests that the model is learning higher frequencies not presnent in the signal or augmenting the amplitude of the high-frequencies present in the signal. This way, we repeat the experiment reducing the value for $\omega_0$, that is, bounding the frequencies of initialization to a smaller interval.
 
 
-Next, we train each network with 4 times less points. The same configuration of networks generated high-oscilating results as shown in Figure XXXX. However, after adjusting the networks width and initialization we reached reasonable approximations of the signals as display in Figure XXXXX.
+\begin{figure}[!h]
+    \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/pred-2048hf-0hl-64w-sub3.pdf}
+        \caption{Reconstruction - no hidden layers}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/16x-2048hf-0hl-64w-sub3.pdf}
+        \caption{16x Zoomed-in - no hidden layers}
+        % \label{fig:16x-zoom-1hl-16hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/32x-2048hf-0hl-64w-sub3.pdf}
+        \caption{32x Zoomed-in - no hidden layers}
+        % \label{fig:fft-1hl-16hf-2hz}
+    \end{subfigure}
 
-\red{FIGURA}
-
-\red{FIGURA}
-
-
-Analysing Figure XXXX, we judge that the reconstruction is good as a lossy compression. In fact, the PSNR value for the shallow network is XXXXX and for the deep one, XXXXXX.The maximim difference is XXX and XXXXX. Since we are not using the sinc function to reconstruct the signal, we were not expecting the reconstruction to be perfect.
-
-
-% - Present the experiments in fitting multiresolution signals
-%     - 1D Gaussian Tower
-%     - 1D Gaussian Pyramid
-%     - show that networks is well behaved between samples
-
-% \subsection{Gaussian Pyramid Training}
-
-
-% After exploring the impact of different values of initialization frequencies, we investigated if we could fit multiple scales of the same signal by building a Gaussian pyramid of it. We filtered the signal using a box filter of dimension 5, decimated it by a factor of 2 and used this subsampled version to train our network. Then, we used the trained network to predict the values over all originally sampled points, so we could verify its behaviour on unsupervised points. As we are filtering the higher frequencies of the signal, we expect to be able to represent it exactly by using fewer samples, acconding to the classical sampling theory.  
-% We compared our result to a smoothed but not decimated version of the signal where we doubled the size of the filter as we walked to coarse scales. The panel of figures below shows the result of fitting a signal in 7 different scales, starting with \omega_0=256 and dividing it by 2 as we walk to coarse scales.
-% We trained the network using less points at each scale.
-
-% \begin{figure}[!htb]
-% \minipage{0.49\textwidth}
-% \includegraphics[width=\linewidth]{charts/Section-20-Panel-0-ulotlhctz}
-% \caption{}
-% \endminipage\hfill
-% \minipage{0.49\textwidth}
-% \includegraphics[width=\linewidth]{charts/Section-20-Panel-1-twwld6gku}
-% \caption{}
-% \endminipage
-% \end{figure}
-
-
-% \chapter{Multiresolution Sinusoidal Neural Networks}
-% \label{ch:mrnet}
-
-% In recent years, the computer science community has seen an explosion in research in neural networks, motivated mainly by advances in Deep Learning~\cite{lecun2015deep,goodfellow2016deep}.
-% For visual computing, this was spurred by the creation of Convolutional Neural Networks~(CNNs)~\cite{cnn98}, which had a significant impact both for the research community and the society at large~\cite{li2021survey,shamsaldin2019study}.
-% The effectiveness of CNNs comes from the translation invariant properties of the convolution operator, which makes it a proper architecture for the analysis of visual imagery.
-
-% Deep neural networks such as CNNs, employ an array-based discrete representation of the underlying signal. In this case, the network input consists of a vector of pixel values (in RGB) representing the image \emph{directly} by data samples. We call this kind of network a \textit{data-based} network.
-
-
-% Moreover, the revolution in the media industry caused by deep neural networks motivated the development of new image representations using neural networks. While the data-based network is appropriate for analysis tasks, relying on a discretization of the image, another kind of network called \textit{coordinate-based~network} is suitable for synthesis, and provides a continuous and compact representation. For its characteristics, there is a growing interest in using these networks in imaging applications~\cite{xie2022neural}.
-% For instance, coordinate-based networks have been successfully applied in image compression~\cite{dupont2021coin} and super-resolution~\cite{czerkawski2021neural}.
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/pred-64hf-1hl-16w-sub3.pdf}
+        \caption{Reconstruction - 1 hidden layer}
+        % \label{fig:pred-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/16x-64hf-1hl-16w-sub3.pdf}
+        \caption{16x Zoomed-in - 1 hidden layer}
+        % \label{fig:16x-zoom-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/32x-64hf-1hl-16w-sub3.pdf}
+        \caption{32x Zoomed-in - 1 hidden layer}
+        % \label{fig:pred-1hl-16hf-64hz}
+    \end{subfigure}
+    \caption{Reconstruction training on the training signal and evaluating against the test signal. Shallow network (top) and a one hidden layer network (bottom)}
+    \label{f:pred-256samples-shallow-deep-adjusted}
+\end{figure}
 
 
-% A coordinate-based network represents the image \emph{indirectly} using a fully connected \textit{multi-layer perceptron} (MLP) that takes as input a pixel coordinate and outputs a RGB color. These~networks provide a continuous implicit representation for images~\cite{chen2021learning}, and allow for various applications, from Neural Signed Distance Functions~(NeuralSDFs)~\cite{park2019deepsdf} to Neural Radiance Fields~(NeRFs)~\cite{mildenhall2021nerf}. Since the coordinates are continuous, images can be presented in arbitrary resolution.
+It is remarkable that despite not using the sinc function, we can get a really good reconstruction of the signal using 8 times less points. In fact, the PSNR value for the shallow network reconstruction is 42 db and for the deep one, 50 db. 
 
-% % Sinusoidal neural networks are particularly suited to model stationary or quasi-stationary signals due to the periodic nature of its activation function~\cite{chen2022}.
+In our generalization vs overfitting discussion, it seems that using more points act as a regularization when training a sinusoidal neural network. With less points, it tends to learn higher frequencies and oscillate between the supervised points. However, other regularization techniques, like adjusting the initialization, may compensate this.
 
-% Sinusoidal neural networks are examples of coordinate-based networks in which their activation function is the sine function. As such, they bridge the gap between the spatial and spectral domains, given the close relationship of the sine function with the Fourier~basis. However, these sinusoidal neural networks have been regarded as difficult to train~\cite{taming2017}. To overcome this problem, \citet{sitzmann2019siren} proposed a sinusoidal network for signal representation called SIREN. One of the key contributions of this work is the initialization scheme that guarantees stability and good convergence. Furthermore, it also allows modeling fine details in accordance with the signal’s frequency content.
+\begin{figure}[!h]
+    \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/pred-32hf-1hl-6w-sub4.pdf}
+        \caption{Reconstruction - 1 hidden layer}
+        % \label{fig:pred-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/4x-32hf-1hl-6w-sub4.pdf}
+        \caption{4x Zoomed-in - 1 hidden layer}
+        % \label{fig:16x-zoom-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/16x-32hf-1hl-6w-sub4.pdf}
+        \caption{16x Zoomed-in - 1 hidden layer}
+        % \label{fig:pred-1hl-16hf-64hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/pred-24hf-1hl-6w-sub5.pdf}
+        \caption{Reconstruction - 1 hidden layer}
+        % \label{fig:pred-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/4x-24hf-1hl-6w-sub5.pdf}
+        \caption{4x Zoomed-in - 1 hidden layer}
+        % \label{fig:16x-zoom-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/16x-24hf-1hl-6w-sub5.pdf}
+        \caption{16x Zoomed-in - 1 hidden layer}
+        % \label{fig:pred-1hl-16hf-64hz}
+    \end{subfigure}
 
-% A \textit{multiplicative filter network} (MFN) is a sinusoidal network simpler than SIREN which is equivalent to a shallow sinusoidal network~\cite{fathony2020multiplicative}. \citet{bacon2021} presented \textit{band-limited coordinate network }(BACON), an MFN that produces intermediate outputs with an analytical spectral bandwidth (specified at initialization) and achieves multiresolution of the underlying signal. While its structure allows BACON to be expressed as a linear combinations of sines, avoiding the composition of sines present in sinusoidal MLPs, it creates multiresolution representations by truncating the frequency spectra of the signals. This approach produces ringing artifacts  in some levels of detail, and becomes evident when we look at the Fourier transform of the images.
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/pred-8hf-1hl-2w-sub6.pdf}
+        \caption{Reconstruction - 1 hidden layer}
+        % \label{fig:pred-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/4x-8hf-1hl-2w-sub6.pdf}
+        \caption{4x Zoomed-in - 1 hidden layer}
+        % \label{fig:16x-zoom-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/16x-8hf-1hl-2w-sub6.pdf}
+        \caption{16x Zoomed-in - 1 hidden layer}
+        % \label{fig:pred-1hl-16hf-64hz}
+    \end{subfigure}
 
-% The control of frequency bands in the representation is closely related with the capability of adaptive reconstruction of the signal in multiple levels of detail.
-% In that context, \citet{mueller2022instant} developed a multiresolution neural network architecture based on hash encoding. Also, \citet{martel2021acorn} designed an adaptive coordinate network for neural signals.
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/pred-6hf-1hl-1w-sub7.pdf}
+        \caption{Reconstruction - 1 hidden layer}
+        % \label{fig:pred-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/4x-6hf-1hl-1w-sub7.pdf}
+        \caption{4x Zoomed-in - 1 hidden layer}
+        % \label{fig:16x-zoom-1hl-256hf-2hz}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ch3/16x-6hf-1hl-1w-sub7.pdf}
+        \caption{16x Zoomed-in - 1 hidden layer}
+        % \label{fig:pred-1hl-16hf-64hz}
+    \end{subfigure}
+    \caption{Reconstruction one hidden layer}
+    \label{f:rec-deep-multiple-filters}
+\end{figure}
 
-% In this context, we introduce \textit{multiresolution sinusoidal neural networks}~(MR-Net) based on classical signal multiresolution representations. 
-% Our results, presented in Section~\ref{sub:spectra-eval}, indicate that using MR-Net produces better results compared to the previous state-of-the-art technique, BACON, while employing a smaller number of parameters.
-% We describe three MR-Net subclasses: S-Net, L-Net and M-Net.
-% Finally, we present applications on antialiasing and level-of-detail reconstruction.
 
-% - Related Works: Mip-Nerf; Bacon; 
+% filter 3 | w=16 | 64hf
+filter 4 | w=8  | 32hf | 47.12 db
+filter 5 | w=6 | 24hf | 43.39 db
+filter 6 | w=2 | 8hf | 39.91 db
+filter 7 | w=1 | 6hf | 42.47 db

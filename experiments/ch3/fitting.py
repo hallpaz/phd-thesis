@@ -85,14 +85,12 @@ def training_pipeline(hyper, name):
     project_name = hyper['project_name']
     scale, octaves, p = hyper['scale'], hyper['octaves'], hyper['p']
     # name = f"fit-s{scale}-o{octaves}-p{p}"
-    NUM_LEVELS = 4
-    OMEGAS = [128, 24]
-    H_FEATURES = [128, 64]
+    NUM_LEVELS = 5
     base_signal = make_noise(hyper)
-    train_dataset = create_MR_structure(base_signal, 
-                                        NUM_LEVELS,
-                                        hyper['filter'],
-                                        hyper['decimation'])
+    # train_dataset = create_MR_structure(base_signal, 
+    #                                     NUM_LEVELS,
+    #                                     hyper['filter'],
+    #                                     hyper['decimation'])
     test_dataset = create_MR_structure(base_signal, 
                                         NUM_LEVELS,
                                         hyper['filter'],
@@ -148,7 +146,7 @@ def training_pipeline(hyper, name):
 
 
 if __name__ == '__main__':
-    nfeatures = [64]
+    nfeatures = [32]
     h_layers = [1]
     device = "cuda" if torch.cuda.is_available() else "cpu"
     torch.manual_seed(777)
