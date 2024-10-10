@@ -701,7 +701,7 @@ We assume that the initial input signal, the Perlin noise, is band-limited. More
 
 Although we are not using the sinc basis for reconstruction, we evaluate the generalization capacity of our \textit{representational neural network} by training it on the training signal and then evaluate it against the test signal. By sampling the network at a much higher resolution and comparing it to the ground-truth test signal, we can analyze whether the network accurately reconstructs the signal or exhibits overfitting, characterized by oscillations or spurious frequencies between the supervised points.
 
-As a sanity check, in Figure \ref{f:pred-2048samples-shallow-deep}, we show the reconstruction of a test signal, generated after three filtering steps, using both a shallow network (top) and a deep sinusoidal network with a single hidden layer (bottom). The shallow network has 2048 neurons per layer and \(\omega_0 = 96\), while the deep network has 64 neurons per layer and \(\omega_0 = 32\). Both networks were trained using all 2048 points. 
+As a sanity check, Figure \ref{f:pred-2048samples-shallow-deep} presents the reconstruction of a test signal generated after three filtering steps using two models: a shallow network (top row) and a deep sinusoidal network with a single hidden layer (bottom row). The shallow network has 2048 neurons per layer and uses \(\omega_0 = 96\), while the deep network has 64 neurons per layer and uses \(\omega_0 = 32\). Both models were trained using all 2048 points; that is, we trained and evaluated the network on the test signal. 
 
 \begin{figure}[!h]
     \centering
@@ -746,7 +746,8 @@ As a sanity check, in Figure \ref{f:pred-2048samples-shallow-deep}, we show the 
     \label{f:pred-2048samples-shallow-deep}
 \end{figure}
 
-Note that Figure \ref{f:pred-2048samples-shallow-deep} displays good qualitative reconstructions for both models. Quantitatively, the reconstruction of the shallow network yields a Peak to Noise Signal Ratio (PSNR) of 72.46 db, while the one of the deep networks is of 61.06 db. We apply the same hyperparameters to train these models using the training signal, that has 8 times less points than the test signal. Figure \ref{f:pred-256samples-shallow-deep} shows the resultant reconstruction.
+
+Note that Figure \ref{f:pred-2048samples-shallow-deep} shows that both models provide good qualitative reconstructions. Quantitatively, the shallow network achieves a Peak Signal-to-Noise Ratio (PSNR) of 72.46 dB, while the deep network reaches 61.06 dB. We use these same hyperparameters to train both models on the training signal, which has 8 times less points than the test signal. Figure \ref{f:pred-256samples-shallow-deep} shows the resultant reconstruction.
 
 
 \begin{figure}[!h]
@@ -794,6 +795,8 @@ Note that Figure \ref{f:pred-2048samples-shallow-deep} displays good qualitative
 Although the reconstruction looks reasonably close to the ground-truth signal, it is possible to note that the model reconstruction exhibits some oscilations. The PSNR of the shallow model decreased to 32.36 db, while the PSNR for the other model decreased to 35.76 db. These oscillations suggests that the model is learning higher frequencies not presnent in the signal or augmenting the amplitude of the high-frequencies present in the signal. This way, we repeat the experiment reducing the value for $\omega_0$, that is, bounding the frequencies of initialization to a smaller interval.
 
 
+Although these reconstructions closely resemble the ground-truth signal, both models exhibit some oscillations. The PSNR of the shallow model drops to 32.36 dB, while the deep model’s PSNR decreases to 35.76 dB. These oscillations suggest that the models might be learning higher frequencies not present in the signal or amplifying the amplitude of the high frequencies already in the signal. To address this, we repeated the experiment with a reduced \(\omega_0\), subsequently limiting the range of frequencies in the initial weights.
+
 \begin{figure}[!h]
     \centering
     \begin{subfigure}[b]{0.32\textwidth}
@@ -837,9 +840,26 @@ Although the reconstruction looks reasonably close to the ground-truth signal, i
 \end{figure}
 
 
-It is remarkable that despite not using the sinc function, we can get a really good reconstruction of the signal using 8 times less points. In fact, the PSNR value for the shallow network reconstruction is 42 db and for the deep one, 50 db. 
+Figure \ref{f:pred-256samples-shallow-deep-adjusted} displays the resulting reconstructions with adjusted \(\omega_0\). Notably, despite not using the sinc function for reconstruction, both models still achieve a high-quality approximation of the test signal using only one-eighth of the available points. The shallow network now achieves a PSNR of 42 dB, while the deep network improves to 50 dB.
 
-In our generalization vs overfitting discussion, it seems that using more points act as a regularization when training a sinusoidal neural network. With less points, it tends to learn higher frequencies and oscillate between the supervised points. However, other regularization techniques, like adjusting the initialization, may compensate this.
+From our generalization vs. overfitting analysis, it appears that training with more points acts as a form of regularization for sinusoidal neural networks. With fewer training points, the networks tend to learn higher frequencies quicker, resulting in oscillations between the supervised points. However, applying other regularization strategies, such as adjusting the initial frequency values, can mitigate these effects and lead to better generalization.
+
+We generate other pairs of training and test signal by filtering the input signal further and display additional results using a network with one hiden layer in Figure \ref{f:rec-deep-multiple-filters}. Each row displays a level of filtering iteration over the input signal. The hyperparameters for each experiment is presented in Table \ref{tab:generalization}.
+
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|l|}
+    \hline
+    \multicolumn{1}{|l|}{times filtered} & \multicolumn{1}{l|}{training signal size} & \multicolumn{1}{l|}{$\omega_0$} & \multicolumn{1}{l|}{neurons per layer} & PSNR                          \\ \hline
+    4                                    & 128                                       & w=8                             & 32                                     & \multicolumn{1}{c|}{47.12 db} \\ \hline
+    5                                    & 64                                        & w=6                             & 24                                     & 43.39 db                      \\ \hline
+    6                                    & 32                                        & w=2                             & 8                                      & 39.91 db                      \\ \hline
+    7                                    & 16                                        & w=1                             & 6                                      & 42.47 db                      \\ \hline
+\end{tabular}
+\caption{Resultado}
+\label{tab:generalization}
+\end{table}
 
 \begin{figure}[!h]
     \centering
@@ -920,10 +940,3 @@ In our generalization vs overfitting discussion, it seems that using more points
     \caption{Reconstruction one hidden layer}
     \label{f:rec-deep-multiple-filters}
 \end{figure}
-
-
-% filter 3 | w=16 | 64hf
-filter 4 | w=8  | 32hf | 47.12 db
-filter 5 | w=6 | 24hf | 43.39 db
-filter 6 | w=2 | 8hf | 39.91 db
-filter 7 | w=1 | 6hf | 42.47 db
