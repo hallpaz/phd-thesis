@@ -32,34 +32,18 @@ In the next sections, we provide an overview of signal processing and deep learn
 
 \section{Media Objects as Signals}
 
-In a broad sense, a \textbf{signal} is a mathematical function that conveys information about a phenomenon. Signals can vary over time, space, or other dimensions, depending on the nature of the data being represented. Formally, a signal can be defined as a function \( f: \mathcal{D} \to \mathcal{C} \), where:
+In a broad sense, a \textbf{signal} is a mathematical function that conveys information about a phenomenon. Signals can vary over time, space, or other domains, depending on the nature of the data being represented. Formally, a signal can be defined as a function \( f: \mathcal{D} \to \mathcal{C} \), where:
 
 \begin{itemize}
-  \item \( \mathcal{D} \) is the signal natural domain, representing dimensions such as time, space, or both.
+  \item \( \mathcal{D} \) is the signal natural domain, representing time, space, or another variable.
   \item \( \mathcal{C} \) is the codomain, representing the values or attributes of the signal, such as intensity or color.
 \end{itemize}
 
-For example, an audio signal can be described as a function \( f(t): \mathbb{R} \to \mathbb{R} \), where \( t \) represents time and \( f(t) \) provides the amplitude of the sound wave at each moment. 
+For example, an audio signal can be described as a function \( f(t): \mathbb{R} \to \mathbb{R} \), where \( t \) represents time and \( f(t) \) provides the amplitude of the sound wave at each moment. Similarly, an image can be interpreted as a two-dimensional signal \( f: U \subset \mathbb{R}^2 \to \mathcal{C} \) that maps spatial coordinates, a subset of the 2D Euclidean space, to color values. 
 
-In the case of audio, the signal is typically represented as a one-dimensional function \( f(t): \mathbb{R} \to \mathbb{R} \), where \( t \) is the time variable, and \( f(t) \) gives the amplitude of the sound wave at each moment. The domain of the signal is continuous, and the codomain is a real-valued amplitude, corresponding to the intensity of the audio wave at time \( t \).
+For an image to be precisely defined, we must provide a mathematical model for color. Typically, $\mathcal{C}$ is a subspace of $\mathbb{R}^3$. For instance, in the \textbf{RGB color model} each point \( (x, y) \) in the image maps to a vector \( (R, G, B) \) representing the intensities of red, green, and blue. Alternatively, in the \textbf{HSV color model}, the color space is parameterized by hue (H), saturation (S), and value (V), which provides a more perceptually intuitive representation of colors. For a detailed discussion on mathematical models for colors, please refer to \cite{ipcgVelho2014}.
 
-
-% Similarly, an image can be viewed as a function \( f(x, y): \mathbb{R}^2 \to \mathcal{C} \), where \( (x, y) \) represents spatial coordinates on a 2D plane, and \( \mathcal{C} \) is the color space (e.g., RGB or HSV) associated with each point.
-
-Similarly, an image can be interpreted as a two-dimensional signal that maps spatial coordinates to color values. Mathematically, an image is a function \( f: U \subset \mathbb{R}^2 \to \mathcal{C} \), where \( U \) is a subset of the 2D Euclidean space representing the pixel grid, and \( \mathcal{C} \) is a color space, typically a subspace of \( \mathbb{R}^3 \). 
-
-For instance, in the \textbf{RGB color model}, the codomain \( \mathcal{C} \) is \( \mathbb{R}^3 \), where each point \( (x, y) \) in the image maps to a vector \( (R, G, B) \) representing the red, green, and blue color intensities. Alternatively, in the \textbf{HSV color model}, the color space is parameterized by hue (H), saturation (S), and value (V), which provides a more perceptually intuitive representation of colors.
-
-\[
-f(x, y) = \begin{cases}
-(R, G, B) & \text{in the RGB model} \\
-(H, S, V) & \text{in the HSV model}
-\end{cases}
-\]
-
-A **3D surface** can also be interpreted as a signal, specifically as a function that encodes the geometric and spatial properties of the surface. A way of doint that is modeling the 3D object by a function that describes the surface implicitly as the zero level set of a scalar field.
-
-Mathematically, an implicit surface can be represented by a function \( f : \mathbb{R}^3 \rightarrow \mathbb{R} \), where for any point \( \mathbf{x} = (x, y, z) \in \mathbb{R}^3 \), the function returns a scalar value that encodes the \textit{signed distance} or some similar measure from the surface. The surface itself is defined as the set of points where the function evaluates to zero:
+A 3D surface can also be interpreted as a signal, specifically as a function that encodes the geometric and spatial properties of the surface. One way to do this is by modeling the 3D object using a function that describes the surface implicitly as the zero level set of a scalar field. An implicit surface can be represented by a function \( f : \mathbb{R}^3 \rightarrow \mathbb{R} \), where for any point \( \mathbf{x} = (x, y, z) \in \mathbb{R}^3 \), the function returns a scalar value that encodes the \textit{signed distance} or some similar measure from the surface. The surface itself is defined as the set of points where the function evaluates to zero:
 
 \[
 \mathcal{S} = \{ \mathbf{x} \in \mathbb{R}^3 \mid f(\mathbf{x}) = 0 \}
@@ -70,14 +54,6 @@ In this case, \( f(\mathbf{x}) \) is called an \textbf{implicit function}, and t
 \[
 f(\mathbf{x}) = \|\mathbf{x}\| - r
 \]
-
-% This implicit representation of a surface as a signal provides several advantages. One key benefit is its ability to handle complex, smooth geometries without needing to explicitly store vertices or faces as in a polygonal mesh. The continuous nature of the implicit function allows for seamless surface representation and manipulation, supporting operations such as smoothing, blending, and deformation in a natural way.
-
-% Here, the surface of the sphere is the set of points where \( f(\mathbf{x}) = 0 \), i.e., where the distance from the origin equals \( r \). This representation can easily generalize to more complex surfaces by constructing implicit functions that combine multiple geometric primitives or encode intricate shape properties.
-
-% In the context of media objects, encoding 3D surfaces as implicit functions enables a compact and continuous representation of shapes. These functions can be learned and approximated using neural networks, similar to how other types of signals are encoded, leading to efficient, multiresolution representations of 3D surfaces that can be manipulated and rendered in diverse applications such as computer graphics, simulation, and 3D modeling.
-
-% This interpretation of 3D surfaces as implicit signals further highlights the power of signal processing techniques, allowing for a unified approach to handling various types of media objects within a single, cohesive framework.
 
 Interpreting \textbf{media objects} such as audio, images, and 3D models as signals is a natural and powerful approach because it allows us to apply established mathematical frameworks from signal processing. By treating these objects as signals, we can leverage techniques such as sampling, filtering, and reconstruction to model, analyze, and manipulate them.
 
@@ -92,19 +68,6 @@ Interpreting \textbf{media objects} such as audio, images, and 3D models as sign
 
 % In this formalism, the domain \( U = U_1 \cup \dots \cup U_m \) defines the shape of the object, while the attribute function \( f \) assigns the object's properties. This perspective aligns well with interpreting media objects as signals, where the geometric structure corresponds to the domain, and the attributes of the object correspond to the signal values.
 
-% ### Interpreting Different Media Types as Signals
-
-% #### Images as Signals
-
-
-
-% This representation allows us to treat images as signals that can be manipulated using techniques such as filtering, transformation, and frequency domain analysis.
-
-% #### Audio as Signals
-
-% In the case of audio, the signal is typically represented as a one-dimensional function \( f(t): \mathbb{R} \to \mathbb{R} \), where \( t \) is the time variable, and \( f(t) \) gives the amplitude of the sound wave at each moment. The domain of the signal is continuous, and the codomain is a real-valued amplitude, corresponding to the intensity of the audio wave at time \( t \).
-
-% Audio signals can be processed using Fourier transforms to analyze their frequency components, enabling us to understand and manipulate the sound at different frequencies. This is a crucial technique for audio compression, filtering, and enhancement.
 
 % #### Video as Signals
 
@@ -115,12 +78,6 @@ Interpreting \textbf{media objects} such as audio, images, and 3D models as sign
 % \]
 
 % This interpretation allows us to analyze both spatial and temporal aspects of the video signal, applying techniques such as spatiotemporal filtering, frame interpolation, and video compression.
-
-% ### Encoding and Multiresolution
-
-% In the context of signal processing, the process of encoding refers to transforming a continuous signal into a discrete, finite representation that can be stored, processed, or transmitted efficiently. For media objects, this often involves sampling the continuous signal at regular intervals to create a discrete representation.
-
-% In this work, we focus on encoding media objects using neural networks. Neural networks offer a flexible way to approximate the mathematical models of media content, enabling both continuous and discrete representations of signals. By leveraging multiresolution techniques, we aim to develop a neural architecture capable of encoding signals at different levels of detail. This allows for efficient processing and manipulation of complex media objects, such as images, audio, and video, in a hierarchical manner.
 
 
 \section{Overview of Signal Processing Theory}
