@@ -24,11 +24,49 @@ To implement the multiresolution approach, we draw inspiration from classical si
 
 \section{Related Works}
 
-\cite{bacon2021} introduced the Band-Limited Coordinate Network (BACON), an MFN that produces intermediate outputs with an analytically specified spectral bandwidth, achieving multiresolution representations of underlying signals. While its structure allows BACON to be expressed as a linear combinations of sines, avoiding the composition of sines present in deep sinusoidal MLPs, it creates multiresolution representations by truncating the frequency spectra of the signals at a specific value. This approach produces ringing artifacts in some levels of detail, and becomes evident when we look at the Fourier transform of images reconstructed using this network (see Chapter \ref{ch:imaging}).
+Multiresolution analysis has its roots in the seminal work of (\cite{mallat1989theory}) and (\cite{daubechies92}), who formalized the wavelet transform as a powerful tool for analyzing signals at different scales. Their work laid the groundwork for decomposing signals into various frequency bands while preserving temporal information, a crucial aspect in many signal processing applications.
+
+The integration of multiresolution concepts with neural network architectures has led to several innovative approaches. \cite{bruna2013} proposed scattering networks, which use cascaded wavelet transforms followed by nonlinear operations to create stable, translation-invariant representations of signals. Works such as those by Ke et al. (2017) \red{FIND CITATION} have explored CNN architectures that process inputs at multiple scales simultaneously, mimicking the multi-scale nature of wavelet transforms. \red{However, these models architectures are data-networks designed to extract features from large datasets to solve problems like image classification, and not represent signals.}
+% Multi-Scale CNNs: 
+
+\cite{zhangWavelet92} incorporate wavelet functions as activation functions and propose Wavelents Neural Networks (WNNs) as an alternative architecture to traditional artificial neural networks. A WNN uses a wavelon instead of a perceptron as basic computational unit to perform a kind of adaptive wavelet transform on the input signal. Unlike deep neural networks that learn hierarchical features, WNNs typically have a shallow architecture, what impacts its representational capacity, requiring much more parameters to create high-fidelity representations of signals. Also, WNNs can be challenging to optimize and their  performance can be highly dependent on the initial choice of wavelet functions and their parameters.
+
+In terms of coordinate-based neural networks, \cite{bacon2021} introduced the Band-Limited Coordinate Network (BACON), a Multiplicative Filter Network (\cite{fathony2020multiplicative}) that produces intermediate outputs with an analytically specified spectral bandwidth, achieving multiresolution representations of underlying signals. While its structure allows BACON to be expressed as a linear combinations of sines, avoiding the composition of sines present in deep sinusoidal MLPs, it creates multiresolution representations by truncating the frequency spectra of the signals at a specific value. This approach produces ringing artifacts in some levels of detail, and becomes evident when we look at the Fourier transform of images reconstructed using this network (see Chapter \ref{ch:imaging}).
 
 The ability to control frequency bands in representation is closely tied to the capability of adaptively reconstructing signals at multiple detail levels. \citet{mueller2022instant} developed a multiresolution neural network architecture based on hash encoding, while \citet{martel2021acorn} designed an adaptive coordinate network for neural signals.
 
 In this context, we introduce \textit{Multiresolution Sinusoidal Neural Networks} (MR-Net) \cite{paz2022,paz2023mr} based on classical signal multiresolution representations. Our results in imaging applications, discussed in Chapter \ref{ch:imaging}, demonstrate that MR-Net outperforms the previous state-of-the-art technique, BACON, while utilizing a smaller number of parameters.
+
+% # Weaknesses of Wavelet Neural Networks
+
+% ## 1. Training Complexity
+
+% - WNNs often require optimization of wavelet parameters (scaling and translation) along with the usual network weights.
+% - This increases the number of parameters to be learned, potentially leading to longer training times and increased risk of overfitting.
+% - The optimization landscape can be more complex, with many local minima, making it challenging to find optimal solutions.
+
+% ## 2. Limited Representational Capacity
+
+% - While effective for certain types of signals, WNNs may struggle with very complex or high-dimensional data.
+% - The fixed wavelet basis might not be optimal for all types of signals or tasks.
+% - Compared to modern deep learning architectures, WNNs often have lower representational capacity, limiting their performance on complex tasks.
+
+% ## 3. Lack of Hierarchical Feature Learning
+
+% - Unlike deep neural networks that learn hierarchical features, WNNs typically have a shallow architecture.
+% - This can limit their ability to capture complex, multi-level abstractions in the data.
+% - The absence of multiple layers of nonlinear transformations can restrict the network's ability to learn intricate patterns.
+
+% ## 4. Sensitivity to Initial Conditions
+
+% - The performance of WNNs can be highly dependent on the initial choice of wavelet functions and their parameters.
+% - Poor initialization can lead to suboptimal results or slow convergence during training.
+
+% ## 5. Limited Adaptability
+
+% - Once trained, the wavelet basis in WNNs is fixed, which can limit their adaptability to new, unseen data.
+% - This contrasts with some modern architectures that can adapt their feature extraction process more flexibly.
+
 
 \section{Multiscale Representation and Learning}
 % Título Alternativo "Multiresolution Signal Decomposition"
@@ -48,7 +86,7 @@ Each stage $\gt{g}_i$ can be computed as:
 \gt{g}_i = \gt{f}_{i+1} - K * \gt{f}_{i+1}, \quad \text{where } \gt{f}_{N-1} = \gt{f}.
 \end{equation}
 
-That is, each stage $\gt{g}_i$ represents the difference between the $(i+1)$-th level and its smoothed version obtained by convolving with a low-pass filter $K$. For instance, $K$ could be a \textit{Gaussian kernel} defined as $G(x,t)=\frac{1}{2\pi t}\exp{(-\frac{\norm{x}^2}{2t})}$, where $t$ is the scale parameter. This way, the sequences $\{\gt{f}_i\}$ and $\{\gt{g}_i\}$ correspond to the \textit{Gaussian} and \textit{Laplacian pyramids}, which are standard tools in multiresolution analysis of digital images \cite{rosenfeld2013multiresolution,lindeberg1994scale,velho2009image}.
+That is, each stage $\gt{g}_i$ represents the difference between the $(i+1)$-th level and its smoothed version obtained by convolving it with a low-pass filter $K$. For instance, $K$ could be a \textit{Gaussian kernel} defined as $G(x,t)=\frac{1}{2\pi t}\exp{(-\frac{\norm{x}^2}{2t})}$, where $t$ is the scale parameter. This way, the sequences $\{\gt{f}_i\}$ and $\{\gt{g}_i\}$ correspond to the \textit{Gaussian} and \textit{Laplacian pyramids}, which are standard tools in multiresolution analysis of digital images \cite{rosenfeld2013multiresolution,lindeberg1994scale,velho2009image}.
 
 Given this multiscale decomposition, our goal is to represent a signal $\gt{f}$ using a family of sinusoidal neural networks. Motivated by the hierarchical structure of $\gt{f}=\gt{g}_0+\dots+\gt{g}_{N-1}$, we propose an aggregation of $N$ sinusoidal MLPs, denoted by $g_i:\mathcal{D}\to \mathcal{C}$, to approximate each stage $\gt{g}_i$. By training each $g_i$ to match the corresponding stage $\gt{g}_i$, we gain precise control over the frequency spectrum learned by each network. This approach leverages the spectral bias of sinusoidal networks, as demonstrated in Chapter \ref{chap:sinusoidal}, allowing the network to naturally prioritize lower frequencies and gradually introduce higher-frequency details.
 
