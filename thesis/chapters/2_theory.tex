@@ -205,7 +205,17 @@ When signals are sampled, we effectively multiply the original continuous signal
 
 Multiresolution analysis (MRA) offers a hierarchical approach to understanding signals at different levels of detail. By breaking down signals into components that represent varying scales of resolution, MRA helps to capture both global trends and fine details. This technique leverages the way we naturally process visual information, focusing on broader patterns while also perceiving intricate details as needed.
 
-In MRA, signals are decomposed into a coarse approximation, which retains the broader features, and a series of detail coefficients, representing finer, localized features. This approach allows for efficient representation and processing of signals, reducing storage requirements and computational complexity by focusing on the relevant details while discarding less important information. The following sections provide an overview of two primary methods for multiresolution analysis: pyramids and wavelets.
+% In MRA, signals are decomposed into a coarse approximation, which retains the broader features, and a series of detail coefficients, representing finer, localized features. 
+
+In the formal setting of MRA, a signal \( f \in L^2(\mathbb{R}^n) \), where \( L^2(\mathbb{R}^n) \) is the space of square-integrable functions in \( n \) dimensions, is represented across different scales using nested subspaces \( V_j \). These subspaces correspond to approximations of the signal at varying resolutions, with a corresponding sequence of detail subspaces \( W_j \) that capture the differences between successive levels. Mathematically, this can be expressed as:
+
+\[
+V_{j-1} = V_j \oplus W_j
+\]
+
+where \( V_{j-1} \) represents a finer approximation of the signal, and \( W_j \) captures the detail lost in transitioning from scale \( j \) to \( j-1 \). The space \( W_j \) is orthogonal to \( V_j \), and the decomposition \( V_{j-1} = V_j \oplus W_j \) allows for a precise reconstruction of the signal at scale \( j-1 \).
+
+This approach allows for efficient representation and processing of signals, reducing storage requirements and computational complexity by focusing on the relevant details while discarding less important information. The following sections provide an overview of two primary methods for multiresolution analysis: pyramids and wavelets.
 
 \subsection{Pyramids: Gaussian and Laplacian}
 
@@ -256,55 +266,115 @@ By progressively adding the finer details back to the lower-resolution versions,
 
 \subsection{Wavelet Transforms}
 
-While pyramid structures provide a basic form of multiresolution analysis, \textbf{wavelet transforms} offer a more sophisticated and flexible framework. Wavelets differ from pyramids in that they allow for localized, multiresolution analysis in both time (or space) and frequency. This makes them especially useful for signals with transient or localized features.
+While pyramid structures provide a basic form of multiresolution analysis, \textbf{wavelet transforms} offer a more sophisticated and flexible framework. Wavelets differ from pyramids in that they allow for localized multiresolution analysis in both natural and frequency domains. This makes them especially useful for signals with transient or localized features.
+
+% Wavelets provide a more mathematically rigorous framework for multiresolution analysis by decomposing signals not only in space but also in frequency. A **wavelet transform** allows for the representation of a signal in terms of basis functions that are localized both in time and frequency, making them well-suited for analyzing signals with non-stationary characteristics.
 
 The key idea behind wavelets is to decompose a signal into a series of \textit{scaled} and \textit{shifted} versions of a fundamental waveform, known as the \textit{mother wavelet}. This process captures both the frequency and location information of the signal components, providing a time-frequency representation that is more adaptive than Fourier-based methods.
 
-In wavelet analysis, a signal is decomposed into approximation coefficients (capturing low-frequency information) and detail coefficients (capturing high-frequency details). This is achieved by convolving the signal with a set of filters: a low-pass filter for approximations and a high-pass filter for details. The decomposition is applied recursively to the approximation coefficients, resulting in a hierarchical, multiresolution representation of the signal.
+% In wavelet analysis, a signal is decomposed into approximation coefficients (capturing low-frequency information) and detail coefficients (capturing high-frequency details). This is achieved by convolving the signal with a set of filters: a low-pass filter for approximations and a high-pass filter for details. The decomposition is applied recursively to the approximation coefficients, resulting in a hierarchical, multiresolution representation of the signal.
 
-Mathematically, the wavelet decomposition can be expressed as:
+In wavelet analysis, a signal is decomposed into \textit{approximation coefficients}, that capture the low-frequency or smooth components of the signal, and \textit{detail coefficients}, that capture the high-frequency or detailed components, which correspond to the signal's sharp changes or fine features. This decomposition is achieved by convolving the signal with a pair of low-pass and high-pass filters. The process is applied recursively to the approximation coefficients, creating a hierarchical, multiresolution representation of the signal. The wavelet decomposition can be expressed as:
 
 \begin{align}
-  A_l = (A_{l-1} * \phi) \downarrow 2, \quad D_l = (A_{l-1} * \psi) \downarrow 2
+  % A_l = (A_{l-1} * \phi) \downarrow 2, \quad D_l = (A_{l-1} * \psi) \downarrow 2
+  A_l(\mathbf{x}) = \left( A_{l-1}(\mathbf{x}) * \phi(\mathbf{x}) \right) \downarrow 2
+  \\
+  D_l(\mathbf{x}) = \left( A_{l-1}(\mathbf{x}) * \psi(\mathbf{x}) \right) \downarrow 2
 \end{align}
 
 where:
 \begin{itemize}
   \item \( A_l \) represents the approximation coefficients at level \( l \).
-  \item \( D_l \) represents the detail coefficients.
-  \item \( \phi \) is the scaling function (low-pass filter).
-  \item \( \psi \) is the wavelet function (high-pass filter).
+  \item \( D_l \) represents the detail coefficients at level \( l \).
+  \item \( \phi \) is the scaling function, responsible for capturing low-frequency information.
+  \item \( \psi \) is the wavelet function, responsible for capturing high-frequency details.
   \item \( \downarrow 2 \) denotes downsampling by a factor of 2.
 \end{itemize}
 
-% Wavelets naturally offer multiresolution analysis, where larger scales correspond to global features (low-frequency components), and smaller scales capture localized details (high-frequency components). This flexibility allows wavelets to handle signals with varying levels of smoothness or complexity.
+% The original signal can be reconstructed from its wavelet coefficients by reversing the decomposition process, first upsampling the approximation and detail coefficients, and then applying the inverse filters.
 
-The original signal can be reconstructed from its wavelet coefficients by reversing the decomposition process, first upsampling the approximation and detail coefficients, and then applying the inverse filters.
+% \begin{align}
+%   A_{l-1} = (A_l \uparrow 2 * \phi) + (D_l \uparrow 2 * \psi)  
+% \end{align}
+
+The original signal can be reconstructed from its wavelet coefficients through the inverse wavelet transform. This involves upsampling the approximation and detail coefficients from the lower resolution and applying the inverse filters. The reconstruction at level \( l-1 \) is given by:
 
 \begin{align}
-  A_{l-1} = (A_l \uparrow 2 * \phi) + (D_l \uparrow 2 * \psi)  
+  A_{l-1}(\mathbf{x}) = \left( A_l(\mathbf{x}) \uparrow 2 * \phi(\mathbf{x}) \right) + \left( D_l(\mathbf{x}) \uparrow 2 * \psi(\mathbf{x}) \right)  
 \end{align}
 
-This reconstruction process is computationally efficient and forms the basis for many practical applications of wavelets, such as image compression (e.g., JPEG2000), signal denoising, and feature extraction.
+Here, \( \uparrow 2 \) denotes upsampling by a factor of 2. The reconstruction process is computationally efficient due to the orthogonal or biorthogonal nature of the wavelet basis, which ensures minimal redundancy in the representation.
+
+The wavelet transform operates within a hierarchy of scale spaces \( V_j \), where each space \( V_j \) corresponds to a specific level of resolution. These spaces are nested, meaning:
+
+\begin{align}
+  \cdots \subset V_{j+1} \subset V_j \subset V_{j-1} \subset \cdots  
+\end{align}
+
+% A multiresolution representation is formally defined by a sequence of closed subspaces \( V_j \), \( j \in \mathbb{Z} \), satisfying the following properties:
+
+% \begin{enumerate}
+%   \item \( V_j \subset V_{j-1} \)
+%   \item \( f(\mathbf{x}) \in V_j \iff f(2\mathbf{x}) \in V_{j-1} \)
+%   \item \( \bigcap_{j \in \mathbb{Z}} V_j = \{ 0 \} \)
+%   \item \( \bigcup_{j \in \mathbb{Z}} V_j = L^2(\mathbb{R}^n) \)
+%   \item There exists a scaling function \( \phi(\mathbf{x}) \in V_0 \) such that the set \( \{ \phi(\mathbf{x} - \mathbf{k}); \mathbf{k} \in \mathbb{Z}^n \} \) forms an orthonormal basis of \( V_0 \)
+% \end{enumerate}
+
+Each \( V_j \) is associated with a scaling function \( \phi \), while the detail spaces \( W_j \) are spanned by a corresponding wavelet function \( \psi \), which captures the differences between successive approximations.
+
+For more details on Wavelets and multiresolution analysis, please refer to \cite{mallat1989theory} and \cite{GomesVelho2015FromFA}.
+
+% where:
+% - \( A_l(\mathbf{x}) \) represents the approximation coefficients at level \( l \), where \( \mathbf{x} = (x_1, x_2, \dots, x_d) \) in \( d \)-dimensional space.
+% - \( D_l(\mathbf{x}) \) represents the detail coefficients at level \( l \).
+% - \( \phi(\mathbf{x}) \) is the **scaling function**, responsible for capturing low-frequency information.
+% - \( \psi(\mathbf{x}) \) is the **wavelet function**, responsible for capturing high-frequency details.
+% - \( \downarrow 2 \) denotes downsampling by a factor of 2 along each dimension.
+
+% The recursive application of this decomposition creates a multiscale representation where each level captures increasingly finer details of the signal.
+
+% #### Practical Applications of Wavelets
+
+% The versatility and efficiency of wavelet transforms make them suitable for a variety of practical applications, including:
+% - **Image compression**: Wavelets are the basis for compression algorithms like JPEG2000, which exploit the multiresolution nature of wavelets to efficiently represent image data while maintaining high quality at lower bitrates.
+% - **Signal denoising**: Wavelet transforms are widely used for removing noise from signals by selectively modifying or discarding the detail coefficients associated with high-frequency noise.
+% - **Feature extraction**: In tasks such as computer vision and machine learning, wavelet transforms are employed to extract meaningful features from signals or images at different scales, allowing for robust analysis across various resolutions.
+
+% The **Fast Wavelet Transform (FWT)** further enhances the practicality of wavelets by enabling efficient computation of wavelet coefficients with a complexity of \( O(n) \), making wavelets highly scalable and suitable for real-time applications.
+
+% In summary, wavelet transforms provide a powerful tool for multiresolution analysis, capturing both spatial and frequency-domain information. Their ability to localize features across scales makes them an essential method for signal processing, compression, and analysis across various fields.
+
+% ### The Fast Wavelet Transform
+
+% One of the key advantages of wavelets is the **Fast Wavelet Transform (FWT)**, an efficient algorithm that decomposes a signal into its wavelet coefficients. This algorithm leverages the recursive nature of wavelet analysis, where each level of decomposition splits the signal into approximation and detail coefficients. The FWT operates in \( O(n) \) time, making it suitable for real-time applications.
+
+% In summary, MRA using pyramids and wavelets provides a powerful framework for analyzing signals and images across scales, capturing both coarse and fine details efficiently. This hierarchical representation is fundamental in applications such as image compression, denoising, and feature extraction in computer vision and machine learning.
 
 
 \section{Neural Networks}
 
-Artificial Neural networks are computational models inspired by the biological neural networks found in animal brains. These networks consist of interconnected units known as \textbf{artificial neurons} or \textit{perceptrons}. Each neuron receives inputs, processes them through weighted connections, and produces an output that can be transmitted to other neurons. The output of a neuron is calculated as the weighted sum of its inputs plus a bias term, composed with a non-linear function, expressed mathematically as:
+Artificial Neural networks are computational models inspired by the biological neural networks found in animal brains. These networks consist of interconnected units known as \textbf{artificial neurons} or \textbf{perceptrons}. Each neuron receives inputs, processes them through weighted connections, and produces an output that can be transmitted to other neurons. The output of a neuron is calculated as the weighted sum of its inputs plus a bias term, composed with a non-linear function, expressed as:
 
 \begin{align}
-  y = \sigma\left(\sum_{i=1}^{n} w_i x_i + b\right)  
+  \mathbf{y} = \sigma\left(\sum_{i=1}^{n} w_i x_i + \mathbf{b}\right)
+  \label{eq:nn-compute}
 \end{align}
 
-Where \(y\) is the output, \(w_i\) are the weights, \(x_i\) are the inputs, \(b\) is the bias, and \(sigma\) is an activation function applied to introduce non-linearity into the model.
+In Equation \ref{eq:nn-compute}, \(\mathbf{y}\) is the output vector; \(w_i\) are the weights; \(x_i\) are the coordinates of the input vector; \(\mathbf{b}\) is the bias vector; and \(\sigma\) is a non-linear function called \textit{activation function}.
 
-This architecture allows neural networks to learn complex patterns and relationships within data, making them particularly effective for tasks such as image recognition and natural language processing. In fact, they are universal approximators (\cite{HORNIK1989359,cybenko89}).
+% \begin{itemize}
+%   \item 
+%   \item 
+%   \item 
+%   \item 
+%   \item 
+% \end{itemize}
 
-% The fundamental building blocks of a neural network are artificial neurons, which receive inputs represented as real numbers. Each input is associated with a weight that signifies the strength of the connection between neurons.
+This architecture allows neural networks to learn complex patterns and relationships within data, making them particularly effective for tasks such as image recognition and natural language processing. In fact, neural networks are universal approximators (\cite{HORNIK1989359,cybenko89}).
 
-Weights are critical parameters that adjust during training to minimize prediction error. Biases allow neurons to shift their activation function, providing additional flexibility in modeling complex relationships. Both weights and biases are updated through optimization algorithms during the training process.
-
-Activation functions introduce non-linearity into the network and their choice can impact the network performance and convergence during training. Common activation functions include:
+Weights and biases are parameters of a neural network that are updated through optimization algorithms during the training process to minimize prediction error Activation functions introduce non-linearity into the network and their choice can impact the network performance and convergence during training. Common activation functions include:
 
 \begin{itemize}
     \item \textbf{Sigmoid}: Maps outputs to a range between 0 and 1.
@@ -323,7 +393,7 @@ Activation functions introduce non-linearity into the network and their choice c
     \]
 \end{itemize}
 
-Neural networks learn through a process called \textbf{backpropagation}, which efficiently computes gradients needed for optimization. The learning process involves two main steps: 
+Neural networks learn through a process called \textbf{backpropagation}, which efficiently computes gradients needed for optimization. The learning, or training, process involves two main steps: 
 
 \begin{enumerate}
     \item \textbf{Forward Pass}: Inputs are passed through the network to obtain predictions.
@@ -333,16 +403,15 @@ Neural networks learn through a process called \textbf{backpropagation}, which e
 The weights are then updated using an optimization algorithm like \textbf{gradient descent}, which adjusts weights in the direction that minimizes the loss function:
 
 \begin{align}
-  w = w - \eta \nabla L(w)  
+  \mathbf{w} = \mathbf{w} - \eta \nabla L(\mathbf{w})  
 \end{align}
 
-where \(w\) represents weights, \(\eta\) is the learning rate, and \(\nabla L(w)\) is the gradient of the loss function with respect to weights.
+Where \(\mathbf{w}\) represents weights; \(\eta\) is the learning rate; and \(\nabla L(\mathbf{w})\) is the gradient of the loss function with respect to weights.
 
-Neural networks can be categorized into \textbf{shallow} and \textbf{deep networks} based on their architecture. \red{A shallow network consists of an input layer, one hidden layer, and an output layer}. In contrast, deep networks contain multiple hidden layers that enable them to learn hierarchical representations of data. Stacking layers increases the representational power of the network; each additional layer allows the model to capture more complex features from the input data.
+Neural networks can be categorized into \textbf{shallow} and \textbf{deep networks} based on their architecture. A shallow network consists of a layer of inputs, one hidden layer, and an output layer. This way, the inputs undergo through two transformations. In contrast, deep networks contain multiple hidden layers that enable them to learn hierarchical representations of data. Stacking layers increases the representational power of the network as each additional layer allows the model to capture more complex features from the input data.
 
-In the context of neural networks, \textbf{capacity} refers to the ability of a model to fit a wide variety of functions. It is determined by the architecture of the network, including the number of layers and the number of neurons within those layers. A network with high capacity can learn complex patterns in data, while a network with low capacity may struggle to capture the underlying relationships. The capacity of a neural network is closely linked to its \textbf{expressive power}—the range of functions it can approximate. For instance, a deep neural network with many hidden layers and neurons can represent more intricate functions than a shallow network. However, this increased capacity comes with trade-offs, particularly concerning generalization. A highly expressive model might overfit the training data, learning patterns that do not generalize well to new, unseen data, thus requiring regularization techniques to manage this balance.
+The \textbf{capacity} of a model, that is its ability to fit functions is determined by the architecture of the network, including the number of layers and the number of neurons within those layers. A network with high capacity can learn complex patterns in data, while a network with low capacity may struggle to capture the underlying relationships. The capacity of a neural network is closely linked to its \textbf{expressive power}—the range of functions it can approximate. For instance, a deep neural network with many hidden layers and neurons can represent more intricate functions than a shallow network. However, this increased capacity comes with trade-offs, particularly concerning generalization. A highly expressive model might overfit the training data, learning patterns that do not generalize well to new, unseen data, thus requiring regularization techniques to manage this balance.
 
-% ---
 
 \subsection{Overfitting and Underfitting}
 
@@ -352,101 +421,129 @@ Underfitting occurs when the model is too simplistic and lacks the capacity to l
 
 On the other hand, overfitting happens when the model has excessive capacity, allowing it to memorize the training data instead of generalizing from it. While the model might achieve very low error on the training set, it struggles to handle new, unseen data. This occurs because the overfitted model learns specific details and noise in the training data that don't generalize to broader trends in other datasets. Overfitting leads to a situation where the model's performance on the training data is excellent, but its performance on test data is significantly worse.
 
-Mathematically, these two issues can be observed through the behavior of the loss function. In the case of underfitting, both training loss and validation loss remain high, indicating that the model is not capturing enough of the underlying structure of the data:
+These two issues can be observed through the behavior of the loss function. In underfitting, both training loss and validation loss remain high, indicating that the model is not capturing enough of the underlying structure of the data: 
+% $L_{\text{train}} \gg 0 \quad \text{and} \quad L_{\text{val}} \gg L_{\text{train}}$. 
+
+% \[
+% \text{High training loss and high validation loss:} \quad L_{\text{train}} \gg 0 \quad \text{and} \quad L_{\text{val}} \gg L_{\text{train}}
+% \]
 
 \[
-\text{High training loss and high validation loss:} \quad L_{\text{train}} \gg 0 \quad \text{and} \quad L_{\text{val}} \gg L_{\text{train}}
+  L_{\text{train}} \gg 0 \quad \text{and} \quad L_{\text{val}} \gg L_{\text{train}}
 \]
 
-For overfitting, the training loss becomes very low, but the validation loss is much higher, reflecting the model's poor generalization to new data:
 
+For overfitting, the training loss becomes very low, but the validation loss is much higher, reflecting the model's poor generalization to new data: 
 \[
-\text{Low training loss and high validation loss:} \quad L_{\text{train}} \approx 0 \quad \text{and} \quad L_{\text{val}} \gg L_{\text{train}}
+  L_{\text{train}} \approx 0 \quad \text{and} \quad L_{\text{val}} \gg L_{\text{train}}
 \]
+
+
+% $L_{\text{train}} \approx 0 \quad \text{and} \quad L_{\text{val}} \gg L_{\text{train}}$
+
+% \[
+% \text{Low training loss and high validation loss:} \quad L_{\text{train}} \approx 0 \quad \text{and} \quad L_{\text{val}} \gg L_{\text{train}}
+% \]
 
 To address these challenges, it is important to find a balance between a model's capacity and its ability to generalize. Several techniques are commonly used to combat overfitting, such as regularization, dropout, and early stopping:
 
-\textbf{Regularization} adds a penalty term to the loss function, discouraging overly complex models by constraining the weights. This helps to reduce overfitting by preventing the model from becoming too specialized to the training data.
+\textbf{Regularization} adds a penalty term to the loss function, discouraging complex models by constraining the network's weights. This helps to reduce overfitting by preventing the model from becoming too specialized to the training data.
   
 \textbf{Dropout} involves randomly deactivating a portion of the neurons during training. This technique prevents neurons from relying too heavily on one another, forcing the network to learn more robust features that generalize better.
   
 \textbf{Early stopping} monitors the performance of the model on validation data during training and stops the process when performance on the validation set begins to deteriorate, thereby preventing overfitting.
 
-% Ultimately, understanding how to manage capacity is crucial in designing neural networks that can learn effectively from training data while also generalizing well to new examples. Achieving the right balance between underfitting and overfitting is essential in many fields, such as computer vision and signal processing, where the accuracy of predictions on unseen data is vital for practical applications.
-
 % ---
 
 \subsection{Coordinate-Based Neural Networks}
 
-Coordinate-based neural networks represent a change of perspective in how data is modeled and encoded, especially in spatial domains like images and signals. The central concept is to use neural networks to express data as a continuous function of spatial coordinates. By doing this, various types of signals—such as 2D images or 3D shapes—can be represented by mapping spatial coordinates directly to the corresponding output values, like pixel colors or spatial features.
+\red{SEÇÃO EM FINALIZAÇAO}
 
-\textbf{Implicit Neural Representations (INRs)} are a specific realization of this idea. Unlike traditional methods that rely on discrete grids (e.g., pixel arrays for images or voxel grids for 3D geometries), INRs treat signals as continuous functions. Rather than storing values at fixed, discrete points, an implicit representation defines a function:
+Coordinate-based neural networks represent a change of perspective in how data is modeled and encoded, especially in spatial domains like images and signals. 
 
-\[
-f: \mathbb{R}^n \to \mathbb{R}^m
-\]
+% The central concept is to use neural networks to express data as a continuous function of spatial coordinates. By doing this, various types of signals—such as 2D images or 3D shapes—can be represented by mapping spatial coordinates directly to the corresponding output values, like pixel colors or spatial features.
 
-This function maps any coordinate from an \(n\)-dimensional input space to a corresponding \(m\)-dimensional output value. For instance, in the case of a 2D image, an INR would take a coordinate \((x, y)\) as input and return the RGB color value at that point:
+% \textbf{Implicit Neural Representations (INRs)} are a specific realization of this idea. Unlike traditional methods that rely on discrete grids (e.g., pixel arrays for images or voxel grids for 3D geometries), INRs treat signals as continuous functions. Rather than storing values at fixed, discrete points, an implicit representation defines a function:
 
-\[
-\text{Color} = f(x, y) = (R, G, B)
-\]
+% \[
+% f: \mathbb{R}^n \to \mathbb{R}^m
+% \]
 
-The advantage of this continuous representation is its flexibility—it is not restricted to any specific spatial resolution. In theory, INRs can achieve infinite resolution, meaning they can be sampled at any desired level of detail without the limitations of traditional discrete grids. This is particularly useful for applications like **super-resolution imaging** or working with high-dimensional datasets.
+% This function maps any coordinate from an \(n\)-dimensional input space to a corresponding \(m\)-dimensional output value. For instance, in the case of a 2D image, an INR would take a coordinate \((x, y)\) as input and return the RGB color value at that point:
 
-Furthermore, INRs offer **efficient memory usage**. The memory required to store an implicit representation scales with the complexity of the signal rather than its spatial resolution. For complex datasets, this efficiency is crucial because traditional methods might demand excessive storage, especially when handling high-resolution data.
+% \[
+% \text{Color} = f(x, y) = (R, G, B)
+% \]
 
-The impact of implicit neural representations extends far beyond storage optimization. INRs are being utilized in several advanced applications in fields like computer graphics and computer vision:
+% The advantage of this continuous representation is its flexibility—it is not restricted to any specific spatial resolution. In theory, INRs can achieve infinite resolution, meaning they can be sampled at any desired level of detail without the limitations of traditional discrete grids. This is particularly useful for applications like **super-resolution imaging** or working with high-dimensional datasets.
 
-1. **3D Shape Representation**: INRs can outperform traditional 3D shape representations such as meshes or point clouds. By learning continuous functions over geometric shapes, they allow for seamless deep learning-based modeling of shape priors.
+% Furthermore, INRs offer **efficient memory usage**. The memory required to store an implicit representation scales with the complexity of the signal rather than its spatial resolution. For complex datasets, this efficiency is crucial because traditional methods might demand excessive storage, especially when handling high-resolution data.
 
-2. **Signal Reconstruction**: INRs can be used to reconstruct missing or incomplete data in signals. For example, given a sparse set of image pixels or audio data points, the learned function can fill in the gaps, making INRs particularly valuable in scenarios where the input data is noisy or incomplete.
+% The impact of implicit neural representations extends far beyond storage optimization. INRs are being utilized in several advanced applications in fields like computer graphics and computer vision:
 
-3. **Solving Partial Differential Equations (PDEs)**: Some architectures, like **Sinusoidal Representation Networks (SIRENs)**, leverage periodic activation functions such as sine functions. This choice of activations enhances the network’s ability to model complex signals, including their derivatives, making SIRENs especially suitable for solving boundary value problems associated with PDEs. The periodic nature of the activations provides an ideal framework for capturing the oscillatory behavior of solutions to such equations.
+% 1. **3D Shape Representation**: INRs can outperform traditional 3D shape representations such as meshes or point clouds. By learning continuous functions over geometric shapes, they allow for seamless deep learning-based modeling of shape priors.
 
-Thus, coordinate-based neural networks and implicit neural representations represent a paradigm shift in how we approach and process spatial data. By conceptualizing signals as continuous functions instead of discrete samples, these models provide enhanced flexibility, efficiency, and power in representing complex datasets. As research in this area continues to advance, these approaches are likely to drive further innovations across a range of applications, from computer vision to graphics and beyond.
+% 2. **Signal Reconstruction**: INRs can be used to reconstruct missing or incomplete data in signals. For example, given a sparse set of image pixels or audio data points, the learned function can fill in the gaps, making INRs particularly valuable in scenarios where the input data is noisy or incomplete.
 
-% % Citations:
-% % [1] https://github.com/vsitzmann/awesome-implicit-representations
-% % [2] https://www.vincentsitzmann.com/siren/
-% % [3] https://www.reddit.com/r/MLQuestions/comments/qta8v6/could_someone_explain_what_an_implicit_neural/
-% % [4] https://en.wikipedia.org/wiki/Neural_network_(machine_learning)
-% % [5] https://aws.amazon.com/what-is/neural-network/
-% % [6] https://www.science-on-stage.eu/machine-learning/neurons
-% % [7] https://eitca.org/artificial-intelligence/eitc-ai-dltf-deep-learning-with-tensorflow/introduction-eitc-ai-dltf-deep-learning-with-tensorflow/introduction-to-deep-learning-with-neural-networks-and-tensorflow/examination-review-introduction-to-deep-learning-with-neural-networks-and-tensorflow/what-are-the-key-components-of-a-neural-network-and-what-is-their-role/
-% % [8] https://en.wikipedia.org/wiki/Artificial_neuron
+% 3. **Solving Partial Differential Equations (PDEs)**: Some architectures, like **Sinusoidal Representation Networks (SIRENs)**, leverage periodic activation functions such as sine functions. This choice of activations enhances the network’s ability to model complex signals, including their derivatives, making SIRENs especially suitable for solving boundary value problems associated with PDEs. The periodic nature of the activations provides an ideal framework for capturing the oscillatory behavior of solutions to such equations.
+
+% Thus, coordinate-based neural networks and implicit neural representations represent a paradigm shift in how we approach and process spatial data. By conceptualizing signals as continuous functions instead of discrete samples, these models provide enhanced flexibility, efficiency, and power in representing complex datasets. As research in this area continues to advance, these approaches are likely to drive further innovations across a range of applications, from computer vision to graphics and beyond.
 
 
 
 \subsection{Sinusoidal Neural Networks}
 
-Sinusoidal neural networks leverage sine functions as activation functions, offering a powerful way to model signals with intricate details. The motivation for using sine functions lies in their ability to capture fine variations in data, making them particularly well-suited for representing high-frequency components of signals. In contrast to conventional neural networks that use activation functions like ReLU or sigmoid, sinusoidal networks are designed to approximate complex signals more naturally, especially those characterized by oscillations and periodic patterns.
+Sinusoidal neural networks are examples of coordinate-based networks in which their activation function is the sine function. As such, they bridge the gap between the spatial and spectral domains, given the close relationship of the sine function with the Fourier~basis. However, these sinusoidal neural networks have been regarded as difficult to train~\cite{taming2017}. To overcome this problem, \citet{sitzmann2019siren} proposed a sinusoidal network for signal representation called SIREN. One of the key contributions of this work is the initialization scheme that guarantees stability and good convergence. Furthermore, it also allows modeling fine details in accordance with the signal’s frequency content.
 
-The use of sine functions allows sinusoidal neural networks to represent signals in both the **spatial** and **frequency** domains. Signals, especially those in fields such as audio, image processing, and computer graphics, often contain fine structures that require high-frequency components for accurate representation. A sinusoidal activation function, defined as:
+% The continuous nature of the sine function is particularly useful in applications where smoothness and differentiability of the output are required, such as modeling surfaces or fields in 3D space. Also, since the derivative of the sine function is the cossine, which is a shifted sine in the domain, the network's derivative preserves its properties.
 
-\[
-\sigma(x) = \sin(x)
-\]
+% Sinusoidal neural networks are particularly suited to model stationary or quasi-stationary signals due to the periodic nature of its activation function~\cite{chen2022}.
 
-is inherently capable of generating oscillations. These oscillations enable the network to capture fine variations in data, something that traditional activations might struggle with. This characteristic makes sinusoidal neural networks ideal for tasks where precision at smaller scales is critical, such as super-resolution, texture generation, or even physics simulations.
 
-The relationship between sinusoidal networks and the **frequency domain** is central to understanding their expressive power. In signal processing, the **Fourier series** is a method for expressing a periodic function as a sum of sine and cosine terms, each associated with a specific frequency. A signal \(f(x)\) can be decomposed into a sum of sinusoids as:
 
-\[
-f(x) = a_0 + \sum_{n=1}^{\infty} \left( a_n \cos(n x) + b_n \sin(n x) \right)
-\]
 
-This decomposition reveals that any periodic signal can be described as a combination of sinusoids of different frequencies. By using sine functions as activations, sinusoidal neural networks can directly represent the frequency components of a signal, offering the ability to capture both low-frequency (coarse) and high-frequency (fine) details. This is particularly useful when modeling signals that vary at multiple scales, as the network can flexibly adapt to different frequency ranges.
+% Each layer of the network is defined as 
 
-**Sinusoidal Representation Networks (SIREN)** are a specific type of neural network that employ sine functions as their core activations. Introduced as an alternative to traditional architectures, SIRENs have shown significant advantages in representing complex signals, particularly in the context of continuous signals such as images, 3D shapes, and physical fields.
 
-A SIREN architecture typically defines each layer of the network as:
+% offering a powerful way to model signals with intricate details. 
 
-\[
-y = \sin(Wx + b)
-\]
 
-where \(W\) represents the weight matrix, \(x\) is the input, and \(b\) is the bias term. The sine activation allows the network to approximate high-frequency components, which is especially beneficial for tasks like **implicit neural representation** (as discussed previously) and **solving partial differential equations (PDEs)**.
+
+% One example of 
+
+% **Sinusoidal Representation Networks (SIREN)** are a specific type of neural network that employ sine functions as their core activations. Introduced as an alternative to traditional architectures, SIRENs have shown significant advantages in representing complex signals, particularly in the context of continuous signals such as images, 3D shapes, and physical fields.
+
+% A SIREN architecture typically defines each layer of the network as:
+
+% \[
+% y = \sin(Wx + b)
+% \]
+
+% where \(W\) represents the weight matrix, \(x\) is the input, and \(b\) is the bias term. The sine activation allows the network to approximate high-frequency components, which is especially beneficial for tasks like **implicit neural representation** (as discussed previously) and **solving partial differential equations (PDEs)**.
+
+% % The motivation for using sine functions lies in their ability to capture fine variations in data, making them particularly well-suited for representing high-frequency components of signals. 
+
+% % In contrast to conventional neural networks that use activation functions like ReLU or sigmoid, sinusoidal networks are designed to approximate complex signals more naturally, especially those characterized by oscillations and periodic patterns.
+
+% The use of sine functions allows sinusoidal neural networks to represent signals in both the **spatial** and **frequency** domains. Signals, especially those in fields such as audio, image processing, and computer graphics, often contain fine structures that require high-frequency components for accurate representation. A sinusoidal activation function, defined as:
+
+% \[
+% \sigma(x) = \sin(x)
+% \]
+
+% is inherently capable of generating oscillations. These oscillations enable the network to capture fine variations in data, something that traditional activations might struggle with. This characteristic makes sinusoidal neural networks ideal for tasks where precision at smaller scales is critical, such as super-resolution, texture generation, or even physics simulations.
+
+% The relationship between sinusoidal networks and the **frequency domain** is central to understanding their expressive power. In signal processing, the **Fourier series** is a method for expressing a periodic function as a sum of sine and cosine terms, each associated with a specific frequency. A signal \(f(x)\) can be decomposed into a sum of sinusoids as:
+
+% \[
+% f(x) = a_0 + \sum_{n=1}^{\infty} \left( a_n \cos(n x) + b_n \sin(n x) \right)
+% \]
+
+% This decomposition reveals that any periodic signal can be described as a combination of sinusoids of different frequencies. By using sine functions as activations, sinusoidal neural networks can directly represent the frequency components of a signal, offering the ability to capture both low-frequency (coarse) and high-frequency (fine) details. This is particularly useful when modeling signals that vary at multiple scales, as the network can flexibly adapt to different frequency ranges.
+
+% However, training SIRENs presents unique challenges. The periodic nature of sine functions can lead to difficulties in convergence during optimization due to the presence of multiple local minima in the loss landscape. To address this issue, effective initialization schemes are crucial for ensuring stability during training. These schemes help guide the optimization process toward regions of the parameter space that facilitate learning.
+
+
 
 % Advantages of SIREN
 
@@ -490,23 +587,3 @@ where \(W\) represents the weight matrix, \(x\) is the input, and \(b\) is the b
 % $$
 
 % where $$a_n$$, $$b_n$$, and $$\phi_n$$ represent the amplitude, frequency, and phase shift of each harmonic component. This formulation highlights how SIRENs can leverage the properties of sine functions to capture both low-frequency trends and high-frequency details in a unified framework.
-
-% #### Overview of Sinusoidal Representation Networks (SIREN)
-
-% SIRENs are designed specifically to harness the advantages of sinusoidal activations for implicit neural representations. They consist of multiple layers where each layer applies a sine activation function to its outputs. This architecture allows SIRENs to model complex natural signals while maintaining smoothness and continuity across the representation.
-
-% One of the key advantages of SIRENs is their ability to represent signals at varying resolutions without being constrained by traditional grid-based representations. This flexibility enables them to achieve high fidelity in tasks such as image synthesis, 3D shape representation, and audio signal modeling. Additionally, SIRENs have demonstrated superior performance in reconstructing signals from sparse data compared to conventional neural architectures.
-
-% However, training SIRENs presents unique challenges. The periodic nature of sine functions can lead to difficulties in convergence during optimization due to the presence of multiple local minima in the loss landscape. To address this issue, effective initialization schemes are crucial for ensuring stability during training. These schemes help guide the optimization process toward regions of the parameter space that facilitate learning.
-
-% In summary, sinusoidal neural networks leverage the properties of sine functions to provide robust representations of complex signals. Their ability to capture fine details through smoothness and periodicity makes them particularly well-suited for applications that require high precision in modeling physical phenomena. As research continues to advance in this area, SIRENs stand out as a powerful tool for bridging the gap between spatial and frequency domain representations in various fields such as computer graphics, audio processing, and beyond.
-
-% Citations:
-% [1] https://docs.siml.ai/creating-a-simulator/neural-network-node/sinusoidal-representation-network
-% [2] https://arxiv.org/abs/2212.01833
-% [3] https://www.vincentsitzmann.com/siren/
-% [4] https://openreview.net/pdf?id=Sks3zF9eg
-% [5] https://arxiv.org/abs/2109.09338v2
-% [6] https://www.visgraf.impa.br/Data/RefBib/PS_PDF/mrnet-cag-2023/MRNet_CAG-2023.pdf
-% [7] https://towardsdatascience.com/sinusoidal-neural-networks-for-digit-classification-bd2b14e57ad8
-% [8] https://www.reddit.com/r/MLQuestions/comments/qta8v6/could_someone_explain_what_an_implicit_neural/
