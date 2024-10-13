@@ -99,3 +99,7 @@ In summary the contributions of this dissertation are:
 % Finally, we present applications on antialiasing and level-of-detail reconstruction.
 
 % - Related Works: Mip-Nerf; Bacon; 
+
+% Recently, neural networks have been employed to represent signals directly as functions of spatial coordinates, bypassing traditional grid-based representations. These coordinate-based neural networks (Tancik et al., 2020; Sitzmann et al., 2020) are capable of representing continuous signals in a compact, implicit form, which contrasts with the discrete representations used in classical techniques. Neural Implicit Representations (NIRs), such as Neural Radiance Fields (NeRF) (Mildenhall et al., 2020) and Implicit Neural Representations (INRs), encode spatial information using neural networks where the input coordinates map directly to the desired signal value, such as pixel intensity or 3D occupancy.
+
+% One limitation of these approaches, however, is their tendency to struggle with high-frequency signal components, which has led to research into more robust techniques for handling fine-grained details. In this context, sinusoidal activation functions, as introduced by SIREN (Sitzmann et al., 2020), have proven effective for encoding high-frequency details, motivating further exploration into neural networks that incorporate periodic activations to better capture multiscale information.

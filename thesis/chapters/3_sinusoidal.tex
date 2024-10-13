@@ -591,6 +591,7 @@ Ideally we should initialize the network with frequencies that match the frequen
 \pagebreak
 
 \subsection{Capacity Filtering}
+\label{sec:capacity-filtering}
 
 The experiment illustrated in Figure \ref{f:comparison-16-32-64-hf} suggests that a network's capacity can serve as a filter when learning a signal. To further investigate this behavior, we compared the reconstruction of a stochastic signal using two networks: one with 16 neurons per layer and another with 256 neurons per layer. For this experiment, we generated a new Perlin noise signal with the following parameters: scale = 10, octaves = 14, and persistence = 1.5. Both networks have a single hidden layer and were initialized with $\omega_0=2$ Hz. The results are shown in Figure \ref{f:capacity-filter-16-hf-256}. 
 

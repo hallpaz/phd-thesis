@@ -9,6 +9,10 @@ Traditionally, multiresolution representations for images have been based on sig
 
 Although Fourier transforms were initially popular for decomposing signals into multiple frequencies, the wavelet transform, introduced by \citet{mallat1989theory}, soon gained popularity as it enabled representing a signal in levels of detail and scale, and was widely applied to a first generation of wavelet-based image codecs~\cite{antonini1992image}. Subsequently, wavelet analysis of multiscale edges led to a second generation of image coding methods, with higher compression rates~\cite{mallat-2gen}. Nevertheless, understanding and controlling the frequencies present in a signal has been critical on interpreting its details and avoiding artifacts such as aliasing. In this sense, sinusoidal  functions have been instrumental in the development of the multiresolution theory.
 
+\section{Related Works}
+
+Multiresolution representation has a long-standing history in signal processing, with techniques such as Gaussian and Laplacian pyramids (Burt and Adelson, 1983) being fundamental tools for hierarchical decomposition of images. These methods decompose signals into progressively lower-frequency components, enabling efficient signal compression, denoising, and hierarchical analysis.
+
 
 \section{Multiresolution Image Representation}
 \label{s:img}

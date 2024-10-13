@@ -171,7 +171,7 @@ We define a \textit{periodic INR} to be a sinusoidal MLP such that its first lay
 \label{s-multiresolution}
 
 To represent textures using INRs we need to represent them in multiresolution. For this, we adopt the \textit{multiresolution network} (MRnet)~\cite{paz2022,paz2023mr} as a representation. Here, a MRnet is a network $f\!:\!\R^2\!\times\! [0,N]\!\to\! \R$ defined as a sum of $N$ periodic INR $g_i:\R^2\to\R$:
-\begin{align}\label{e-mrnet}
+\begin{align}
 f(x,t) = c_0(t)g_0(x) + \cdots + c_{N-1}(t)g_{N-1}(x),
 \end{align}
 The contribution of each \textit{stage} $g_i$ in Equation~\ref{e-mrnet} is controlled by $
