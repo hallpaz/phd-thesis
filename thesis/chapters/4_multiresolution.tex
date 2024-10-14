@@ -69,30 +69,28 @@ In this context, we introduce \textit{Multiresolution Sinusoidal Neural Networks
 % - Once trained, the wavelet basis in WNNs is fixed, which can limit their adaptability to new, unseen data.
 % - This contrasts with some modern architectures that can adapt their feature extraction process more flexibly.
 
-
-\section{Multiscale Representation and Learning}
 % Título Alternativo "Multiresolution Signal Decomposition"
+\section{Multiscale Representation and Learning}
 \label{s-motivation}
 
+Let $\gt{f}:\mathcal{D}\to \mathcal{C}$ be a \textit{ground-truth signal}, where $\mathcal{D}$ and $\mathcal{C}$ are finite-dimensional vector spaces representing the signal's domain and codomain, respectively. For example, to represent an image, $\mathcal{D}$ could be set to $\R^2$ to define the spatial domain, while $\mathcal{C}=\R^3$ corresponds to the RGB color space. Throughout this text, we use cursive fonts to denote ground-truth signals and a standard font for their corresponding neural network approximations.
 
-Let $\gt{f}:\mathcal{D}\to \mathcal{C}$ be a \textit{ground-truth signal}, where $\mathcal{D}$ and $\mathcal{C}$ are finite-dimensional vector spaces representing the signal's domain and codomain, respectively. For instance, to represent an image, $\mathcal{D}$ can be set to $\R^2$ to define the spatial domain, while $\mathcal{C}=\R^3$ corresponds to the RGB color space. Throughout this text, we use a cursive font to denote ground-truth signals and a standard font for their corresponding neural network approximations.
-
-To represent the signal $\gt{f}$ at multiple scales, we decompose it into a sum of $N$ stages: $\gt{f}=\gt{g}_0+\dots+\gt{g}_{N-1}$, where $\gt{g}_0$ captures the coarsest approximation of the signal and $\gt{g}_i$, for $i>0$, progressively introduce higher frequency components. This multiresolution decomposition enables us to define the \textit{level of detail}~$i$ in two equivalent forms:
+To represent the signal $\gt{f}$ at multiple scales, we decompose it into a sum of $N$ stages: $\gt{f}=\gt{g}_0+\dots+\gt{g}_{N-1}$, where $\gt{g}_0$ captures the coarsest approximation of the signal and $\gt{g}_i$, for $i>0$, progressively introduces higher-frequency components. This multiresolution decomposition allows us to define the \textit{level of detail} at stage $i$ in two equivalent forms:
 
 \begin{equation}
 \gt{f}_i = \gt{g}_0 + \cdots + \gt{g}_i \quad \text{or} \quad \gt{f}_i = \gt{f} - \sum_{j=i+1}^{N-1} \gt{g}_j.
 \end{equation}
 
-Each stage $\gt{g}_i$ can be computed as:
+Each stage $\gt{g}_i$ is computed as:
 \begin{equation}
 \gt{g}_i = \gt{f}_{i+1} - K * \gt{f}_{i+1}, \quad \text{where } \gt{f}_{N-1} = \gt{f}.
 \end{equation}
 
-That is, each stage $\gt{g}_i$ represents the difference between the $(i+1)$-th level and its smoothed version obtained by convolving it with a low-pass filter $K$. For instance, $K$ could be a \textit{Gaussian kernel} defined as $G(x,t)=\frac{1}{2\pi t}\exp{(-\frac{\norm{x}^2}{2t})}$, where $t$ is the scale parameter. This way, the sequences $\{\gt{f}_i\}$ and $\{\gt{g}_i\}$ correspond to the \textit{Gaussian} and \textit{Laplacian pyramids}, which are standard tools in multiresolution analysis of digital images \citep{lindeberg1994scale, velho2009image, rosenfeld2013multiresolution}.
+In this formulation, each stage $\gt{g}_i$ represents the difference between the $(i+1)$-th level of the signal and its smoothed version, obtained by convolving it with a low-pass filter $K$. For instance, $K$ may be a \textit{Gaussian kernel} of the form $G(x,t)=\frac{1}{2\pi t}\exp{\left(-\frac{\|x\|^2}{2t}\right)}$, where $t$ is a scale parameter that controls the degree of smoothing. This way, the sequences $\{\gt{f}_i\}$ and $\{\gt{g}_i\}$ correspond to the \textit{Gaussian} and \textit{Laplacian} pyramids, respectively, which are well-established tools in multiresolution analysis of digital images \citep{lindeberg1994scale, velho2009image, rosenfeld2013multiresolution}.
 
-Given this multiscale decomposition, our goal is to represent a signal $\gt{f}$ using a family of sinusoidal neural networks. Motivated by the hierarchical structure of $\gt{f}=\gt{g}_0+\dots+\gt{g}_{N-1}$, we propose an aggregation of $N$ sinusoidal MLPs, denoted by $g_i:\mathcal{D}\to \mathcal{C}$, to approximate each stage $\gt{g}_i$. By training each $g_i$ to match the corresponding stage $\gt{g}_i$, we gain precise control over the frequency spectrum learned by each network. This approach leverages the spectral bias of sinusoidal networks, as demonstrated in Chapter \ref{chap:sinusoidal}, allowing the network to naturally prioritize lower frequencies and gradually introduce higher-frequency details.
+Given this multiscale decomposition, our goal is to represent the signal $\gt{f}$ using a family of sinusoidal neural networks. Motivated by the hierarchical structure of $\gt{f}=\gt{g}_0+\dots+\gt{g}_{N-1}$, we propose using an aggregation of $N$ sinusoidal MLPs, denoted by $g_i:\mathcal{D}\to \mathcal{C}$, to approximate each stage $\gt{g}_i$. By training each $g_i$ to match its corresponding stage $\gt{g}_i$, we gain precise control over the frequency spectrum learned by each network. This design leverages the spectral bias of sinusoidal networks, as discussed in Chapter \ref{chap:sinusoidal}, allowing the network to naturally prioritize lower frequencies and gradually introduce higher-frequency details.
 
-Each network stage $g_i$ is initialized with a specific and crescent range of frequencies, ensuring that the resulting approximation accurately matches the desired stage $\gt{g}_i$. This structured frequency learning enables us to decompose and reconstruct complex signals in a progressive and controlled manner.
+Each network stage $g_i$ is initialized with a specific and crescent range of frequencies, ensuring that the resulting approximation accurately matches the desired stage $\gt{g}_i$. This structured frequency learning approach enables the decomposition and reconstruction of complex signals in a manner that is both progressive and controlled.
 
 \section{MR-Net Architecture}
 
