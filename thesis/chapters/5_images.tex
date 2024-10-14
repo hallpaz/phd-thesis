@@ -1,17 +1,19 @@
 \chapter{Multiresolution Imaging}
 \label{ch:imaging}
 
-This chapter describes the implementation and experiments of the MR-Net for imaging applications. Imaging applications benefit greatly from multiresolution representations, as they allow us to represent an image hierarchically at different levels of details. This hierarchical model is aligned with some classical image and human visual perception models~\cite{marr82}, and it is instrumental for many tasks in computer vision and graphics, such as compression, analysis and rendering. 
+Imaging applications benefit greatly from multiresolution representations, as they allow us to represent an image hierarchically at different levels of details. This hierarchical model is aligned with some classical image and human visual perception models \citep{marr82}, and it is instrumental for many tasks in computer vision and graphics, such as compression, analysis and rendering. 
 
-For example, in image compression, we can use a multiresolution representation to identify and discard details that are not perceptually important, while preserving important features of the image. This can significantly reduce the amount of data needed to represent the image, while still maintaining its overall quality~\cite{burt1987laplacian}. Additionally, in rendering, multiresolution representations have built-in support for antialiasing, which traditionally is implemented using image pyramids~\cite{mipmap83}. Another important applications of imaging in Graphics is texture synthesis. In that realm, besides antialiasing, the creation of visual patterns from examples has great relevance~\cite{thies19}.
+For example, in image compression, we can use a multiresolution representation to identify and discard details that are not perceptually important, while preserving important features of the image. This can significantly reduce the amount of data needed to represent the image, while still maintaining its overall quality \citep{burt1987laplacian}. Additionally, in rendering, multiresolution representations have built-in support for antialiasing, which traditionally is implemented using image pyramids~\cite{mipmap83}. Another important applications of imaging in Graphics is texture synthesis. In that realm, besides antialiasing, the creation of visual patterns from examples has great relevance~\cite{thies19}.
 
 Traditionally, multiresolution representations for images have been based on signal processing techniques derived from Fourier theory~\cite{bracewell1986fourier}. Such operators were primarily motivated by image compression~\cite{bhaskaran1997image} and played an important role in the development of JPEG-2000~\cite{marcellin2000overview}. For instance, the Discrete Cosine Transform \cite{dct-og} have been  used as an efficient way to get a frequency content of the image, and estimate the importance of certain coefficients to the image quality perception. 
 
-Although Fourier transforms were initially popular for decomposing signals into multiple frequencies, the wavelet transform, introduced by \citet{mallat1989theory}, soon gained popularity as it enabled representing a signal in levels of detail and scale, and was widely applied to a first generation of wavelet-based image codecs~\cite{antonini1992image}. Subsequently, wavelet analysis of multiscale edges led to a second generation of image coding methods, with higher compression rates~\cite{mallat-2gen}. Nevertheless, understanding and controlling the frequencies present in a signal has been critical on interpreting its details and avoiding artifacts such as aliasing. In this sense, sinusoidal  functions have been instrumental in the development of the multiresolution theory.
+Although Fourier transforms were initially popular for decomposing signals into multiple frequencies, the wavelet transform, introduced by \citet{mallat1989theory}, soon gained popularity as it enabled representing a signal in levels of detail and scale, and was widely applied to a first generation of wavelet-based image codecs~\cite{antonini1992image}. Subsequently, wavelet analysis of multiscale edges led to a second generation of image coding methods, with higher compression rates~\cite{mallat-2gen}. Nevertheless, understanding and controlling the frequencies present in a signal has been critical on interpreting its details and avoiding artifacts such as aliasing. In this sense, sinusoidal functions have been instrumental in the development of the multiresolution theory.
+
+This chapter is based on the papers \cite{paz2022} and \cite{paz2023mr}, and describes the implementation and experiments of the MR-Net for imaging applications. 
 
 \section{Related Works}
 
-Multiresolution representation has a long-standing history in signal processing, with techniques such as Gaussian and Laplacian pyramids (Burt and Adelson, 1983) being fundamental tools for hierarchical decomposition of images. These methods decompose signals into progressively lower-frequency components, enabling efficient signal compression, denoising, and hierarchical analysis.
+Multiresolution representation has a long-standing history in signal processing, with techniques such as Gaussian and Laplacian pyramids \citep{burt1987laplacian} being fundamental tools for hierarchical decomposition of images. These methods decompose signals into progressively lower-frequency components, enabling efficient signal compression, denoising, and hierarchical analysis.
 
 
 \section{Multiresolution Image Representation}
@@ -27,13 +29,13 @@ We have determined that the base resolution of the train data at the first stage
 We train the network using an adaptive scheme with the following hyper-parameters: Loss Function used is MSE (Mean Squared Error); convergence threshold = $0.001$ (i.e., training of a stage stops if loss value changes less than $0.001\%$); maximum number of epochs per stage of $300$; each epoch visits all the pixels once; size of mini-batch of $65536$ (to fit the GPU memory). Training uses Adam with a learning rate of $1e-4$.
 
 % {\color{red}}
-The network initialization follows the scheme in Sec. \ref{s-frequency-initialization}, with the choice of frequency bands described in the "Filtering with Gaussian pyramid" level of detail scheme (Sec. \ref{s:lod}). The weights of first layer of each stage are set to match the frequencies of the corresponding level of detail: $\omega_0$ is uniformly distributed as $ \mathcal{U}(-B_i, B_i)$ with $B_i = [4, 8, 16, 32, 64, 128, 256]_{i=1}^7$ for a network with seven stages, and $\omega_h = 30$ for all experiments.
+The network initialization follows the scheme in Sec. \ref{sec:frequency-initialization}, with the choice of frequency bands described in the "Filtering with Gaussian/Laplacian pyramid" level of detail scheme (Sec. \ref{s:lod}). The weights of first layer of each stage are set to match the frequencies of the corresponding level of detail: $\omega_0$ is uniformly distributed as $ \mathcal{U}(-B_i, B_i)$ with $B_i = [4, 8, 16, 32, 64, 128, 256]_{i=1}^7$ for a network with seven stages, and $\omega_h = 30$ for all experiments.
 
 
 \subsection{Level of Detail Example}
 \label{ss:LOD}
 
-We now show an example of a multiresolution image representation using the setup described above. For this experiment, we chose the ``Cameraman'', a standard test image used in the field of image processing and also in \citet{sitzmann2019siren}.
+We now show an example of a multiresolution image representation using the setup described above. For this experiment, we chose the "Cameraman", a standard test image used in the field of image processing and also in \citet{sitzmann2019siren}.
 The source is a monochromatic picture with $512\times 512$ pixels of resolution.
 
 Fig~\ref{f:lod} depicts the levels 1, 3, 5 and 7 of the multiresolution reconstructed with resolution of $512\times 512$, as well as the corresponding Fourier spectra. 
@@ -55,7 +57,7 @@ Fig~\ref{f:lod} depicts the levels 1, 3, 5 and 7 of the multiresolution reconstr
 
 The training times for each stage of the networks are as follows: 5s, 4s, 3s, 11s, 17s, 29s and 48s. The total training time is 117s. The machine was a Windows 10 laptop with a NVIDIA RTX A5000 Laptop GPU. Note that these times result from the adaptive training regime and the number of samples for each level of the Gaussian Pyramid. 
 
-The training evolution is depicted in the graph of Fig~\ref{f:training-epochs} that shows the convergence of the MSE loss with the number of epochs for each multiresolution levels 1, 3, 5, and 7. It is worth pointing out the qualitative behavior of the network, in that the base level (stage 1) takes more than 200 epochs to reach the limit, while detail levels (stages 3, 5, 7) take less than 150 epochs to converge. Also, the error decreases for each level of detail. It is like, there are two different modes, one to fit the base level and the other for the detail levels.
+The training evolution is depicted in the graph of Figure \ref{f:training-epochs} that shows the convergence of the MSE loss with the number of epochs for each multiresolution levels 1, 3, 5, and 7. It is worth pointing out the qualitative behavior of the network, in that the base level (stage 1) takes more than 200 epochs to reach the limit, while detail levels (stages 3, 5, 7) take less than 150 epochs to converge. Also, the error decreases for each level of detail. It is like, there are two different modes, one to fit the base level and the other for the detail levels.
 
 \begin{figure}[!h]
 \centering
