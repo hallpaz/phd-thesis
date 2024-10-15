@@ -15,21 +15,45 @@ CONFIG_PATH = 'experiments/ch5/configs'
 
 from skimage.transform import resize, rescale
 from scipy.ndimage import gaussian_filter
+from PIL import Image, ImageFilter
 
-def create_MR_strutures(base_signal, max_stages, 
-                       decimation, pmode='constant', 
-                       filter='gaussian', sigma=2/3):
-    tower = [base_signal]
-    while len(tower) < max_stages:
-        tower.append(
-            gaussian_filter(tower[-1], 2**(len(tower)-1) * sigma, mode=pmode)
-        )
-    if decimation:
-        pyramid = [tower[0]]
-        for i, signal in enumerate(tower[1:], start=1):
-            pyramid.append(rescale(signal, 1 / (2**i), anti_aliasing=False))
-            ImageSignal.new_like()
+def create_MR_strutures(hyper):
+    img = Image.open(hyper['data_path'])
+    width = hyper.get('width', 0)
+    height = hyper.get('height', 0)
+    if width != img.size[0] or height != img.size[1]:
+        img = img.resize((width, height))
+
+    levels = hyper['max_stages']
+    tower = [img]
+    
+    while len(tower) < levels:
+        sigma = 2**(len(tower)-1) * 2 / 3
+        tower.append(tower[-1].filter(ImageFilter.GaussianBlur(sigma)))
+    
+    if hyper['decimation']:
+        pyramid = [img]
+        for i in range(1, len(tower)):
+            current = tower[i]
+            size = current.size
+            pyramid.append(current.resize((size[0] // 2**i, size[1] // 2**i)))
+
+    tower = [ImageSignal.init_from_pil(image,
+                                       domain=hyper['domain'],
+                                    channels=hyper['channels'],
+                                    sampling_scheme=hyper['sampling_scheme'],
+                                    batch_size=hyper['batch_size'],
+                                    color_space=hyper['color_space']) 
+                                    for image in tower]
+    if hyper['decimation']:
+        pyramid = [ImageSignal.init_from_pil(image,
+                                             domain=hyper['domain'],
+                        channels=hyper['channels'],
+                        sampling_scheme=hyper['sampling_scheme'],
+                        batch_size=hyper['batch_size'],
+                        color_space=hyper['color_space']) for image in pyramid]
         return pyramid, tower
+    
     return tower, tower
 
 if __name__ == '__main__':
@@ -57,12 +81,7 @@ if __name__ == '__main__':
     #                                     hyper['filter'],
     #                                     False,
     #                                     hyper['pmode'])
-    train_dataset, test_dataset = create_MR_strutures(base_signal, 
-                                                      hyper['max_stages'],
-                                                      hyper['decimation'],
-                                                      hyper['pmode'])
-    embed()
-    exit()
+    train_dataset, test_dataset = create_MR_strutures(hyper)
     # train_dataset = [base_signal] * hyper['max_stages']
     # test_dataset = [base_signal] * hyper['max_stages']
 
