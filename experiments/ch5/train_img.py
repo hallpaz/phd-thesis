@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from IPython import embed
 import torch
 
 from mrnet.training.trainer import MRTrainer
@@ -10,7 +11,26 @@ from mrnet.training.listener import TrainingListener
 
 from mrnet.training.utils import load_hyperparameters, get_optim_handler
 
-CONFIG_PATH = '/Users/hallpaz/Workspace/impa/phd-thesis/experiments/ch5/configs'
+CONFIG_PATH = 'experiments/ch5/configs'
+
+from skimage.transform import resize, rescale
+from scipy.ndimage import gaussian_filter
+
+def create_MR_strutures(base_signal, max_stages, 
+                       decimation, pmode='constant', 
+                       filter='gaussian', sigma=2/3):
+    tower = [base_signal]
+    while len(tower) < max_stages:
+        tower.append(
+            gaussian_filter(tower[-1], 2**(len(tower)-1) * sigma, mode=pmode)
+        )
+    if decimation:
+        pyramid = [tower[0]]
+        for i, signal in enumerate(tower[1:], start=1):
+            pyramid.append(rescale(signal, 1 / (2**i), anti_aliasing=False))
+            ImageSignal.new_like()
+        return pyramid, tower
+    return tower, tower
 
 if __name__ == '__main__':
     torch.manual_seed(777)
@@ -27,16 +47,24 @@ if __name__ == '__main__':
                         batch_size=hyper['batch_size'],
                         color_space=hyper['color_space'])
 
-    train_dataset = create_MR_structure(base_signal,
-                                        hyper['max_stages'],
-                                        hyper['filter'],
-                                        hyper['decimation'],
-                                        hyper['pmode'])
-    test_dataset = create_MR_structure(base_signal,
-                                        hyper['max_stages'],
-                                        hyper['filter'],
-                                        False,
-                                        hyper['pmode'])
+    # train_dataset = create_MR_structure(base_signal,
+    #                                     hyper['max_stages'],
+    #                                     hyper['filter'],
+    #                                     hyper['decimation'],
+    #                                     hyper['pmode'])
+    # test_dataset = create_MR_structure(base_signal,
+    #                                     hyper['max_stages'],
+    #                                     hyper['filter'],
+    #                                     False,
+    #                                     hyper['pmode'])
+    train_dataset, test_dataset = create_MR_strutures(base_signal, 
+                                                      hyper['max_stages'],
+                                                      hyper['decimation'],
+                                                      hyper['pmode'])
+    embed()
+    exit()
+    # train_dataset = [base_signal] * hyper['max_stages']
+    # test_dataset = [base_signal] * hyper['max_stages']
 
     if hyper['width'] == 0:
         hyper['width'] = base_signal.shape[-1]
