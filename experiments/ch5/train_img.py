@@ -10,12 +10,12 @@ from mrnet.training.listener import TrainingListener
 
 from mrnet.training.utils import load_hyperparameters, get_optim_handler
 
-CONFIG_PATH = '/Users/hallpaz/Workspace/impa/phd-thesis/experiments/ch5/configs'
+CONFIG_PATH = 'experiments/ch5/configs'
 
 if __name__ == '__main__':
     torch.manual_seed(777)
     #-- hyperparameters in configs --#
-    hyper = load_hyperparameters(os.path.join(CONFIG_PATH, 'image.yml'))
+    hyper = load_hyperparameters(os.path.join(CONFIG_PATH, 'cameraman.yml'))
     project_name = hyper.get('project_name', 'framework-tests')
 
     base_signal = ImageSignal.init_fromfile(
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     train_dataset = create_MR_structure(base_signal,
                                         hyper['max_stages'],
                                         hyper['filter'],
-                                        hyper['decimation'],
+                                        False, #hyper['decimation'],
                                         hyper['pmode'])
     test_dataset = create_MR_structure(base_signal,
                                         hyper['max_stages'],

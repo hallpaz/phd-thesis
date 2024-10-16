@@ -1,0 +1,61 @@
+# Logging
+project_name: phd-thesis-ch5-camera
+logger: local
+# Model Class (S, L, M)
+model: M
+positive_freqs: False
+
+# Network
+in_features: 2
+out_features: 1
+hidden_layers: 1
+hidden_features: [64, 64, 96, 96, 128, 192, 384]
+bias: True
+max_stages: 7
+
+pmode: reflect
+domain: [-1, 1]
+# mask_color: 130
+
+# Frequency Initialization
+omega_0: [4, 10, 20, 32, 60, 160, 512]
+hidden_omega_0: 30
+superposition_w0: True
+
+# Sampling
+sampling_scheme: regular
+decimation: True
+filter: gauss # vary between none, laplace and gauss
+attributes: ['d0', 'd1']
+
+# Loss
+loss_function: 'mse'
+loss_weights: {'d0': 1, 'd1': 0.0}
+optim_handler: 'regular'
+
+# Training
+opt_method: Adam
+lr: [0.00002, 0.00001, 0.00001, 0.000005, 0.000004, 0.000003, 0.000003]
+loss_tol: 0.00000000001
+diff_tol: 0.0001
+max_epochs_per_stage: [2000, 1600, 1200, 900, 900, 900, 900]
+batch_size: 256 * 128
+
+# Image
+data_path: data/img/camera.png
+width: 512
+height: 512
+channels: 1
+#see: https://pillow.readthedocs.io/en/stable/handbook/concepts.html#concept-modes
+color_space: L
+
+# Computation (Only vary between 'cpu' and 'cuda')
+device: cuda
+eval_device: cuda
+
+# Etc
+save_format: 'general'
+visualize_grad: True
+extrapolate: [-2, 2]
+zoom: [2, 4, 8]
+zoom_filters: ['linear', 'cubic', 'nearest']
