@@ -945,15 +945,15 @@ Our method consistently outperforms SIREN across all tested configurations, both
 
 % % % \vspace{-0.2cm}
 
-% % To reconstruct seamless tiles using Poisson equation, \citet{perez2023poisson} suggests to manipulate the pixels intensities at the borders so that left = right and top = bottom, which can be achieved by averaging these values. These intensities should be given as boundary conditions while the gradients should be given at all other positions. In Figure \ref{f:average_border},  we compare this strategy with the one presented in Section \ref{s:poisson-regularization}. Note that our approach gives a more uniform result, better reducing the photometric differences present in the pattern.
-% % \begin{figure}[!h]
-% % \centering
-% % \includegraphics[width=0.47\linewidth]{img/comparisons/tile_average-border-inr.png}
-% % \includegraphics[width=0.47\linewidth]{img/comparisons/tile_gradient_border.png}
-% % \vspace{-0.3cm}
-% % \caption{Average border (left). Gradient Border (right).}
-% % \label{f:average_border}
-% % \end{figure}
+To reconstruct seamless tiles using Poisson equation, \citet{perez2023poisson} suggests to manipulate the pixels intensities at the borders so that left = right and top = bottom, which can be achieved by averaging these values. These intensities should be given as boundary conditions while the gradients should be given at all other positions. In Figure \ref{f:average_border},  we compare this strategy with the one presented in Section \ref{s:poisson-regularization}. Note that our approach gives a more uniform result, better reducing the photometric differences present in the pattern.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.47\linewidth]{img/ch6/comparisons/tile_average-border-inr.png}
+\includegraphics[width=0.47\linewidth]{img/ch6/comparisons/tile_gradient_border.png}
+\caption{Average border (left). Gradient Border (right).}
+\label{f:average_border}
+\end{figure}
 
 % % % We also compare our method against traditional Poisson Image Editing (Figure \ref{f:comparison_opencv}).
 
@@ -999,6 +999,35 @@ Our method consistently outperforms SIREN across all tested configurations, both
 % % % \tnote{green}{Talvez adicionar um exp que cria uma textura seamless a partir de uma imagem real.}
 
 % % \citet{paz2022} have demonstrated MRNet capabilities of encoding mip-mapping and displaying an anti-aliased version of an image, adapted to the required resolution. This section demonstrates practical applications of this property in mapping textures to surfaces.
+
+\section{Surface Texture Mapping}
+
+This section presents an application of our periodic INR in mapping textures to surfaces. First, using a simple renderer, we directly evaluate the network at the $uv$-coordinates of each fragment in a rendering pipeline. We map the $uv$-coordinates from the range $[0, 1]$ to  $[-1, 1]$; then, for the torus, we apply a factor of 2 in the $u$ coordinate for a better aspect to the rendering (Fig.\ref{f:surface_texture_mapping}). 
+We can also transform the coordinates to, for example, invert the texture orientation or scale it so that it spans multiple periods of the texture on the surface.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[angle=270,origin=c,width=0.21\linewidth]{img/ch6/torus/a6.png}
+    \includegraphics[angle=270,origin=c,width=0.21\linewidth]{img/ch6/torus/a6xfliped.png}
+    \includegraphics[angle=270,origin=c,width=0.21\linewidth]{img/ch6/torus/c6.png}
+    \includegraphics[angle=270,origin=c,width=0.21\linewidth]{img/ch6/torus/c6x4.png}
+    \caption{Neural texture mapping on the torus using its $uv$-coordinates. Two examples of textures affected by different torus transformations.}
+    \label{f:surface_texture_mapping}
+\end{figure}
+ 
+
+\citet{paz2022} have showcased the MRNet's capabilities in encoding mip-mapping \cite{mipmap83} and presenting an anti-aliased version of an image, adapted to the required resolution. Consequently, we can use our method to evaluate a multiresolution INR at any coordinate and achieve similar anti-aliasing effects. Figure \ref{f:alias} shows the texture mapping results with and without anti-aliasing treatment utilizing a periodic M-Net \cite{paz2023mr} with 5 stages.
+
+
+\begin{figure}[!h]
+    \centering
+    % \includegraphics[width=0.2\linewidth]{img/ch6/alias0.png}
+    % \includegraphics[width=0.2\linewidth]{img/ch6/anti_alias0.png}
+    \includegraphics[width=0.4\linewidth]{img/ch6/alias2.png}
+    \includegraphics[width=0.4\linewidth]{img/ch6/anti_alias2.png}
+    \caption{Antialiasing in texture mapping using a periodic sinusoidal network. In each example, the image on the left has no antialiasing in contrast with the one on the right.}
+    \label{f:alias}
+\end{figure}
 
 % % \subsection{Surface Texture Mapping}
 
@@ -1047,32 +1076,14 @@ Our method consistently outperforms SIREN across all tested configurations, both
 
 % % % \lnote{red}{falar tambem sobre deformaçoes no UV usando o iFlow e se possivel colocar exemplo / figura}
 
-% % \begin{comment}
 
-% % \subsection{Solid Texture Mapping}
 
-% % Solid textures offer practical advantages as they eliminate the need for computing $uv$-coordinates on a surface. We trained a solid texture of a marble using Perlin Noise as described in section \ref{s-multires-3d}, and we integrated our representation into the Omniverse platform, which provides a comprehensive rendering pipeline management system. Figure \ref{f:solid_texture_mapping} showcases some of the results achieved using our solid texture mapping approach.
+\section{Conclusion and Future Work}
 
-% % \begin{figure}[!h]
-% % \centering
-% % \includegraphics[width=0.375\linewidth]{img/omniverse/bunny_mrnet.0000.png}
-% % \includegraphics[width=0.245\linewidth]{img/omniverse/max_plank_mrnet_512_mc400.0099.png}
-% % \includegraphics[width=0.285\linewidth]{img/omniverse/spot_mrnet.0101.png}
-% % \caption{Solid Texture Mapping.}
-% % \label{f:solid_texture_mapping}
-% % \end{figure}
+In this chapter, we have presented an unified framework for modeling seamless textures by incorporating Fourier series ideas into neural network architectures. Our approach demonstrates the ability to train the network using partial texture data, making it more compact, and capturing sharper details compared to the ground truth in certain cases.
 
-% % To apply the solid texture, we extract meshes from implicit surfaces represented by neural networks and perform the inference of the texture network at the vertices of the mesh. We render the scene using \textit{path tracing}, and we can choose among various materials and shading options to enhance the visual quality of the scene. This demonstrates that this approach can be fully integrated in the  graphics pipeline.
+While we have made significant progress in understanding the impact of sinusoidal network initialization on representation capacity, there are still paths for future exploration. Although we have constrained the space of frequency choices by selecting integer multiples of a period and partitioning the frequency space, determining the appropriate band limit remains an empirical task. In our current approach, we freeze the weights of the first layer to maintain their constancy throughout training. However, finding a way to make these weights learnable parameters while preserving the desired period is a valuable research direction.
 
-% % \end{comment}
-
-% \section{Conclusion and Future Work}
-
-% In this chapter, we have presented an unified framework for modeling seamless textures by incorporating Fourier series ideas into neural network architectures. Our approach demonstrates the ability to train the network using partial texture data, making it more compact, and capturing sharper details compared to the ground truth in certain cases.
-
-% While we have made significant progress in understanding the impact of sinusoidal network initialization on representation capacity, there are still paths for future exploration. Although we have constrained the space of frequency choices by selecting integer multiples of a period and partitioning the frequency space, determining the appropriate band limit remains an empirical task. In our current approach, we freeze the weights of the first layer to maintain their constancy throughout training. However, finding a way to make these weights learnable parameters while preserving the desired period is a valuable research direction.
-
-% % % Our method has demonstrated effectiveness in 2D/3D texture representations. 
 
 % % % \lnote{red}{falar que usamos so' o albedo mas que se aplica naturalmente aos outros canais da definicao de materiais - citar metodos que aprendem os canais a partir de imagens - Substance Image to Materials e Delight - Ref: https://helpx.adobe.com/substance-3d-sampler/filters/tools.html}
 
@@ -1080,11 +1091,11 @@ Our method consistently outperforms SIREN across all tested configurations, both
 
 % % % \lnote{red}{falar do iFlow - nao exploramos, pois o ponto e' a integracao com o rendering e parametrizacao - talvez citar - "Synthesis of Progressively Variant Textures on Arbitrary Surfaces". ACM Transactions on Graphics, 22(3):295–302, July 2003}
 
-% To fully integrate neural networks as primitives in a graphics pipeline, it is crucial to develop methods for operating and editing them. The functional structure of sinusoidal INRs provides opportunities to explore algebraic structures for network manipulation. 
+To fully integrate neural networks as primitives in a graphics pipeline, it is crucial to develop methods for operating and editing them. The functional structure of sinusoidal INRs provides opportunities to explore algebraic structures for network manipulation. 
 
 % % % \lnote{red}{naturalmente compacta mas compressao e' trabalho futuro}
 
-% Periodic INRs have high-capacity representation. When restricted to periodic functions domain, they can naturally compress the images, specially in multiresolution. However, investigating compression techniques tailored for sinusoidal networks is essential for achieving compact storage and efficient transmission over computer networks. Exploring the distribution of signal frequencies to inform network initialization is a promising direction in this regard.
+Periodic INRs have high-capacity representation. When restricted to periodic functions domain, they can naturally compress the images, specially in multiresolution. However, investigating compression techniques tailored for sinusoidal networks is essential for achieving compact storage and efficient transmission over computer networks. Exploring the distribution of signal frequencies to inform network initialization is a promising direction in this regard.
 
 % % \section{Conclusion and Future Work}
 
@@ -1099,24 +1110,6 @@ Our method consistently outperforms SIREN across all tested configurations, both
 
 
 % % In this work we employed \myhl{multiresolution neural networks} to represent periodic textures. By incorporating Fourier series ideas in neural network architectures, we can approximate and model 2D and 3D textures effectively in a unified framework. This approach allowed training the network using only some parts of the texture generator and captures sharper details compared to the ground truth. Integration with other neural graphics frameworks further enhances its potential for texture representation...
-
-
-% % \begin{figure*}[!t]
-% % \centering
-% % \includegraphics[width=0.20\linewidth]{img/placeholder.png}
-% % \includegraphics[width=0.20\linewidth]{img/placeholder.png}
-% % \includegraphics[width=0.20\linewidth]{img/placeholder.png}
-% % \includegraphics[width=0.20\linewidth]{img/placeholder.png} \\
-% % % \vspace{1pt}
-% % \includegraphics[width=0.20\linewidth]{img/placeholder.png}
-% % \includegraphics[width=0.20\linewidth]{img/placeholder.png}
-% % \includegraphics[width=0.20\linewidth]{img/placeholder.png}
-% % \includegraphics[width=0.20\linewidth]{img/placeholder.png}
-% % % \vspace{-0.3cm}
-% % \caption{Reconstructed multiresolution levels extrapolation.}
-% % \label{f:lod}
-% % \end{figure*}
-
 
 % % \begin{figure*}[!h]
 % % \centering
