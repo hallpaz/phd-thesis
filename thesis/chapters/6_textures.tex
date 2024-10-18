@@ -266,33 +266,6 @@ Theorem~\ref{t-periodic} allows us to use sinusoidal MLPs to represent periodic 
 % Using our method, we observe that a single sample from the equivalence class defined by the periodicity suffices to reconstruct the image without additional regularization. 
 % To illustrate this, we construct a mask by randomly selecting a pixel and then excluding all pixels corresponding to it based on the pattern's period. This process repeats until no further pixels can be sampled, resulting in a mask covering $1/4$ of the total pixels. Figure \ref{f:masked_recontruction} presents the training data, where the black pixels were removed from training, and the learned texture in $[2, 6]^2$. In this case, the training still considers the interval $[-1, 1]$ but the period $P$ is set to $1$. Even under these conditions, our method captures the underlying periodicity.
 
-% % \begin{figure}[h]{\textwidth}
-% %     \centering
-% %     \includegraphics[width=0.40\linewidth]{img/victorian/stochastic_mask.png}
-% %     \includegraphics[width=0.40\linewidth]{img/victorian/extrapolation_randommask.png}
-% %     \caption{The masked input data, where the black pixels were removed from training (left). The network reconstruction (right).~\\
-% %     }
-    
-% % \end{figure}
-
-
-% \begin{figure}[h]
-%     \centering
-%     \begin{subfigure}[b]{0.40\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/ch6/stochastic_mask.png}
-%         % \caption{$\omega_0=2$ Hz}
-%     \end{subfigure}
-%     \begin{subfigure}[b]{0.40\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{img/ch6/extrapolation_randommask.png}
-%         % \caption{$\omega_0=4$ Hz}
-%         % \label{fig:16x-zoom-1hl-16hf-2hz}
-%     \end{subfigure}
-%     \caption{The masked input data, where the black pixels were removed from training (left). The network reconstruction (right).}
-%     \label{f:masked_recontruction}
-% \end{figure}
-
 
 \section{Multiresolution Periodic Representation}
 

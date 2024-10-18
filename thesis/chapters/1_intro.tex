@@ -16,6 +16,31 @@ Deep learning has been so present in computation today that specialized hardware
 
 \subsection{Media Objects and Neural Media}
 
+In this context, our goal is to derive a \textit{multiresolution representation of media objects using neural networks}, a concept we will refer to as \textbf{neural media}. We define \textbf{media content} as any form of information intended to be consumed, shared, or experienced by an audience. This includes various types of content, such as visual, auditory, and interactive media. These concepts serve to convey ideas, narratives, knowledge, or emotions and they exist in the real world independently of a computer.
+
+A \textbf{media object}, on the other hand, refers to the digital representation of media content, which can be stored, processed, or transmitted electronically. Media objects take various forms depending on the type of data they represent. For instance:
+
+\begin{itemize}
+\item \textbf{Images} are digital representations of still pictures, typically stored as 2D arrays of pixel values (e.g., JPEG, PNG).
+\item \textbf{Audio} consists of sound recordings represented as waveforms or spectrograms (e.g., MP3, WAV).
+\item \textbf{Videos} are sequences of images combined with an audio track (e.g., MP4, AVI).
+\item \textbf{3D models} are geometric representations of objects or scenes (e.g., OBJ, STL).
+\end{itemize}
+
+When representing real-world media content in a computer, we can apply the \textit{Paradigm of the Four Universes} (\cite{gomes1995}):
+
+\begin{enumerate}
+\item \textbf{Physical Universe}: The real-world objects and phenomena we intend to model.
+\item \textbf{Mathematical Universe}: The abstract, continuous description of these objects using mathematical formulations.
+\item \textbf{Representation Universe}: The discrete approximations of the objects, where continuous signals are sampled and quantized.
+\item \textbf{Implementation Universe}: The realm of concrete data structures and algorithms that map the discrete representations into computable forms.
+\end{enumerate}
+
+The transition from the physical universe to the mathematical universe involves creating a \textit{mathematical model} of the media content as a continuous signal. Once modeled, the signal is discretized, bringing it into the representation universe. Finally, in the implementation universe, these discrete representations are stored in data structures suitable for computational purposes.
+
+The process of moving from a discrete representation of a signal to its computable form in the implementation universe is called \textbf{encoding}. In this work, we focus on encoding media objects using \textbf{artificial neural networks}. We will show that neural networks can not only approximate the underlying continuous mathematical model of the media content but also provide an efficient representation of its discrete and finite form. Additionally, we will explore how multiresolution theory can be applied within this framework, developing neural network architectures capable of encoding signals at multiple levels of resolution.
+
+
 In this context, using neural networks to represent media objects such as audio, image, video or 3D models have attracted attention of the community as it is a compact and continuous representation. 
 
 Nowadays, images can be stored and processed in a variety of file formats. However there are basically two big classes of representations fr
@@ -25,15 +50,15 @@ Neural Networks are universal approximators models for functions. All these obje
 A coordinate-based network represents the image \emph{indirectly} using a fully connected \textit{multi-layer perceptron} (MLP) that takes as input a pixel coordinate and outputs a RGB color. These~networks provide a continuous implicit representation for images~\cite{chen2021learning}, and allow for various applications, from Neural Signed Distance Functions~(NeuralSDFs)~\cite{park2019deepsdf} to Neural Radiance Fields~(NeRFs)~\cite{2020nerf}. Since the coordinates are continuous, images can be presented in arbitrary resolution.
 
 
-Note that audio, image and videos have a natural representation in euclidean domains, as their digital representations are encoded as lattices, samples with regularity in space and time. However, other media objects such as 3D models have many possible representations available such as point clouds, polygonal meshes, multiview images or implicit surfaces.
+% Note that audio, image and videos have a natural representation in euclidean domains, as their digital representations are encoded as lattices, samples with regularity in space and time. However, other media objects such as 3D models have many possible representations available such as point clouds, polygonal meshes, multiview images or implicit surfaces.
 
 % \red{As these two use cases became more "stable", the field kept advancing towards non-euclidean domains. Geometric Deep Learning, Graph Neural Networks .... How to apply machine learning techiniques, more specifically, deep learning, to solve problems in Computer Graphics?}
 
 
-Many works have addressed each of these representations. For instance [CITE works for each kind]... At this point, other tasks such as geometry reconstruction and appearance estimation started to be better addressed. Still, most of these works could be either classified as analysis - how to classify an object based on a point cloud - or generative models based: after training on a dataset, given an image as a prior, generate the corresponding geometry.
+% Many works have addressed each of these representations. For instance [CITE works for each kind]... At this point, other tasks such as geometry reconstruction and appearance estimation started to be better addressed. Still, most of these works could be either classified as analysis - how to classify an object based on a point cloud - or generative models based: after training on a dataset, given an image as a prior, generate the corresponding geometry.
 
 
-\section{Research Questions}
+\subsection{Research Questions}
 
 In this scenario, the main research questions we aim to address in this dissertation are:
 

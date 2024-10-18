@@ -1,33 +1,6 @@
 \chapter{Theoretical Framework}
 
-Our goal is to derive a \textit{multiresolution representation of media objects using neural networks}, a concept we will refer to as \textbf{neural media}. To achieve this, we need to understand foundational concepts related to digital media representation, multiresolution theory, and neural networks.
-
-In this context, we define \textbf{media content} as any form of information intended to be consumed, shared, or experienced by an audience. This includes various types of content, such as visual, auditory, and interactive media. These concepts serve to convey ideas, narratives, knowledge, or emotions and they exist in the real world independently of a computer.
-
-A \textbf{media object}, on the other hand, refers to the digital representation of media content, which can be stored, processed, or transmitted electronically. Media objects take various forms depending on the type of data they represent. For instance:
-
-\begin{itemize}
-\item \textbf{Images} are digital representations of still pictures, typically stored as 2D arrays of pixel values (e.g., JPEG, PNG).
-\item \textbf{Audio} consists of sound recordings represented as waveforms or spectrograms (e.g., MP3, WAV).
-\item \textbf{Videos} are sequences of images combined with an audio track (e.g., MP4, AVI).
-\item \textbf{3D models} are geometric representations of objects or scenes (e.g., OBJ, STL).
-\end{itemize}
-
-When representing real-world media content in a computer, we can apply the \textit{Paradigm of the Four Universes} (\cite{gomes1995}):
-
-\begin{enumerate}
-\item \textbf{Physical Universe}: The real-world objects and phenomena we intend to model.
-\item \textbf{Mathematical Universe}: The abstract, continuous description of these objects using mathematical formulations.
-\item \textbf{Representation Universe}: The discrete approximations of the objects, where continuous signals are sampled and quantized.
-\item \textbf{Implementation Universe}: The realm of concrete data structures and algorithms that map the discrete representations into computable forms.
-\end{enumerate}
-
-
-The transition from the physical universe to the mathematical universe involves creating a \textit{mathematical model} of the media content as a continuous signal. Once modeled, the signal is discretized, bringing it into the representation universe. Finally, in the implementation universe, these discrete representations are stored in data structures suitable for computational purposes.
-
-The process of moving from a discrete representation of a signal to its computable form in the implementation universe is called \textbf{encoding}. In this work, we focus on encoding media objects using \textbf{artificial neural networks}. We will show that neural networks can not only approximate the underlying continuous mathematical model of the media content but also provide an efficient representation of its discrete and finite form. Additionally, we will explore how multiresolution theory can be applied within this framework, developing neural network architectures capable of encoding signals at multiple levels of resolution.
-
-In the next sections, we provide an overview of signal processing and deep learning knowledge to familiarize the reader  with the methods employed in our approach.
+To achieve this, we need to understand foundational concepts related to digital media representation, multiresolution theory, and neural networks. In the next sections, we provide an overview of signal processing and deep learning knowledge to familiarize the reader  with the methods employed in our approach.
 
 
 \section{Media Objects as Signals}
