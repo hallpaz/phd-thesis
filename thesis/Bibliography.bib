@@ -99,6 +99,26 @@ numpages = {13}
   url = {https://doi.org/10.1007/BF01901041}
 }
 
+@article{variantTextures,
+author = {Zhang, Jingdan and Zhou, Kun and Velho, Luiz and Guo, Baining and Shum, Heung-Yeung},
+title = {Synthesis of progressively-variant textures on arbitrary surfaces},
+year = {2003},
+issue_date = {July 2003},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {22},
+number = {3},
+issn = {0730-0301},
+url = {https://doi.org/10.1145/882262.882266},
+doi = {10.1145/882262.882266},
+abstract = {We present an approach for decorating surfaces with progressively-variant textures. Unlike a homogeneous texture, a progressively-variant texture can model local texture variations, including the scale, orientation, color, and shape variations of texture elements. We describe techniques for modeling progressively-variant textures in 2D as well as for synthesizing them over surfaces. For 2D texture modeling, our feature-based warping technique allows the user to control the shape variations of texture elements, making it possible to capture complex texture variations such as those seen in animal coat patterns. In addition, our feature-based blending technique can create a smooth transition between two given homogeneous textures, with progressive changes of both shapes and colors of texture elements. For synthesizing textures over surfaces, the biggest challenge is that the synthesized texture elements tend to break apart as they progressively vary. To address this issue, we propose an algorithm based on texton masks, which mark most prominent texture elements in the 2D texture sample. By leveraging the power of texton masks, our algorithm can maintain the integrity of the synthesized texture elements on the target surface.},
+journal = {ACM Trans. Graph.},
+month = jul,
+pages = {295-302},
+numpages = {8},
+keywords = {surfaces, texture mapping, texture synthesis}
+}
+
 @article{gomesGraphical1996,
   title={Graphical objects},
   author={Gomes, J. and Costa, B. and Darsa, L. and Velho, L.},
@@ -153,6 +173,26 @@ abstract = {While 2D texture mapping is one of the most effective of the renderi
   year={1997},
   publisher={Springer Science \& Business Media}
 }
+
+@article{hypertexture,
+author = {Perlin, K. and Hoffert, E. M.},
+title = {Hypertexture},
+year = {1989},
+issue_date = {July 1989},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {23},
+number = {3},
+issn = {0097-8930},
+url = {https://doi.org/10.1145/74334.74359},
+doi = {10.1145/74334.74359},
+abstract = {We model phenomena intermediate between shape and texture by using space-filling applicative functions to modulate density. The model is essentially an extension of procedural solid texture synthesis, but evaluated throughout a volumetric region instead of only at surfaces.We have been able to obtain visually realistic representations of such shape+texture (hypertexture) phenomena as hair, fur, fire, glass, fluid flow and erosion effects. We show how this is done, first by describing a set of base level functions to provide basic texture and control capability, then by combining these to synthesize various phenomena.Hypertexture exists within an intermediate region between object and not-object. We introduce a notion of generalized boolean shape operators to combine shapes having such a region.Rendering is accomplished by ray marching from the eye point through the volume to accumulate opacity along each ray. We have implemented our hypertexture rendering algorithms on a traditional serial computer, a distributed network of computers and a coarse-grain MIMD computer. Extensions to the rendering technique incorporating refraction and reflection effects are discussed.},
+journal = {SIGGRAPH Comput. Graph.},
+month = {jul},
+pages = {253–262},
+numpages = {10}
+}
+
 
 @article{HORNIK1989359,
 title = {Multilayer feedforward networks are universal approximators},
@@ -473,6 +513,17 @@ series = {SIGGRAPH '08}
   publisher={Ieee}
 }
 
+@article{Liu2011,
+  author = {Liu, Y. and Zhang, H. and Wang, Y.},
+  title = {Statistical Modeling of Quasi-Periodic Textures},
+  journal = {Computer Graphics Forum},
+  volume = {30},
+  number = {2},
+  pages = {213--222},
+  year = {2011},
+  publisher = {Wiley}
+}
+
 
 @article{antonini1992image,
   title={Image coding using wavelet transform},
@@ -523,6 +574,12 @@ location = {Denver, CO, USA},
 series = {SIGGRAPH '24}
 }
 
+@misc{mrnetGithub,
+  author={Paz, Hallison and Perazzo, Daniel and Velho, Luiz},
+  title={MR-Net Framework Code},
+  year={2022},
+  url={https://github.com/visgraf/mrnet},
+}
 
 @inproceedings{mallat-2gen,
 author = {Froment, Jacques and Mallat, Ste\'{e}phane},

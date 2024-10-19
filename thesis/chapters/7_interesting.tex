@@ -6,31 +6,33 @@ In this dissertation, we investigated the use of neural networks as digital repr
 The current scenario where specific hardware as neural engines are being designed and comercilaized for consumer products as laptops, smartphones, smartwatches, VR headsets or even AR glasses, we believe that neural assets will play an important role in multiple industries.  In particular, we envision a future where neural networks will be standard digital representations of assets for particular applications in the audiovisual or games indutries. In that sense, we contributed with a representation that can fit the current rendering pipeline and is capable of encoding periodic material textures and even generating seamless textures under certain circunstances.
 
 
-In this dissertation we have contributed to the understanding of the frequencies in sinusoidal neural networks and their connection to the multiresolution analysis theory. We have presented MR-Net as a family of architectures to encode signals in multiresolution showcansing its applications in media objects such as images and material textures. MR-Net is available as a software component, a flexible framework that implements the architectures described in Chapter \ref{chap:mr_snn} and the multiresolution training of the networks. It can be found in \ref{}. Additionaly We demonstrated how to create periodic sinusoidal neural networks to represent periodic textures, we develop a techinique based on Poisson Equation to create seamless material textures, and we demonstrated how to use our architecture for rendering of textured objects.
+In this dissertation we have contributed to the understanding of the frequencies in sinusoidal neural networks and their connection to the multiresolution analysis theory. We have presented MR-Net as a family of architectures to encode signals in multiresolution showcansing its applications in media objects such as images and material textures. MR-Net is available as a software component, a flexible framework that implements the architectures described in Chapter \ref{chap:mr_snn} and the multiresolution training of the networks. It can be found in \cite{mrnetGithub}. Additionaly We demonstrated how to create periodic sinusoidal neural networks to represent periodic textures, we develop a techinique based on Poisson Equation to create seamless material textures, and we demonstrated how to use our architecture for rendering of textured objects.
 
 Next, we explore some general limitations and interesting research directions related to our work.
 
-constituting what we call representational networks.
+% constituting what we call representational networks.
 
 \section{Limitations}
 
 \subsection{Frequencies}
 
-By understanding the relationship between initialization of the first sinusoidal layer of a sinusoidal neural network and the frequencies learned by the model, we have made significant progress into connecting an emprirical hyperparameter to the Shannon-Nyquist theory. Moreover, we concluded that using interger frequencies is more appropriate as it has an underlying model that constitutes a representation for a well defined function space (periodic functions) and we can reduce the space of possible values for the initialiation to a discrete a finite set o values, thus helping on the design of a initialization strategy. 
+By understanding the relationship between initialization of the first sinusoidal layer of a sinusoidal neural network and the frequencies learned by the model, we have made significant progress into connecting an emprirical hyperparameter to the Shannon-Nyquist theory. Moreover, we concluded that using integer frequencies is more appropriate as it has an underlying model that constitutes a representation for a well defined function space (periodic functions) and we can reduce the space of possible values for the initialiation to a discrete a finite set o values, thus helping on the design of a initialization strategy. 
 
-However, there are two limitations that we believe should be addressed in future works. First, is that the frequencies of the first layer of the network need to be kep frozen during the training, working similarly to a Fourier Feature Mapping with only sines. Deriving a way of making these frequencies learnable while guarateeing that these values are kep as integers is a desirable progress. This could lead to better performing models.
+However, there are two limitations that we believe should be addressed in future works. First, is that the frequencies of the first layer of the network need to be kep frozen 
 
-Second, the frequencies are still chosen in a random way with an empirical choice based on the a fraction of the Nyquist limit. Works like \cite{tamingFactory} may help to solve this problem by exploring the harmonic expansion of the frequencies generated in a sinusoidal network and providing ways of bounding these frequencies.
 
-\subsection{Implicit Representations}
+
+\subsection{Implicit Functions}
 
 Related to the frequencies choice, we would like to discuss the implicit represnetations of media, that is representing an object as a level set of an implicit function. We presented experiemnts for one-dimensional signals, that could be related to audio waves, and image signals. We have also experimented with higher order signals as it will be discussed in \ref{sec:3Dtextures}. However, all these media objects are represented explicitly as scalar or vector fields. In these cases, we can sample the signal uniformly and we have the support of the Shannon-Nyquist theory to guide our choices of initiaization of the networks.
 
 For objects defined implicitly such as shapes given by a signed distance function or unsigned distance function, the relationship between the samples and the frequencies or even methods for filtering and building a multiscale representation are not straighforward. Works like MIP-PLICITS show that it is possible to and fruitful to decompose these signals and use a multistage network to represent them, but the terrain for choosing hyperparameters may be more unccertain.
 
+Note that NeRF-based methods, that are usually referred as implicit do not fall in this category. Although they are not explicit representations of scenes, they are explicit representation of volume densities. The chalenge in this case comes from learning the volumetric function from 2D data.
+
 \subsection{Compression}
 
-Thinking of a useful digital represnetation we must make sure it is compact and lightweight to store in the disk or transmiti through the network. Part of this is due to small neural networks architectures, that is, managing to encode signals using networks with less weights. This part was a concern in this dissertation. However, this alone is not sufficient as the size of an image file is not only determided by the amaount of values it has to store, being either the total of pixels in a matrix or the total of weights in a network, but also by the level of compression.
+Thinking of a useful digital representation we must make sure it is compact and lightweight to store in the disk or transmiti through the network. Part of this is due to small neural networks architectures, that is, managing to encode signals using networks with less weights. This part was a concern in this dissertation. However, this alone is not sufficient as the size of an image file is not only determided by the amaount of values it has to store, being either the total of pixels in a matrix or the total of weights in a network, but also by the level of compression.
 
 In this sense, it is important to couple these results to efficient compression methods for neural networks such as \cite{dupont2021coin}, \cite{dupont2022coinpp} or even develop new methods for this goal.
 
@@ -67,7 +69,7 @@ Since they are represented explicitly in computer graphics, this looks like a na
 
 One future research, thus, would be to investigate further how to optimize the training of MR-Net instaces in this case. Another promising research would be to generate a volumetric texture based on a 2D pattern. The ideia is to design a loss function or add the minimal information necessary to optimize it without requiring a large dataset, pretty much how the seamless texture generation in Chapter \ref{chap:seamless-textures} works.
 
-Another interesting and particular object in computer graphics are the Hypertextures~\citep{hypertext}. These objects model phenomena intermediate between shape and texture by using space-filling applicative functions to modulate density. The model is essentially an extension of procedural solid texture synthesis, but evaluated throughout a volumetric region instead of only at surfaces. Having a neural representation of this kind of phenonema to address for example fur or hair may be a path to efficient representation of these delicate objects.
+Another interesting and particular object in computer graphics are the Hypertextures~\citep{hypertexture}. These objects model phenomena intermediate between shape and texture by using space-filling applicative functions to modulate density. The model is essentially an extension of procedural solid texture synthesis, but evaluated throughout a volumetric region instead of only at surfaces. Having a neural representation of this kind of phenonema to address for example fur or hair may be a path to efficient representation of these delicate objects. leveraging the versatility of vector fields in combination with surface representations, holds great potential.
 
 
 \subsection{Irregular sampling}
@@ -94,7 +96,12 @@ When dealing with irregular sampling, we do not have aliasing, but we may have n
 
 \subsection{Parameterizing Operations}
 
-Up until now, we have focused exclusively on representing the media objects as a whole, providing a neural representation for them. However, neural networks may be used to represent transformations in a space too. For instance, \cite{schardong2024neural} used sinusoidal neural networks to represent images of faces of people and also to parameterize morphing transformations between pairs of people so that it is possible to generate a third face that combines features of both individuals in a controlled manner.
+Up until now, we have focused exclusively on representing the media objects as a whole, providing a neural representation for them. 
+
+An important step towards fully integrating neural networks as primitives in a graphics pipeline is the development of methods for operating and editing them. The functional structure of sinusoidal neural networks provides opportunities to explore algebraic structures for network manipulation. 
+
+
+However, neural networks may be used to represent transformations in a space too. For instance, \cite{schardong2024neural} used sinusoidal neural networks to represent images of faces of people and also to parameterize morphing transformations between pairs of people so that it is possible to generate a third face that combines features of both individuals in a controlled manner.
 
 
 We may go a step further a think that a media content may be interpreted as a single piece or decomposed in multiple subparts. For example we could represent a character moving in a scene as a video or as a sparse set of images and specific transformations between them. This may be lead to a storage efficient way of encoding some videos. Regressing a little bit, this strategy could be used in the sense of optical flow \citep{alfarano-opticalflow} to provide a general neural video format.
