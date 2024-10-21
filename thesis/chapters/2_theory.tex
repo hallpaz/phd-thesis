@@ -1,6 +1,6 @@
 \chapter{Theoretical Framework}
 
-To achieve this, we need to understand foundational concepts related to digital media representation, multiresolution theory, and neural networks. In the next sections, we provide an overview of signal processing and deep learning knowledge to familiarize the reader  with the methods employed in our approach.
+To achieve our goal of creating a multiresolution representation for neural media, we need to understand foundational concepts related to digital media representation, multiresolution theory, and neural networks. In the next sections, we provide an overview of signal processing and deep learning knowledge to familiarize the reader with the methods employed in our approach.
 
 
 \section{Media Objects as Signals}
@@ -381,7 +381,7 @@ The weights are then updated using an optimization algorithm like \textbf{gradie
 
 Where \(\mathbf{w}\) represents weights; \(\eta\) is the learning rate; and \(\nabla L(\mathbf{w})\) is the gradient of the loss function with respect to weights.
 
-Neural networks can be categorized into \textbf{shallow} and \textbf{deep networks} based on their architecture. A shallow network consists of a layer of inputs, one hidden layer, and an output layer. This way, the inputs undergo through two transformations. In contrast, deep networks contain multiple hidden layers that enable them to learn hierarchical representations of data. Stacking layers increases the representational power of the network as each additional layer allows the model to capture more complex features from the input data.
+Neural networks can be categorized into \textbf{shallow} and \textbf{deep networks} based on how many layers of composition of function are there in their architecture. There is no standard definition for the number of layers that a shallow or deep network should have, leaving a subjective "a few" and "multiple", respectively for most cases. In this dissertation, we will understand a shallow network as one that applies at most two compositions of transformation to the inputs. Anything greater than that will be referred as a deep network. Stacking layers increases the representational power of the network as each additional layer allows the model to capture more complex features from the input data.
 
 The \textbf{capacity} of a model, that is its ability to fit functions is determined by the architecture of the network, including the number of layers and the number of neurons within those layers. A network with high capacity can learn complex patterns in data, while a network with low capacity may struggle to capture the underlying relationships. The capacity of a neural network is closely linked to its \textbf{expressive power}—the range of functions it can approximate. For instance, a deep neural network with many hidden layers and neurons can represent more intricate functions than a shallow network. However, this increased capacity comes with trade-offs, particularly concerning generalization. A highly expressive model might overfit the training data, learning patterns that do not generalize well to new, unseen data, thus requiring regularization techniques to manage this balance.
 
@@ -426,15 +426,13 @@ To address these challenges, it is important to find a balance between a model's
   
 \textbf{Early stopping} monitors the performance of the model on validation data during training and stops the process when performance on the validation set begins to deteriorate, thereby preventing overfitting.
 
+For more information on deep learning, including neural networks training, please, refer to \cite{goodfellow2016deep}.
+
 % ---
 
 \subsection{Coordinate-Based Neural Networks}
 
-\red{SEÇÃO EM FINALIZAÇAO}
-
-Coordinate-based neural networks represent a change of perspective in how data is modeled and encoded, especially in spatial domains like images and signals. 
-
-% The central concept is to use neural networks to express data as a continuous function of spatial coordinates. By doing this, various types of signals—such as 2D images or 3D shapes—can be represented by mapping spatial coordinates directly to the corresponding output values, like pixel colors or spatial features.
+Coordinate-based neural networks represent a change of perspective in how data is modeled and encoded, especially in spatial domains like images and signals. The central concept is to use neural networks to express data as a continuous function of spatial, temporal or spatio-temporal coordinates. By doing this, various types of signals—such as 2D images or 3D shapes—can be represented by mapping coordinates directly to the corresponding output values, like pixel colors or spatial features.
 
 % \textbf{Implicit Neural Representations (INRs)} are a specific realization of this idea. Unlike traditional methods that rely on discrete grids (e.g., pixel arrays for images or voxel grids for 3D geometries), INRs treat signals as continuous functions. Rather than storing values at fixed, discrete points, an implicit representation defines a function:
 
@@ -448,7 +446,9 @@ Coordinate-based neural networks represent a change of perspective in how data i
 % \text{Color} = f(x, y) = (R, G, B)
 % \]
 
-% The advantage of this continuous representation is its flexibility—it is not restricted to any specific spatial resolution. In theory, INRs can achieve infinite resolution, meaning they can be sampled at any desired level of detail without the limitations of traditional discrete grids. This is particularly useful for applications like **super-resolution imaging** or working with high-dimensional datasets.
+One of the advantages of this continuous representation is its flexibility—it is not restricted to any specific spatial resolution. In theory, representational networks can achieve infinite resolution, meaning they can be sampled at any desired level of detail without the limitations of traditional discrete grids. Although, according to the Information Theory, you it is not possible to add more details to the represnetation than those that were captured in the original sample.
+
+This is particularly useful for applications like **super-resolution imaging** or working with high-dimensional datasets.
 
 % Furthermore, INRs offer **efficient memory usage**. The memory required to store an implicit representation scales with the complexity of the signal rather than its spatial resolution. For complex datasets, this efficiency is crucial because traditional methods might demand excessive storage, especially when handling high-resolution data.
 
@@ -462,30 +462,32 @@ Coordinate-based neural networks represent a change of perspective in how data i
 
 % Thus, coordinate-based neural networks and implicit neural representations represent a paradigm shift in how we approach and process spatial data. By conceptualizing signals as continuous functions instead of discrete samples, these models provide enhanced flexibility, efficiency, and power in representing complex datasets. As research in this area continues to advance, these approaches are likely to drive further innovations across a range of applications, from computer vision to graphics and beyond.
 
+% Recently, neural networks have been employed to represent signals directly as functions of spatial coordinates, bypassing traditional grid-based representations. These coordinate-based neural networks (Tancik et al., 2020; Sitzmann et al., 2020) are capable of representing continuous signals in a compact, implicit form, which contrasts with the discrete representations used in classical techniques. Neural Implicit Representations (NIRs), such as Neural Radiance Fields (NeRF) (Mildenhall et al., 2020) and Implicit Neural Representations (INRs), encode spatial information using neural networks where the input coordinates map directly to the desired signal value, such as pixel intensity or 3D occupancy.
+
+One limitation of these approaches, however, is their tendency to struggle with high-frequency signal components due to the MLPs spectral bias \citep{rahaman2018spectral}. Multiple works adopt the approach proposed by \cite{tancik2020fourfeat} to project the input coordinates into higher dimensional spaces using a basis of sines and cossines, what beacame known as Fourier Feature Mapping. Another approach useful in this context are the sinusoidal activation functions, as utilized by SIREN \cite{sitzmann2019siren}, that showed themselves able of capturing high-frequency details.
+
 
 
 \subsection{Sinusoidal Neural Networks}
 
-Sinusoidal neural networks are examples of coordinate-based networks in which their activation function is the sine function. As such, they bridge the gap between the spatial and spectral domains, given the close relationship of the sine function with the Fourier~basis. However, these sinusoidal neural networks have been regarded as difficult to train~\cite{taming2017}. To overcome this problem, \citet{sitzmann2019siren} proposed a sinusoidal network for signal representation called SIREN. One of the key contributions of this work is the initialization scheme that guarantees stability and good convergence. Furthermore, it also allows modeling fine details in accordance with the signal’s frequency content.
+Sinusoidal neural networks are examples of coordinate-based networks in which their activation function is the sine function. As such, they bridge the gap between the spatial and spectral domains, given the close relationship of the sine function with the Fourier~basis. However, these sinusoidal neural networks have been regarded as difficult to train~\cite{taming2017}. To overcome this problem, \citet{sitzmann2019siren} proposed a sinusoidal network for signal representation called SIREN. One of the key contributions of this work is the initialization scheme that guarantees stability and good convergence. 
 
-% The continuous nature of the sine function is particularly useful in applications where smoothness and differentiability of the output are required, such as modeling surfaces or fields in 3D space. Also, since the derivative of the sine function is the cossine, which is a shifted sine in the domain, the network's derivative preserves its properties.
+% Furthermore, it also allows modeling fine details in accordance with the signal's frequency content.
 
-% Sinusoidal neural networks are particularly suited to model stationary or quasi-stationary signals due to the periodic nature of its activation function~\cite{chen2022}.
+The continuous nature of the sine function is particularly useful in applications where smoothness and differentiability of the output are required, such as modeling surfaces or fields in 3D space. Also, since the derivative of the sine function is the cossine, which is a shifted sine in the domain, the network's derivative preserves its properties. This characteristic makes them suitable for solving boundary value problems, such as the Poisson equation or the Helmholtz equation, where precise control over spatial and temporal derivatives is necessary.
 
 
+The use of sine functions allows sinusoidal neural networks to represent signals in both the **spatial** and **frequency** domains. Signals, especially those in fields such as audio, image processing, and computer graphics, often contain fine structures that require high-frequency components for accurate representation. A sinusoidal activation function, defined as:
 
+\[
+\sigma(x) = \sin(x)
+\]
+
+is inherently capable of generating oscillations. These oscillations enable the network to capture fine variations in data, something that traditional activations might struggle with. This characteristic makes sinusoidal neural networks ideal for tasks where precision at smaller scales is critical, such as super-resolution, texture generation, or even physics simulations.
+
+In the next chapter, we will see that the relationship between sinusoidal networks and the frequency domain is central to understanding their expressive power. 
 
 % Each layer of the network is defined as 
-
-
-% offering a powerful way to model signals with intricate details. 
-
-
-
-% One example of 
-
-% **Sinusoidal Representation Networks (SIREN)** are a specific type of neural network that employ sine functions as their core activations. Introduced as an alternative to traditional architectures, SIRENs have shown significant advantages in representing complex signals, particularly in the context of continuous signals such as images, 3D shapes, and physical fields.
-
 % A SIREN architecture typically defines each layer of the network as:
 
 % \[
@@ -494,81 +496,7 @@ Sinusoidal neural networks are examples of coordinate-based networks in which th
 
 % where \(W\) represents the weight matrix, \(x\) is the input, and \(b\) is the bias term. The sine activation allows the network to approximate high-frequency components, which is especially beneficial for tasks like **implicit neural representation** (as discussed previously) and **solving partial differential equations (PDEs)**.
 
-% % The motivation for using sine functions lies in their ability to capture fine variations in data, making them particularly well-suited for representing high-frequency components of signals. 
-
-% % In contrast to conventional neural networks that use activation functions like ReLU or sigmoid, sinusoidal networks are designed to approximate complex signals more naturally, especially those characterized by oscillations and periodic patterns.
-
-% The use of sine functions allows sinusoidal neural networks to represent signals in both the **spatial** and **frequency** domains. Signals, especially those in fields such as audio, image processing, and computer graphics, often contain fine structures that require high-frequency components for accurate representation. A sinusoidal activation function, defined as:
-
-% \[
-% \sigma(x) = \sin(x)
-% \]
-
-% is inherently capable of generating oscillations. These oscillations enable the network to capture fine variations in data, something that traditional activations might struggle with. This characteristic makes sinusoidal neural networks ideal for tasks where precision at smaller scales is critical, such as super-resolution, texture generation, or even physics simulations.
-
-% The relationship between sinusoidal networks and the **frequency domain** is central to understanding their expressive power. In signal processing, the **Fourier series** is a method for expressing a periodic function as a sum of sine and cosine terms, each associated with a specific frequency. A signal \(f(x)\) can be decomposed into a sum of sinusoids as:
-
-% \[
-% f(x) = a_0 + \sum_{n=1}^{\infty} \left( a_n \cos(n x) + b_n \sin(n x) \right)
-% \]
-
 % This decomposition reveals that any periodic signal can be described as a combination of sinusoids of different frequencies. By using sine functions as activations, sinusoidal neural networks can directly represent the frequency components of a signal, offering the ability to capture both low-frequency (coarse) and high-frequency (fine) details. This is particularly useful when modeling signals that vary at multiple scales, as the network can flexibly adapt to different frequency ranges.
 
 % However, training SIRENs presents unique challenges. The periodic nature of sine functions can lead to difficulties in convergence during optimization due to the presence of multiple local minima in the loss landscape. To address this issue, effective initialization schemes are crucial for ensuring stability during training. These schemes help guide the optimization process toward regions of the parameter space that facilitate learning.
 
-
-
-% Advantages of SIREN
-
-% 1. **Modeling Fine Details**: SIRENs excel at capturing fine details and sharp transitions in signals due to the periodic nature of sine functions. This makes them highly effective in applications such as super-resolution imaging, surface reconstruction, and neural rendering.
-
-% 2. **Smooth Representations**: The continuous nature of the sine function ensures that the output of SIRENs is inherently smooth. This property is particularly useful in applications where smoothness and differentiability of the output are required, such as modeling surfaces or fields in 3D space.
-
-% 3. **Efficient Frequency Control**: SIRENs can naturally control the frequency of their output, allowing them to capture both coarse structures and intricate high-frequency details. This multi-resolution capability is a key advantage over conventional neural networks, which may require additional architectural components (e.g., skip connections) to handle multi-scale data effectively.
-
-% Challenges of SIREN
-
-% While SIRENs offer substantial benefits, they also present some unique challenges:
-
-% 1. **Training Stability**: The use of sine activations can lead to instabilities during training, particularly when initializing the weights. If not properly initialized, the network may struggle to converge or produce overly oscillatory outputs. To address this, specific weight initialization strategies, such as **periodic weight scaling**, are often required.
-
-% 2. **Generalization to Low Frequencies**: While SIRENs excel at high-frequency signal approximation, they may struggle to represent low-frequency components effectively. This issue arises because the network is more naturally attuned to oscillatory patterns, which can lead to difficulties when modeling smoother, broader trends in the data.
-
-% 3. **Complexity of Derivatives**: Another challenge comes from the fact that, while sine functions are smooth and differentiable, the resulting derivatives may be complex to compute efficiently for certain high-dimensional tasks, such as solving higher-order PDEs.
-
-% Conclusion
-
-% Sinusoidal neural networks, and particularly SIRENs, represent a powerful framework for modeling signals that contain intricate, high-frequency components. By leveraging sine functions as activations, these networks can capture fine details that are often missed by traditional architectures. While they offer distinct advantages in precision and smoothness, their unique challenges—such as training instability and generalization to low-frequency signals—require careful consideration when applied in practice. Despite these challenges, SIRENs continue to push the boundaries of neural network-based representations in fields like computer vision, graphics, and scientific computing.
-
-
-% \subsection{Sinusoidal Neural Networks}
-
-% Sinusoidal neural networks, particularly exemplified by **Sinusoidal Representation Networks (SIRENs)**, utilize sine functions as activation functions to effectively model complex signals. The choice of sine functions is grounded in their unique properties that allow these networks to capture fine details and represent intricate spatial patterns. Unlike traditional activation functions like ReLU or tanh, sine functions are periodic and smooth, which is crucial for modeling signals that exhibit oscillatory behavior or require high-frequency detail.
-
-% #### Capturing Fine Details
-
-% The periodic nature of sine functions enables sinusoidal networks to approximate signals with high fidelity. This capability is particularly beneficial in applications involving natural signals, such as images and audio, where fine details are essential for accurate representation. The smoothness of sine functions allows these networks to maintain continuity and differentiability, which is vital when modeling physical phenomena governed by partial differential equations (PDEs). 
-
-% By employing sine activations, SIRENs can effectively represent a signal's derivatives, which are often critical in understanding the underlying dynamics of the data being modeled. This characteristic makes them suitable for solving boundary value problems, such as the Poisson equation or the Helmholtz equation, where precise control over spatial and temporal derivatives is necessary.
-
-% #### Frequency Domain Representation
-
-% The link between sinusoidal activations and Fourier series further elucidates their effectiveness in signal representation. Fourier series express periodic functions as sums of sine and cosine terms, allowing for the decomposition of signals into their frequency components. In this context, sinusoidal neural networks can be viewed as approximating a function through a harmonic sum:
-
-% $$
-% f(x) = \sum_{n=0}^{N} a_n \sin(b_n x + \phi_n)
-% $$
-
-% where $$a_n$$, $$b_n$$, and $$\phi_n$$ represent the amplitude, frequency, and phase shift of each harmonic component. This formulation highlights how SIRENs can leverage the properties of sine functions to capture both low-frequency trends and high-frequency details in a unified framework.
-
-% % Sinusoidal neural networks are particularly suited to model stationary or quasi-stationary signals due to the periodic nature of its activation function~\cite{chen2022}.
-
-% Sinusoidal neural networks are examples of coordinate-based networks in which their activation function is the sine function. As such, they bridge the gap between the spatial and spectral domains, given the close relationship of the sine function with the Fourier~basis. However, these sinusoidal neural networks have been regarded as difficult to train~\cite{taming2017}. To overcome this problem, \citet{sitzmann2019siren} proposed a sinusoidal network for signal representation called SIREN. One of the key contributions of this work is the initialization scheme that guarantees stability and good convergence. Furthermore, it also allows modeling fine details in accordance with the signal’s frequency content.
-
-% A \textit{multiplicative filter network} (MFN) is a sinusoidal network simpler than SIREN which is equivalent to a shallow sinusoidal network~\cite{fathony2020multiplicative}. \citet{bacon2021} presented \textit{band-limited coordinate network }(BACON), an MFN that produces intermediate outputs with an analytical spectral bandwidth (specified at initialization) and achieves multiresolution of the underlying signal. While its structure allows BACON to be expressed as a linear combinations of sines, avoiding the composition of sines present in sinusoidal MLPs, it creates multiresolution representations by truncating the frequency spectra of the signals. This approach produces ringing artifacts  in some levels of detail, and becomes evident when we look at the Fourier transform of the images.
-
-% - Related Works: Mip-Nerf; Bacon; 
-
-% Recently, neural networks have been employed to represent signals directly as functions of spatial coordinates, bypassing traditional grid-based representations. These coordinate-based neural networks (Tancik et al., 2020; Sitzmann et al., 2020) are capable of representing continuous signals in a compact, implicit form, which contrasts with the discrete representations used in classical techniques. Neural Implicit Representations (NIRs), such as Neural Radiance Fields (NeRF) (Mildenhall et al., 2020) and Implicit Neural Representations (INRs), encode spatial information using neural networks where the input coordinates map directly to the desired signal value, such as pixel intensity or 3D occupancy.
-
-% One limitation of these approaches, however, is their tendency to struggle with high-frequency signal components, which has led to research into more robust techniques for handling fine-grained details. In this context, sinusoidal activation functions, as introduced by SIREN (Sitzmann et al., 2020), have proven effective for encoding high-frequency details, motivating further exploration into neural networks that incorporate periodic activations to better capture multiscale information.
