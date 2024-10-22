@@ -201,8 +201,8 @@
       \smallskip
       {\LARGE \authornames \par}
       \vfill
-      {\large A thesis submitted in partial fulfillment for the \par}
-      {\large degree of Doctor of Science (D.Sc.) \par}
+      {\large A dissertation submitted in partial fulfillment for \par}
+      {\large the degree of Doctor of Science (D.Sc.) \par}
       \bigskip
       \bigskip
       {\large in the \par}

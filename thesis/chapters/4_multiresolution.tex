@@ -24,7 +24,7 @@ To implement the multiresolution approach, we draw inspiration from classical si
 
 \section{Related Works}
 
-Multiresolution analysis has its roots in the seminal work of (\cite{mallat1989theory}) and (\cite{daubechies92}), who formalized the wavelet transform as a powerful tool for analyzing signals at different scales. Their contributions provided the framework for decomposing signals into distinct frequency bands while preserving spatial or temporal information, which is essential for many signal processing applications.
+\sloppy Multiresolution analysis has its roots in the seminal work of (\cite{mallat1989theory}) and (\cite{daubechies92}), who formalized the wavelet transform as a powerful tool for analyzing signals at different scales. Their contributions provided the framework for decomposing signals into distinct frequency bands while preserving spatial or temporal information, which is essential for many signal processing applications.
 
 Integrating multiresolution concepts with neural network architectures has led to several innovative developments. One such approach is the scattering networks proposed by \citet{bruna2013}, which apply cascaded wavelet transforms followed by nonlinear operators to produce stable, translation-invariant signal representations. For image-related tasks, architectures such as those by \citet{sppHe2015} and \citet{YuKoltun2016} employ Convolutional Neural Networks (CNNs) to process inputs at multiple scales simultaneously. However, these models are primarily designed to extract features from large datasets for applications such as image classification, rather than to represent signals in a multiresolution format.
 
@@ -324,7 +324,7 @@ For the training of each of the \( N \) stages \( g_i \), the input data is orga
 
 \subsubsection{Sampling Strategies}
 
-There are two primary sampling strategies: \textit{regular} and \textit{irregular} sampling. In this work, we focus on regular sampling, also known as uniform sampling, which is more commonly used and is supported by a well-established theoretical foundation for sampling and reconstruction. \red{However, Chapter \ref{chap:future} will touch on some intriguing possibilities for irregular sampling and areas where it could offer future research opportunities. (remover se eu não escrever)}
+There are two primary sampling strategies: \textit{regular} and \textit{irregular} sampling. In this work, we focus on regular sampling, also known as uniform sampling, which is more commonly used and is supported by a well-established theoretical foundation for sampling and reconstruction. However, Chapter \ref{chap:future} will touch on some intriguing possibilities for irregular sampling and areas where it could offer future research opportunities.
 
 In regular sampling, the points are arranged in a uniform grid \(\{x_{k,l}\}\) that discretizes the domain \(\mathcal{D}\). From the perspective of \textit{representation theory}, this setup can be interpreted as projecting the function \(\gt{f}_i\) onto the primal \textit{Shannon basis} (i.e., a grid of Dirac delta distributions). In signal processing terms, this basis is a grid of impulses, and the function is represented as the sequence \(\{y_j\}_i\) at corresponding grid locations \(\{x_j\}_i\).
 
@@ -569,15 +569,15 @@ These characteristics are particularly valuable in media applications, where con
 
 The hierarchical structure of MR-Net, with its levels of detail, has important implications for both signal transmission and processing. For transmission, coarse versions of the signal can be sent quickly through a channel, with subsequent updates refining the level of detail for progressive rendering. For processing, the multiresolution approach facilitates data caching by efficiently utilizing the various memory structures of the GPU, enabling performance optimization across different stages of the rendering pipeline.
 
-\red{Senti que poderia ter mais figuras neste capítulo, mas despriorizei em face do tempo. O que acha? É necessário pririzar alguma delas? Exemplos
+% \red{Senti que poderia ter mais figuras neste capítulo, mas despriorizei em face do tempo. O que acha? É necessário pririzar alguma delas? Exemplos
 
-\begin{itemize}
-    \item Na 4.4: átomos resultantes das camadas escondidas de cada subclasse da MR-Net (meio que tem uma representação na seção MR-Module...).
-    \item Na 4.5.2: Reconstrução de um sinal em multiresolução (meio que ficou por conta do capítulo 3).
-    \item Na 4.6: Alguma representação de que é contínua em escala.
-\end{itemize}
+% \begin{itemize}
+%     \item Na 4.4: átomos resultantes das camadas escondidas de cada subclasse da MR-Net (meio que tem uma representação na seção MR-Module...).
+%     \item Na 4.5.2: Reconstrução de um sinal em multiresolução (meio que ficou por conta do capítulo 3).
+%     \item Na 4.6: Alguma representação de que é contínua em escala.
+% \end{itemize}
 
-}
+% }
 
 % \section{MR-Framework}
 
