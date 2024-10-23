@@ -1,11 +1,12 @@
+\lhead{\emph{Frequency Dynamics in Sinusoidal Neural Networks}}
 \chapter{Frequency Dynamics in Sinusoidal Neural Networks}
 \label{chap:sinusoidal}
 
 In this chapter, we explore the frequency dynamics within sinusoidal neural networks, laying the groundwork for designing architectures that can represent signals across multiple resolutions. While much of the research on sinusoidal neural networks has focused on their capacity to capture high-frequency details, the interplay between frequency initialization, network structure, and learned representations is still not fully understood. Our goal is to analyze these factors systematically and establish a deeper understanding of how frequency components propagate and interact in both shallow and deep sinusoidal architectures.
 
-We initially focus on representing one-dimensional signals using sinusoidal neural networks. This approach allows us to experiment on the control of signal frequencies, visualize them through their Fast Fourier Transform (FFT) plots, and validate our results against classical sampling theory. We progressively increase the complexity of our experiments to evaluate how different initializations and network capacities affect frequency learning.
+We initially focus on representing one-dimensional signals using sinusoidal neural networks. This approach allows us to experiment on the control of signal frequencies, visualize their amplitudes through Fast Fourier Transform (FFT) plots, and validate our results against classical sampling theory. We progressively increase the complexity of our experiments to evaluate how different initializations and network capacities affect frequency learning.
 
-In our experiments, we employ the Sinusoidal Representation Networks (SIREN) framework (\cite{sitzmann2019siren}) due to its effectiveness in capturing high-frequency signal details and modeling signal derivatives. We conduct an in-depth investigation of its initialization, examining the relationship between the network’s hyperparameters, the inherent frequencies of the input signal, and the frequencies the network learns. Through controlled experiments, we show how the number of neurons, network depth, and specific initialization strategies influence the network's capacity to isolate and reconstruct distinct frequency bands. This analysis allows us to define methods for frequency band filtering and representation by strategically adjusting network width, depth, and weight initialization. 
+In our experiments, we employ the Sinusoidal Representation Networks (SIREN) model \citep{sitzmann2019siren} due to its effectiveness in capturing high-frequency signal details and modeling signal derivatives. We conduct an in-depth investigation of its initialization, examining the relationship between the network's hyperparameters, the inherent frequencies of the input signal, and the frequencies the network learns. Through controlled experiments, we show how the number of neurons, network depth, and specific initialization strategies influence the network's capacity to isolate and reconstruct distinct frequency bands. This analysis allows us to define methods for frequency band filtering and representation by strategically adjusting network width, depth, and weight initialization. 
 
 Additionally, we analyse the generalization capabilities of these sinusoidal representational networks, discussing the notion of overfitting in the scenario where the model is trained to encode a single example. These insights will be explored in the design of the MR-Net, a family of neural network architectures to represent signals in multiresolution that will be presented in Chapter \ref{chap:mr_snn}.
 
@@ -14,9 +15,11 @@ Additionally, we analyse the generalization capabilities of these sinusoidal rep
 
 Our focus lies on signals as media objects, usually represented by functions in one, two, and three dimensions. \cite{tancik2020fourfeat} demonstrated, both theoretically and empirically, that standard Multilayer Perceptrons (MLPs) struggle to learn high frequencies in such domains, which are considered low-dimensional domains for machine learning applications. They proposed using Fourier feature mapping to transform input coordinates into a higher-dimensional spectral feature space before processing them through the network. This enables coordinate-based MLPs to effectively capture high-frequency content in low-dimensional signals, overcoming this \textit{spectral bias} \citep{rahaman2018spectral}.
 
-Sinusoidal neural networks represent a class of coordinate-based networks that employs the sine function as their activation function. They serve as a bridge between spatial and spectral domains due to the close relationship between the sine function and the Fourier basis. The first layer of a sinusoidal neural network projects the signal into spectral space, while the last layer reconstructs the signal from a dictionary of spectral atoms. This characteristic allows them to naturally overcome the spectral bias of regular MLPs. However, these sinusoidal neural networks have been regarded as difficult to train \citep{taming2017}. To address this issue, \citet{sitzmann2019siren} proposed SIREN, a sinusoidal network for signal representation. One of their key contributions is an initialization scheme that ensures stability and convergence when using sines as activation functions.
+% Sinusoidal neural networks represent a class of coordinate-based networks that employs the sine function as their activation function. The first sinusoidal layer of the network projects the signal into spectral space, while the last layer reconstructs the signal from a dictionary of spectral atoms. This characteristic allows them to naturally overcome the spectral bias of regular MLPs. 
 
-The challenge in training sinusoidal neural networks comes in part from the composition of sinusoidal functions, which can generate multiple new and higher frequencies. \citet{novello2022understanding} studied sinusoidal MLPs by expanding them as harmonic sums, demonstrating how numerous new frequencies are expressed as integer linear combinations of the input frequencies. This work provides theoretical justification for sinusoidal MLPs compactness property and contributes to a better understanding of these networks’ behavior.
+Sinusoidal neural networks are a class of coordinate-based networks that use the sine function as their activation function. In these networks, the first sinusoidal layer projects the input signal into a spectral space, while the final layer reconstructs the signal from a set of spectral components. This structure allows sinusoidal networks to naturally overcome the spectral bias inherent in traditional MLPs, enabling them to capture high-frequency details more effectively.
+
+Training sinusoidal neural networks can be unstable \citep{taming2017} due to the composition of sine functions, which can introduce higher and more complex frequencies. To address this, \citet{sitzmann2019siren} proposed an initialization scheme for SIREN, a sinusoidal network, that keeps the weights within a range favorable to stable convergence. Additionally, \citet{novello2022understanding} analyzed sinusoidal MLPs by expanding them as harmonic sums, showing how new frequencies arise as integer linear combinations of the input frequencies. This work offers a theoretical basis for the compactness property of sinusoidal MLPs and enhances understanding of their behavior.
 
 A simpler form of sinusoidal networks is the Multiplicative Filter Network (MFN) \citep{fathony2020multiplicative}, which can be viewed as a shallow sinusoidal MLP. By using the Hadamard product of matrices instead of standard matrix multiplication, the MFN avoids the composition of sine functions, allowing its representation to be expressed as a closed-form finite sum of sines using basic trigonometric identities. However, despite having a straightforward mechanism to target specific frequency bands, shallow networks like the MFN require significantly more parameters to accurately represent a signal as we will see in the next sections.
 
@@ -25,11 +28,11 @@ A simpler form of sinusoidal networks is the Multiplicative Filter Network (MFN)
 
 The correct initialization of sinusoidal neural networks is critical for having stability during training and convergence to the expected result. According to \cite{sitzmann2019siren}, a SIREN model must be initialized so that for a uniform input in $[-1, 1]$ the outputs of each hidden layer before the sine nonlinearity are standard normal distributed. 
 
-Moreover, the authors of SIREN propose to initialize the first layer of the network so that the sine function $\sin(\omega_0 \cdot W x + b)$ spans multiple periods over $[-1, 1]$. They introduce $\omega_0$ as a hyperparameter that could be adjusted to each signal, while $W$ and $b$ are the weights and biases of a layer in the network. For the examples presented in their work, they used a fixed $\omega_0=30$ and found it to work well empirically, but they did not dive deeper on the \emph{why}.
+Moreover, the authors of SIREN propose to initialize the first sinusoidal layer of the network so that the sine function $\sin(\omega_0 \cdot W x + b)$ spans multiple periods over $[-1, 1]$. They introduce $\omega_0$ as a hyperparameter that could be adjusted to each signal, while $W$ and $b$ are the weights and biases of a layer in the network. For the examples presented in their work, they used a fixed $\omega_0=30$ and found it to work well empirically, but they did not dive deeper on the \emph{why}.
 
 In this section, we examine how the choice of \(\omega_0\) impacts the frequencies learned by the network, the speed of training, and whether the network will converge to a reasonable result or collapse into noise. We show that the hyperparameter \(\omega_0\) directly influences the range of frequencies used to initialize the first layer of the network, thus determining the set of spectral atoms onto which the signal will be projected. 
 
-The $\omega_0$ hyperparameter is also applied to the initialization of the hidden layers, as the authors argue that it boosts gradients during training and accelerates convergence. However, in the hidden layers, \(\omega_0\) functions primarily as a pre-conditioner, a numerical trick, since the implementation multiplies the weights by \(\omega_0\) and then divides them by the same value. To clarify this distinction, we propose referring to the hyperparameter in the hidden layers as \(\omega_h\), reserving \(\omega_0\) exclusively for the first layer. In all experiments, the hyperparameter $\omega_h$ will be kept constant equal 30 unless explicitly stated on contrary.
+The $\omega_0$ hyperparameter is also applied to the initialization of the hidden layers, as the authors argue that it boosts gradients during training and accelerates convergence. However, in the hidden layers, \(\omega_0\) functions primarily as a pre-conditioner, a numerical trick, since the implementation multiplies the weights by \(\omega_0\) and then divides them by the same value. To clarify this distinction, we propose reserving \(\omega_0\) exclusively for the first sinusoidal layer and referring to the hyperparameter in the hidden layers as \(\omega_h\). In all experiments, the hyperparameter $\omega_h$ will be kept constant equal 30 unless explicitly stated on contrary.
 
 By understanding and adjusting \(\omega_0\), we aim to optimize the training process of sinusoidal neural networks and develop mechanisms for controlled frequency learning.
 
@@ -69,7 +72,7 @@ First, we tried to recover the lower frequencies using $\omega_0=10$. The recons
 \end{figure}
 
 
-We believe this result is due to the network being initialized with frequencies lower than those present in the signal. Given that the sine function is periodic with a period of $2\pi$, we propose that the hyperparameter $\omega_0$ should always be multiplied by $2\pi$ to better establish a relationship between the initialization of the network's first layer and the range of frequencies represented by each atom in this layer.
+We believe this result is due to the network being initialized with frequencies lower than those present in the signal. Given that the sine function is periodic with a period of $2\pi$, we propose that the hyperparameter $\omega_0$ should be multiplied by $2\pi$ to better establish a relationship between the initialization of the network's first layer and the range of frequencies represented by each atom in this layer.
 
 Repeating the experiment with $\omega_0 = 10$ Hz, that is $10*2\pi$, we observe the expected behavior: the predicted wave in Figure \ref{fig:rec-2pi-w0} approximates the low-frequency portion of the signal. Notice how the FFT plot (Figure \ref{fig:fft-low-4freqs}) matches the peaks at 2 Hz and 5Hz, while the high frequency tones are not learned.
 
@@ -294,7 +297,7 @@ We conclude that a sinusoidal neural network with no hidden layers can effective
 %     - Diverging by using high frequencies. Show how the network diverges when initialized with very high frequencies.
 
 
-After experimenting with signals containing a few controlled frequencies, we procedurally generated stochastic signals using a technique known as Perlin Noise (\cite{perlin-1985}). This approach allows us to analyze how a sinusoidal model learns a distribution of frequencies across a broad range. For the following experiments, we sampled 2048 points uniformly from the interval $[-1, 1]$, yielding a sampling rate of 1/1024. According to the Shannon-Nyquist sampling theorem, this limits us to frequencies up to 512 Hz. The parameters for generating the Perlin Noise signal were: scale = 10; octaves = 16; persistence = 1.4.
+After experimenting with signals containing a few controlled frequencies, we procedurally generated stochastic signals using a technique known as Perlin Noise~\citep{perlin-1985}. This approach allows us to analyze how a sinusoidal model learns a distribution of frequencies across a broad range. For the following experiments, we sampled 2048 points uniformly from the interval $[-1, 1]$, yielding a sampling rate of 1/1024. According to the Shannon-Nyquist sampling theorem, this limits us to frequencies up to 512 Hz. The parameters for generating the Perlin Noise signal were: scale = 10; octaves = 16; persistence = 1.4.
 
 We began by training a shallow sinusoidal network as a sanity check. The expectation was for the network to capture only the lowest frequencies, up to the range determined by its initialization parameter, $\omega_0$. We used a network with 512 hidden neurons per layer, varying the value of $\omega_0$. Figure \ref{f:rec-noise-shallow} shows the reconstruction in both spatial and frequency domains for $\omega_0 \in \{8, 64, 128\}$ Hz. Note that the FFT plot displays a distribution of frequencies up to 512 Hz, with higher amplitudes for the lower frequencies. As expected, the results resemble smoothed versions of the signal, as the network captures only the frequencies up to the value of $\omega_0$.
 
@@ -683,9 +686,9 @@ The problem at hand is a classic problem in signal processing: \textbf{sampling 
 
 In this section, we evaluate the generalization capacity of sinusoidal neural networks in representing signals. We conduct experiments to reconstruct a signal from a critically sampled set of observations by generating distinct training and test signals. For these experiments, we use a Perlin noise with 2048 samples in the range $[-1, 1]$, configured with the following parameters: scale = 10, octaves = 8, and persistence = 0.9.
 
-The \textit{test signal} is is created by iteratively filtering the input signal with a Gaussian kernel, a low-pass filter, where each filtering step doubles the kernel window size. As a result, the test signal retains 2048 samples but has a reduced frequency band, making it oversampled. The \textit{training signal}, on the other hand, is generated by subsampling the test signal by a factor of $2^N$, where \(N\) is the number of filtering steps applied. For example, if the signal is filtered four times, the subsampling factor is 16, resulting in 128 training samples extracted from the original 2048 samples.
+The \textit{test signal} is created by iteratively filtering the input signal with a Gaussian kernel, a low-pass filter, where each filtering step doubles the kernel window size. As a result, the test signal retains 2048 samples but has a reduced frequency band, making it oversampled. The \textit{training signal}, on the other hand, is generated by subsampling the test signal by a factor of $2^N$, where \(N\) is the number of filtering steps applied. For example, if the signal is filtered four times, the subsampling factor is 16, resulting in 128 training samples extracted from the original 2048 samples.
 
-We assume that the initial input signal, the Perlin noise, is band-limited. Moreover, as observed in the FFT plots in Section \ref{sec:learning-stochastic}, the higher frequencies have significantly lower amplitudes, allowing us to disregard potential aliasing effects caused by the Gaussian filter not being an ideal filter. Based on this premisse, according to signal processing theory, it should be possible to reconstruct the entire test signal using only the training samples by applying an ideal \textit{sinc} interpolation ($sinc(x) = \frac{sin(x)}{x}$). 
+We assume that the initial input signal, the Perlin noise, is band-limited. Moreover, as observed in the FFT plots in Section \ref{sec:learning-stochastic}, the higher frequencies have significantly lower amplitudes, allowing us to disregard potential aliasing effects caused by the Gaussian filter not being an ideal filter. Based on this premisse, according to signal processing theory, it should be possible to reconstruct the entire test signal using only the training samples by applying an ideal \textit{sinc} interpolation ($sinc(x) = \frac{sin(\pi x)}{\pi x}$). 
 
 Although we are not using the sinc basis for reconstruction, we evaluate the generalization capacity of our \textit{representational neural network} by training it on the training signal and then evaluate it against the test signal. By sampling the network at a much higher resolution and comparing it to the ground-truth test signal, we can analyze whether the network accurately reconstructs the signal or exhibits overfitting, characterized by oscillations or spurious frequencies between the supervised points.
 
@@ -776,14 +779,14 @@ Note that Figure \ref{f:pred-2048samples-shallow-deep} shows that both models pr
         \caption{FFT - 1 hidden layer}
         % \label{fig:pred-1hl-16hf-64hz}
     \end{subfigure}
-    \caption{Reconstruction training on the training signal and evaluating against the test signal. Shallow network (top) and a one hidden layer network (bottom)}
+    \caption{Reconstruction training on the training signal using the same hyperparameters used for Figure \ref{f:pred-2048samples-shallow-deep} and evaluating against the test signal. Shallow network (top) and a one hidden layer network (bottom)}
     \label{f:pred-256samples-shallow-deep}
 \end{figure}
 
-Although the reconstruction looks reasonably close to the ground-truth signal, it is possible to note that the model reconstruction exhibits some oscilations. The PSNR of the shallow model decreased to 32.36 db, while the PSNR for the other model decreased to 35.76 db. These oscillations suggests that the model is learning higher frequencies not presnent in the signal or augmenting the amplitude of the high-frequencies present in the signal. This way, we repeat the experiment reducing the value for $\omega_0$, that is, bounding the frequencies of initialization to a smaller interval.
+% Although the reconstruction looks reasonably close to the ground-truth signal, it is possible to note that the model reconstruction exhibits some oscilations. The PSNR of the shallow model decreased to 32.36 db, while the PSNR for the other model decreased to 35.76 db. These oscillations suggests that the model is learning higher frequencies not present in the signal or augmenting the amplitude of the high-frequencies present in the signal. This way, we repeat the experiment reducing the value for $\omega_0$, that is, bounding the frequencies of initialization to a smaller interval.
 
 
-Although these reconstructions closely resemble the ground-truth signal, both models exhibit some oscillations. The PSNR of the shallow model drops to 32.36 dB, while the deep model’s PSNR decreases to 35.76 dB. These oscillations suggest that the models might be learning higher frequencies not present in the signal or amplifying the amplitude of the high frequencies already in the signal. To address this, we repeated the experiment with a reduced \(\omega_0\), subsequently limiting the range of frequencies in the initial weights.
+These reconstructions closely resemble the ground-truth signal, but both models exhibit some oscillations. The PSNR of the shallow model drops to 32.36 dB, while the deep model's PSNR decreases to 35.76 dB. These oscillations suggest that the models might be learning higher frequencies not present in the signal or amplifying the amplitude of the high frequencies already in the signal. To address this, we repeated the experiment with a reduced \(\omega_0\), subsequently limiting the range of frequencies in the initial weights.
 
 \begin{figure}[!h]
     \centering
@@ -823,7 +826,7 @@ Although these reconstructions closely resemble the ground-truth signal, both mo
         \caption{32x Zoomed-in - 1 hidden layer}
         % \label{fig:pred-1hl-16hf-64hz}
     \end{subfigure}
-    \caption{Reconstruction training on the training signal and evaluating against the test signal. Shallow network (top) and a one hidden layer network (bottom)}
+    \caption{Reconstruction training on the training signal with reduced $\omega_0$ and evaluating against the test signal. Shallow network (top) and a one hidden layer network (bottom)}
     \label{f:pred-256samples-shallow-deep-adjusted}
 \end{figure}
 
@@ -845,7 +848,7 @@ We generate other pairs of training and test signal by filtering the input signa
     6                                    & 32                                        & w=2                             & 8                                      & 39.91 db                      \\ \hline
     7                                    & 16                                        & w=1                             & 6                                      & 42.47 db                      \\ \hline
 \end{tabular}
-\caption{Resultado}
+\caption{Hyperparameters for generalization experiments.}
 \label{tab:generalization}
 \end{table}
 
@@ -854,77 +857,77 @@ We generate other pairs of training and test signal by filtering the input signa
     \begin{subfigure}[b]{0.32\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch3/pred-32hf-1hl-6w-sub4.pdf}
-        \caption{Reconstruction - 1 hidden layer}
+        \caption{Reconstruction - 4x filtered}
         % \label{fig:pred-1hl-256hf-2hz}
     \end{subfigure}
     \begin{subfigure}[b]{0.32\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch3/4x-32hf-1hl-6w-sub4.pdf}
-        \caption{4x Zoomed-in - 1 hidden layer}
+        \caption{4x Zoomed-in - 4x filtered}
         % \label{fig:16x-zoom-1hl-256hf-2hz}
     \end{subfigure}
     \begin{subfigure}[b]{0.32\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch3/16x-32hf-1hl-6w-sub4.pdf}
-        \caption{16x Zoomed-in - 1 hidden layer}
+        \caption{16x Zoomed-in - 4x filtered}
         % \label{fig:pred-1hl-16hf-64hz}
     \end{subfigure}
     \begin{subfigure}[b]{0.32\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch3/pred-24hf-1hl-6w-sub5.pdf}
-        \caption{Reconstruction - 1 hidden layer}
+        \caption{Reconstruction - 5x filtered}
         % \label{fig:pred-1hl-256hf-2hz}
     \end{subfigure}
     \begin{subfigure}[b]{0.32\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch3/4x-24hf-1hl-6w-sub5.pdf}
-        \caption{4x Zoomed-in - 1 hidden layer}
+        \caption{4x Zoomed-in - 5x filtered}
         % \label{fig:16x-zoom-1hl-256hf-2hz}
     \end{subfigure}
     \begin{subfigure}[b]{0.32\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch3/16x-24hf-1hl-6w-sub5.pdf}
-        \caption{16x Zoomed-in - 1 hidden layer}
+        \caption{16x Zoomed-in - 5x filtered}
         % \label{fig:pred-1hl-16hf-64hz}
     \end{subfigure}
 
     \begin{subfigure}[b]{0.32\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch3/pred-8hf-1hl-2w-sub6.pdf}
-        \caption{Reconstruction - 1 hidden layer}
+        \caption{Reconstruction - 6x filtered}
         % \label{fig:pred-1hl-256hf-2hz}
     \end{subfigure}
     \begin{subfigure}[b]{0.32\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch3/4x-8hf-1hl-2w-sub6.pdf}
-        \caption{4x Zoomed-in - 1 hidden layer}
+        \caption{4x Zoomed-in - 6x filtered}
         % \label{fig:16x-zoom-1hl-256hf-2hz}
     \end{subfigure}
     \begin{subfigure}[b]{0.32\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch3/16x-8hf-1hl-2w-sub6.pdf}
-        \caption{16x Zoomed-in - 1 hidden layer}
+        \caption{16x Zoomed-in - 6x filtered}
         % \label{fig:pred-1hl-16hf-64hz}
     \end{subfigure}
 
     \begin{subfigure}[b]{0.32\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch3/pred-6hf-1hl-1w-sub7.pdf}
-        \caption{Reconstruction - 1 hidden layer}
+        \caption{Reconstruction - 7x filtered}
         % \label{fig:pred-1hl-256hf-2hz}
     \end{subfigure}
     \begin{subfigure}[b]{0.32\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch3/4x-6hf-1hl-1w-sub7.pdf}
-        \caption{4x Zoomed-in - 1 hidden layer}
+        \caption{4x Zoomed-in - 7x filtered}
         % \label{fig:16x-zoom-1hl-256hf-2hz}
     \end{subfigure}
     \begin{subfigure}[b]{0.32\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/ch3/16x-6hf-1hl-1w-sub7.pdf}
-        \caption{16x Zoomed-in - 1 hidden layer}
+        \caption{16x Zoomed-in - 7x filtered}
         % \label{fig:pred-1hl-16hf-64hz}
     \end{subfigure}
-    \caption{Reconstruction one hidden layer}
+    \caption{Reconstruction of training signals (filtered and subsampled) compared against test signals (only filtered) using the hyperparameters in Table \ref{tab:generalization}}
     \label{f:rec-deep-multiple-filters}
 \end{figure}

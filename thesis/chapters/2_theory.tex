@@ -1,3 +1,4 @@
+\lhead{\emph{Theoretical Framework}}
 \chapter{Theoretical Framework}
 
 To achieve our goal of creating a multiresolution representation for neural media, we need to understand foundational concepts related to digital media representation, multiresolution theory, and neural networks. In the next sections, we provide an overview of signal processing and deep learning knowledge to familiarize the reader with the methods employed in our approach.
@@ -16,13 +17,14 @@ For example, an audio signal can be described as a function \( f(t): \mathbb{R} 
 
 For an image to be precisely defined, we must provide a mathematical model for color. Typically, $\mathcal{C}$ is a subspace of $\mathbb{R}^3$. For instance, in the \textbf{RGB color model} each point \( (x, y) \) in the image maps to a vector \( (R, G, B) \) representing the intensities of red, green, and blue. Alternatively, in the \textbf{HSV color model}, the color space is parameterized by hue (H), saturation (S), and value (V), which provides a more perceptually intuitive representation of colors. For a detailed discussion on mathematical models for colors, please refer to \cite{ipcgVelho2014}.
 
-A 3D surface can also be interpreted as a signal, specifically as a function that encodes the geometric and spatial properties of the surface. One way to do this is by modeling the 3D object using a function that describes the surface implicitly as the zero level set of a scalar field. An implicit surface can be represented by a function \( f : \mathbb{R}^3 \rightarrow \mathbb{R} \), where for any point \( \mathbf{x} = (x, y, z) \in \mathbb{R}^3 \), the function returns a scalar value that encodes the \textit{signed distance} or some similar measure from the surface. The surface itself is defined as the set of points where the function evaluates to zero:
+
+A 3D surface can also be interpreted as a signal. This is often done by representing the surface implicitly as a level set of a scalar field. Specifically, an \textit{implicit surface} is defined by a function \( f : \mathbb{R}^3 \rightarrow \mathbb{R} \), where for any point \( \mathbf{x} = (x, y, z) \in \mathbb{R}^3 \), the function returns a scalar value encoding the \textit{signed distance} or a similar measure from the surface. The surface itself is the zero level set of the \textbf{implicit function} \( f(\mathbf{x}) \), that is, the set of points where this function evaluates to zero:
 
 \[
 \mathcal{S} = \{ \mathbf{x} \in \mathbb{R}^3 \mid f(\mathbf{x}) = 0 \}
 \]
 
-In this case, \( f(\mathbf{x}) \) is called an \textbf{implicit function}, and the surface is the \textit{zero level set} of this function. Points where \( f(\mathbf{x}) < 0 \) lie inside the surface, and points where \( f(\mathbf{x}) > 0 \) lie outside the surface. For example, a sphere with radius \( r \) centered at the origin can be described by the implicit function:
+Points where \( f(\mathbf{x}) < 0 \) are inside the surface, and those where \( f(\mathbf{x}) > 0 \) are outside. For instance, a sphere of radius \( r \) centered at the origin is described by the implicit function:
 
 \[
 f(\mathbf{x}) = \|\mathbf{x}\| - r
@@ -57,11 +59,11 @@ Interpreting \textbf{media objects} such as audio, images, and 3D models as sign
 
 \subsection{Sampling and Reconstruction}
 
-Due to the finite nature of computational systems, continuous signals and objects must be represented in a discrete form and stored in finite data structures. While certain media objects can be described through continuous mathematical models, such as vector graphics and other parameterized representations, these are less frequently employed for most practical purposes due to computational complexity or dificulty in modeling.
+Due to the finite nature of computational systems, continuous signals and objects must be discretized and stored in finite data structures. While certain media objects can be described through continuous mathematical models, such as vector graphics and other parameterized representations, these are less frequently employed for most practical purposes due to computational complexity or dificulty in modeling.
 
-\textbf{Sampling} is the process of converting a continuous signal, such as an analog image or audio waveform, into a discrete sequence of values. One way this is accomplished is by measuring the signal's amplitude at specific intervals uniformly distributed in time and/or space, where the distance between consecutive measurements is known as the \textit{sampling rate}.
+\textbf{Sampling} is the process of converting a continuous signal into a discrete sequence of values. One way this is accomplished is by measuring the signal's amplitude at specific intervals uniformly distributed in time and/or space, where the distance between consecutive measurements is known as the \textit{sampling rate}.
 
-Discrete representations are easy to store and map to data structures; however, many operations—such as resizing, rotation, or resampling of the signal—require us to work with the continuous form of the signal. In such cases, the challenge lies in accurately reconstructing the continuous signal from its discrete samples. According to the theory of sampling and reconstruction, this reconstruction can be achieved under certain conditions. Figure \ref{f:sampling-reconstuction} illustrates the uniform sampling and reconstruction of a one-dimensional signal.
+Discrete representations are easy to store and map to data structures; however, many operations—such as resizing, rotation, or resampling of the signal—require us to work with the continuous form of the signal. In such cases, the challenge lies in accurately reconstructing the continuous signal from its discrete samples. Figure \ref{f:sampling-reconstuction} illustrates the uniform sampling and reconstruction of a one-dimensional signal.
 
 
 \begin{figure}[!h]
@@ -72,7 +74,7 @@ Discrete representations are easy to store and map to data structures; however, 
 \end{figure}
 
 
-One of the fundamental results in this area is the \textbf{Shannon-Nyquist Sampling Theorem} (\cite{Shannon1949}). This theorem asserts that a continuous-time, band-limited signal can be perfectly reconstructed from its samples, provided that the sampling rate is at least twice the highest frequency present in the signal. Formally, for a continuous-time signal \( x(t) \) with a maximum frequency component of \( B \) Hz, perfect reconstruction is possible if the sampling frequency \( F_s \) satisfies:
+One of the fundamental results in this area is the \textbf{Shannon-Nyquist Sampling Theorem} (\cite{Shannon1949}). This theorem asserts that a continuous-time, band-limited signal can be perfectly reconstructed from its samples, provided that the sampling rate is at least twice the highest frequency present in the signal. Formally, for a continuous-time signal \( f(t) \) with a maximum frequency component of \( B \) Hz, perfect reconstruction is possible if the sampling frequency \( F_s \) satisfies:
 \[
 F_s \geq 2B
 \]
@@ -82,7 +84,7 @@ F_s \geq 2B
   \item \( B \): Maximum frequency of the signal (in Hz)
 \end{itemize}
 
-The theorem is central to digital signal processing, as it guarantees that a sufficiently sampled signal retains all the information of its continuous counterpart. This critical threshold, \( 2B \), is known as the \textbf{Nyquist frequency} or Nyquist limit. When the sampling frequency falls below the Nyquist limit, \textbf{aliasing} occurs. Aliasing is a form of signal distortion where higher frequency components are misrepresented as lower frequencies in the discrete signal. This distortion results in an inaccurate and misleading reconstruction of the original signal, as illustrated in Figure \ref{f:aliasing-example}.
+This theorem is central to digital signal processing, as it guarantees that we can reconstruct a continuous signal from a sufficient amount of samples under certain conditions. The critical threshold \( 2B \) is known as the \textbf{Nyquist frequency} or Nyquist limit. When the sampling frequency falls below the Nyquist limit, \textbf{aliasing} occurs. Aliasing is a form of signal distortion where higher frequency components are misrepresented as lower frequencies in the discrete signal. This distortion results in an inaccurate and misleading reconstruction of the original signal, as illustrated in Figure \ref{f:aliasing-example}.
 
 \begin{figure}[!h]
   \centering
@@ -93,13 +95,13 @@ The theorem is central to digital signal processing, as it guarantees that a suf
 
 Note that the Shannon-Nyquist theorem applies to \textbf{band-limited} signals—those whose frequency content is confined within a finite range. If a signal contains infinite frequency components, no finite sampling rate can fully capture its information. In such cases, even a high sampling rate would still result in aliasing, as the unbounded frequency components would fold into the baseband and distort the signal during reconstruction.
 
-The process of signal reconstruction can be viewed as a form of \textit{interpolation}. If the sampling adheres to the Nyquist criterion, the continuous signal can be exactly reconstructed using the \textit{sinc} function as the interpolation kernel. The reconstructed signal is obtained by convolving the discrete samples with the sinc function. The sinc function is defined as:
+The process of signal reconstruction can be viewed as a form of \textit{interpolation}. If the sampling adheres to the Nyquist criterion, the continuous signal can be exactly reconstructed using the \textit{sinc} function as the interpolation kernel. The reconstructed signal is obtained by convolving the discrete samples with the sinc function, which is defined as:
 
 \begin{align}
   \text{sinc}(t) = \frac{\sin(\pi t)}{\pi t}
 \end{align}
 
-The sinc function provides the theoretical basis for perfect interpolation, but this ideal reconstruction method is not physically realizable. The sinc function extends to infinity in both directions, making it impractical for real-world implementation. Additionally, as we will see in the next section, the ideal low-pass filter that corresponds to the sinc function features a perfectly sharp cutoff at the Nyquist frequency, which is impossible to achieve due to physical constraints in filtering technology. Nonetheless, it serves as benchmark against which practical signal processing techniques are measured.
+The sinc function provides the theoretical basis for perfect interpolation, but this ideal reconstruction method is not physically realizable, because this function extends to infinity in both directions, making it impractical for real-world implementation. Additionally, as we will see in the next section, the ideal low-pass filter that corresponds to the sinc function features a perfectly sharp cutoff at the Nyquist frequency, which is impossible to achieve due to physical constraints in filtering technology. Nonetheless, it serves as benchmark against which practical signal processing techniques are measured.
 
 % When applied correctly, it allows for the exact recovery of the original continuous signal from its discrete samples, provided the sampling conditions are met. However
 
@@ -126,10 +128,7 @@ where:
   \item \( i \) is the imaginary unit.
 \end{itemize}
 
-% The Fourier transform operates by multiplying the time-domain signal by a complex exponential function for each frequency \( s \) and then integrating the result over all time. 
-
-This Fourier transform extracts both the amplitude and phase of each frequency component, revealing the signal's spectrum. The amplitude of a frequency component indicates its magnitude or intensity. The amplitude of each frequency component reflects how much that frequency contributes to the overall signal. The phase represents the initial angle or starting position of the sinusoidal wave at a particular frequency. It determines the relative timing between different frequency components and can affect the overall shape of the signal.
-% By analyzing the frequency spectrum, which consists of the frequencies present in the signal and their associated amplitudes, we can gain insight into the signal's characteristics. 
+This Fourier transform extracts both the amplitude and phase of each frequency component, revealing the signal's spectrum. The amplitude of a frequency component indicates its magnitude or intensity, what reflects how much that frequency contributes to the overall signal. The phase represents the initial angle or starting position of the sinusoidal wave at a particular frequency. It determines the relative timing between different frequency components and can affect the overall shape of the signal.
 
 %  In the context of audio signals, amplitude corresponds to loudness, while in image processing, it affects brightness or contrast.   Phase shifts can introduce delays or modify the waveform, altering the temporal or spatial structure of the signal.
 
@@ -137,7 +136,11 @@ This Fourier transform extracts both the amplitude and phase of each frequency c
 
 The Fourier transform has several forms depending on the nature of the signal. The \textit{continuous Fourier transform} (CFT) is used for continuous-time signals, while the \textit{discrete Fourier transform} (DFT) applies to sampled or discrete signals. The \textbf{fast Fourier transform (FFT)} is an efficient algorithm for computing the DFT, enabling real-time signal processing in practical applications.
 
-In the previous section, we discussed how signals are sampled and reconstructed, with particular emphasis on the Shannon-Nyquist sampling theorem and the role of the sinc function in ideal signal reconstruction. The Fourier transform of the sinc function is a rectangular function, also called box function (Figure \ref{f:sinc-and-rect}). This observation highlights an interesting principle of signal processing: smooth functions in the natural domain correspond to compact functions in the frequency domain, and vice versa. Moreover, the sinc function's Fourier transform being a rectangle in the frequency domain illustrates that it acts as an ideal low-pass filter, passing frequencies within a certain range (the band-limited signal) while cutting off higher frequencies that could lead to aliasing.
+In the previous section, we discussed how signals are sampled and reconstructed, with particular emphasis on the Shannon-Nyquist sampling theorem and the role of the sinc function in ideal signal reconstruction. The Fourier transform of the sinc function is a rectangular function, also called box function (Figure \ref{f:sinc-and-rect}). Therefore, in the frequency domain it acts as an ideal low-pass filter, passing frequencies within a certain range (the band-limited signal) while cutting off higher frequencies that could lead to aliasing.
+
+Moreover, this observation highlights an interesting principle of signal processing: smooth functions in the natural domain correspond to compact functions in the frequency domain, and vice versa.
+
+
 
 \begin{figure}[!h]
   \centering
@@ -151,13 +154,12 @@ In the previous section, we discussed how signals are sampled and reconstructed,
       \includegraphics[width=\textwidth]{img/ch2/box.png}
       \caption{}
   \end{subfigure}
-  \caption{sinc function (A) and its Fourier transform, the box function (B) (\cite{ipcgVelho2014}).}
+  \caption{(A) The sinc function; (B) the box function, the Fourier transform of the sinc function~\citep{ipcgVelho2014}.}
   \label{f:sinc-and-rect}
 \end{figure}
 
-% % The **sinc function**, defined as \( \text{sinc}(t) = \frac{\sin(\pi t)}{\pi t} \), plays a crucial role in both the time and frequency domains. It serves as the ideal interpolation kernel for reconstructing continuous signals from discrete samples, ensuring that no information is lost under perfect conditions. 
 
-The Fourier transform not only allows us to decompose signals into their frequency components but also provides a clear connection between sampling theory and frequency domain analysis. The frequency domain offers an intuitive way to understand the band-limited nature of signals: only frequencies below the Nyquist frequency are preserved during sampling. Thus, the Fourier transform gives us the tools to analyze which frequencies are captured and which might cause distortion if undersampled.
+The Fourier transform not only decomposes signals into their frequency components but also links sampling theory to frequency domain analysis. Since only frequencies below the Nyquist limit are preserved during sampling, the Fourier transform helps analyzing which frequencies are captured and which might cause distortion if undersampled.
 
 The \textbf{inverse Fourier transform} is equally important, as it allows us to reconstruct the original signal from its frequency-domain representation. If we know \( F(f) = \hat{f}(s) \), the frequency-domain signal, we can retrieve the time-domain signal \( f(t) \) by applying the inverse Fourier transform:
 
@@ -166,13 +168,12 @@ The \textbf{inverse Fourier transform} is equally important, as it allows us to 
 \end{align}
 
 
-This operation restores the original signal by summing all its frequency components (sine and cosine waves) back into the time domain. The Fourier transform and its inverse create a bridge between the time and frequency domains, allowing us to switch between these perspectives. When combined with sampling theory, these transformations help us understand how signals can be efficiently represented, manipulated, and reconstructed in both domains.
+This operation restores the original signal by integrating over all its frequency components. The Fourier transform and its inverse create a bridge between the time and frequency domains, allowing us to switch between these perspectives.
 
 % The inverse Fourier transform provides the foundation for reconstructing signals, just as the sinc function is used in the time domain for ideal interpolation.
 
-When signals are sampled, we effectively multiply the original continuous signal by a sequence of Dirac delta functions (impulses). In the frequency domain, this multiplication corresponds to a convolution with a train of impulses, which leads to periodic replicas of the signal's frequency spectrum. This relationship emphasizes the importance of the Nyquist criterion: if the sampling rate is too low (below twice the highest frequency in the signal), these spectral replicas overlap, resulting in aliasing. The Fourier transform enables us to clearly visualize this aliasing effect by showing how undersampling distorts the signal's frequency content.
-
-% % \red{Visualizing Signals in the Frequency Domain**: Use simple examples (e.g., sine waves) to demonstrate how different frequencies combine to form complex signals.
+When signals are sampled, we effectively multiply the original continuous signal by a sequence of Dirac delta functions (impulses). In the frequency domain, this multiplication corresponds to a convolution with a train of impulses, which leads to periodic replicas of the signal's frequency spectrum. This relationship emphasizes the importance of the Nyquist criterion: if the sampling rate is too low (below twice the highest frequency in the signal), these spectral replicas overlap, resulting in aliasing. 
+% The Fourier transform enables us to clearly visualize this aliasing effect by showing how undersampling distorts the signal's frequency content.
 
 \section{Multiresolution Analysis}
 
@@ -186,9 +187,9 @@ In the formal setting of MRA, a signal \( f \in L^2(\mathbb{R}^n) \), where \( L
 V_{j-1} = V_j \oplus W_j
 \]
 
-where \( V_{j-1} \) represents a finer approximation of the signal, and \( W_j \) captures the detail lost in transitioning from scale \( j \) to \( j-1 \). The space \( W_j \) is orthogonal to \( V_j \), and the decomposition \( V_{j-1} = V_j \oplus W_j \) allows for a precise reconstruction of the signal at scale \( j-1 \).
+where \( V_{j-1} \) represents a finer approximation of the signal, and \( W_j \) captures the detail lost in transitioning from scale \( j \) to \( j-1 \). The space \( W_j \) is orthogonal to \( V_j \), and the decomposition \( V_{j-1} = V_j \oplus W_j \) enables a precise reconstruction of the signal at scale \( j-1 \).
 
-This approach allows for efficient representation and processing of signals, reducing storage requirements and computational complexity by focusing on the relevant details while discarding less important information. The following sections provide an overview of two primary methods for multiresolution analysis: pyramids and wavelets.
+This approach facilitates efficient representation and processing of signals, reducing storage requirements and computational complexity by focusing on the relevant details while discarding less important information. The following sections provide an overview of two primary methods for multiresolution analysis: pyramids and wavelets.
 
 \subsection{Pyramids: Gaussian and Laplacian}
 
@@ -218,7 +219,6 @@ A \textit{Laplacian pyramid} captures the differences between consecutive levels
   % L_l(x, y) = G_{l-1}(x, y) - (G_l(x, y) \uparrow 2 * H(x, y))
 \end{align}
 
-% A **Laplacian pyramid** captures the high-frequency details between consecutive levels of the Gaussian pyramid. By subtracting a lower-resolution, smoothed version of the signal from its higher-resolution counterpart, the Laplacian pyramid isolates finer details. The relationship between the Gaussian and Laplacian pyramids can be written as:
 
 where:
 \begin{itemize}
@@ -241,11 +241,8 @@ By progressively adding the finer details back to the lower-resolution versions,
 
 While pyramid structures provide a basic form of multiresolution analysis, \textbf{wavelet transforms} offer a more sophisticated and flexible framework. Wavelets differ from pyramids in that they allow for localized multiresolution analysis in both natural and frequency domains. This makes them especially useful for signals with transient or localized features.
 
-% Wavelets provide a more mathematically rigorous framework for multiresolution analysis by decomposing signals not only in space but also in frequency. A **wavelet transform** allows for the representation of a signal in terms of basis functions that are localized both in time and frequency, making them well-suited for analyzing signals with non-stationary characteristics.
 
 The key idea behind wavelets is to decompose a signal into a series of \textit{scaled} and \textit{shifted} versions of a fundamental waveform, known as the \textit{mother wavelet}. This process captures both the frequency and location information of the signal components, providing a time-frequency representation that is more adaptive than Fourier-based methods.
-
-% In wavelet analysis, a signal is decomposed into approximation coefficients (capturing low-frequency information) and detail coefficients (capturing high-frequency details). This is achieved by convolving the signal with a set of filters: a low-pass filter for approximations and a high-pass filter for details. The decomposition is applied recursively to the approximation coefficients, resulting in a hierarchical, multiresolution representation of the signal.
 
 In wavelet analysis, a signal is decomposed into \textit{approximation coefficients}, that capture the low-frequency or smooth components of the signal, and \textit{detail coefficients}, that capture the high-frequency or detailed components, which correspond to the signal's sharp changes or fine features. This decomposition is achieved by convolving the signal with a pair of low-pass and high-pass filters. The process is applied recursively to the approximation coefficients, creating a hierarchical, multiresolution representation of the signal. The wavelet decomposition can be expressed as:
 
@@ -285,30 +282,12 @@ The wavelet transform operates within a hierarchy of scale spaces \( V_j \), whe
   \cdots \subset V_{j+1} \subset V_j \subset V_{j-1} \subset \cdots  
 \end{align}
 
-% A multiresolution representation is formally defined by a sequence of closed subspaces \( V_j \), \( j \in \mathbb{Z} \), satisfying the following properties:
-
-% \begin{enumerate}
-%   \item \( V_j \subset V_{j-1} \)
-%   \item \( f(\mathbf{x}) \in V_j \iff f(2\mathbf{x}) \in V_{j-1} \)
-%   \item \( \bigcap_{j \in \mathbb{Z}} V_j = \{ 0 \} \)
-%   \item \( \bigcup_{j \in \mathbb{Z}} V_j = L^2(\mathbb{R}^n) \)
-%   \item There exists a scaling function \( \phi(\mathbf{x}) \in V_0 \) such that the set \( \{ \phi(\mathbf{x} - \mathbf{k}); \mathbf{k} \in \mathbb{Z}^n \} \) forms an orthonormal basis of \( V_0 \)
-% \end{enumerate}
-
 Each \( V_j \) is associated with a scaling function \( \phi \), while the detail spaces \( W_j \) are spanned by a corresponding wavelet function \( \psi \), which captures the differences between successive approximations.
 
 For more details on Wavelets and multiresolution analysis, please refer to \cite{mallat1989theory} and \cite{GomesVelho2015FromFA}.
 
-% where:
-% - \( A_l(\mathbf{x}) \) represents the approximation coefficients at level \( l \), where \( \mathbf{x} = (x_1, x_2, \dots, x_d) \) in \( d \)-dimensional space.
-% - \( D_l(\mathbf{x}) \) represents the detail coefficients at level \( l \).
-% - \( \phi(\mathbf{x}) \) is the **scaling function**, responsible for capturing low-frequency information.
-% - \( \psi(\mathbf{x}) \) is the **wavelet function**, responsible for capturing high-frequency details.
-% - \( \downarrow 2 \) denotes downsampling by a factor of 2 along each dimension.
 
-% The recursive application of this decomposition creates a multiscale representation where each level captures increasingly finer details of the signal.
-
-% #### Practical Applications of Wavelets
+% \subsection{Practical Applications of Wavelets}
 
 % The versatility and efficiency of wavelet transforms make them suitable for a variety of practical applications, including:
 % - **Image compression**: Wavelets are the basis for compression algorithms like JPEG2000, which exploit the multiresolution nature of wavelets to efficiently represent image data while maintaining high quality at lower bitrates.
@@ -319,7 +298,7 @@ For more details on Wavelets and multiresolution analysis, please refer to \cite
 
 % In summary, wavelet transforms provide a powerful tool for multiresolution analysis, capturing both spatial and frequency-domain information. Their ability to localize features across scales makes them an essential method for signal processing, compression, and analysis across various fields.
 
-% ### The Fast Wavelet Transform
+% \subsection{The Fast Wavelet Transform}
 
 % One of the key advantages of wavelets is the **Fast Wavelet Transform (FWT)**, an efficient algorithm that decomposes a signal into its wavelet coefficients. This algorithm leverages the recursive nature of wavelet analysis, where each level of decomposition splits the signal into approximation and detail coefficients. The FWT operates in \( O(n) \) time, making it suitable for real-time applications.
 
@@ -337,15 +316,7 @@ Artificial Neural networks are computational models inspired by the biological n
 
 In Equation \ref{eq:nn-compute}, \(\mathbf{y}\) is the output vector; \(w_i\) are the weights; \(x_i\) are the coordinates of the input vector; \(\mathbf{b}\) is the bias vector; and \(\sigma\) is a non-linear function called \textit{activation function}.
 
-% \begin{itemize}
-%   \item 
-%   \item 
-%   \item 
-%   \item 
-%   \item 
-% \end{itemize}
-
-This architecture allows neural networks to learn complex patterns and relationships within data, making them particularly effective for tasks such as image recognition and natural language processing. In fact, neural networks are universal approximators (\cite{HORNIK1989359,cybenko89}).
+This architecture makes it possible for neural networks to learn complex patterns and relationships within data, making them particularly effective for tasks such as image recognition and natural language processing. In fact, neural networks are universal approximators (\cite{HORNIK1989359,cybenko89}).
 
 Weights and biases are parameters of a neural network that are updated through optimization algorithms during the training process to minimize prediction error Activation functions introduce non-linearity into the network and their choice can impact the network performance and convergence during training. Common activation functions include:
 
@@ -373,22 +344,31 @@ Neural networks learn through a process called \textbf{backpropagation}, which e
     \item \textbf{Backward Pass}: The error between predicted outputs and actual targets is calculated using a loss function (e.g., mean squared error or cross-entropy). The gradients of this error with respect to each weight are computed using the chain rule.
 \end{enumerate}
 
-The weights are then updated using an optimization algorithm like \textbf{gradient descent}, which adjusts weights in the direction that minimizes the loss function:
+The weights are then updated using an optimization algorithm like \textbf{gradient descent}, which adjusts weights in the direction that minimizes a loss function:
 
 \begin{align}
   \mathbf{w} = \mathbf{w} - \eta \nabla L(\mathbf{w})  
 \end{align}
 
-Where \(\mathbf{w}\) represents weights; \(\eta\) is the learning rate; and \(\nabla L(\mathbf{w})\) is the gradient of the loss function with respect to weights.
+where \(\mathbf{w}\) represents weights; \(\eta\) is the learning rate; and \(\nabla L(\mathbf{w})\) is the gradient of the loss function with respect to weights.
 
-Neural networks can be categorized into \textbf{shallow} and \textbf{deep networks} based on how many layers of composition of function are there in their architecture. There is no standard definition for the number of layers that a shallow or deep network should have, leaving a subjective "a few" and "multiple", respectively for most cases. In this dissertation, we will understand a shallow network as one that applies at most two compositions of transformation to the inputs. Anything greater than that will be referred as a deep network. Stacking layers increases the representational power of the network as each additional layer allows the model to capture more complex features from the input data.
+Perceptrons can be connected in a variety of ways, defining different neural networks architectures. A \textbf{Multilayer Perceptron} (MLP) is a class of artificial neural networks composed of multiple layers of perceptrons, where each layer is fully connected to the next. An MLP typically consists of an input layer, one or more hidden layers, and an output layer. Each layer applies a series of weighted transformations to its inputs, followed by a non-linear activation function.
 
-The \textbf{capacity} of a model, that is its ability to fit functions is determined by the architecture of the network, including the number of layers and the number of neurons within those layers. A network with high capacity can learn complex patterns in data, while a network with low capacity may struggle to capture the underlying relationships. The capacity of a neural network is closely linked to its \textbf{expressive power}—the range of functions it can approximate. For instance, a deep neural network with many hidden layers and neurons can represent more intricate functions than a shallow network. However, this increased capacity comes with trade-offs, particularly concerning generalization. A highly expressive model might overfit the training data, learning patterns that do not generalize well to new, unseen data, thus requiring regularization techniques to manage this balance.
+\subsection{Depth and Capacity}
+
+
+Neural networks can be classified as either \textbf{shallow} or \textbf{deep} based on the number of layers in their architecture. While there is no universally accepted threshold for distinguishing between the two, a shallow network is often understood as one with at most two layers of functional composition applied to its inputs, while networks with more layers are considered deep. Increasing the number of layers enhances the network's representational power, as each layer allows the model to capture progressively more complex features from the input data.
+
+The \textbf{capacity} of a neural network, referring to its ability to fit a range of functions, is determined by its architectural design, including both the depth (number of layers) and the width (number of neurons per layer). High-capacity networks can learn complex patterns, while low-capacity networks may struggle to capture intricate relationships in the data. Capacity is closely related to the network's \textbf{expressive power}, which defines the range of functions the network can approximate. For example, deep networks with many hidden layers and a large number of neurons can represent more complex functions than shallow networks.
+
+However, increased capacity introduces a trade-off with generalization. A highly expressive network may overfit the training data, learning patterns that fail to generalize to unseen data. 
+
+% The \textbf{capacity} of a model, that is its ability to fit functions is determined by the architecture of the network, including the number of layers and the number of neurons within those layers. A network with high capacity can learn complex patterns in data, while a network with low capacity may struggle to capture the underlying relationships. The capacity of a neural network is closely linked to its \textbf{expressive power}—the range of functions it can approximate. For instance, a deep neural network with many hidden layers and neurons can represent more intricate functions than a shallow network. However, this increased capacity comes with trade-offs, particularly concerning generalization. A highly expressive model might overfit the training data, learning patterns that do not generalize well to new, unseen data, thus requiring regularization techniques to manage this balance.
 
 
 \subsection{Overfitting and Underfitting}
 
-In the context of neural networks, two important challenges are \textbf{overfitting} and \textbf{underfitting}. These issues arise from how well the model's capacity aligns with the complexity of the data, and they are closely related to how the model performs on the training set versus unseen test data.
+In the context of neural networks, \textbf{overfitting} and \textbf{underfitting} ara important challenges that arise from how well the model's capacity aligns with the complexity of the data. They are closely related to how the model performs on the training set versus unseen test data.
 
 Underfitting occurs when the model is too simplistic and lacks the capacity to learn the underlying patterns in the data. This typically happens when the network has too few layers or neurons, preventing it from capturing the complexities within the dataset. As a result, the model fails to perform well on both the training data and the test data, as it cannot even identify the basic trends present in the data.
 
@@ -418,7 +398,7 @@ For overfitting, the training loss becomes very low, but the validation loss is 
 % \text{Low training loss and high validation loss:} \quad L_{\text{train}} \approx 0 \quad \text{and} \quad L_{\text{val}} \gg L_{\text{train}}
 % \]
 
-To address these challenges, it is important to find a balance between a model's capacity and its ability to generalize. Several techniques are commonly used to combat overfitting, such as regularization, dropout, and early stopping:
+To address these challenges, it is important to find a balance between the model's capacity and its ability to generalize. Several techniques are commonly used to combat overfitting, such as regularization, dropout, and early stopping:
 
 \textbf{Regularization} adds a penalty term to the loss function, discouraging complex models by constraining the network's weights. This helps to reduce overfitting by preventing the model from becoming too specialized to the training data.
   
@@ -446,9 +426,7 @@ Coordinate-based neural networks represent a change of perspective in how data i
 % \text{Color} = f(x, y) = (R, G, B)
 % \]
 
-One of the advantages of this continuous representation is its flexibility—it is not restricted to any specific spatial resolution. In theory, representational networks can achieve infinite resolution, meaning they can be sampled at any desired level of detail without the limitations of traditional discrete grids. Although, according to the Information Theory, you it is not possible to add more details to the represnetation than those that were captured in the original sample.
-
-This is particularly useful for applications like **super-resolution imaging** or working with high-dimensional datasets.
+One of the advantages of this continuous representation is its flexibility—it is not restricted to any specific spatial resolution. In theory, representational networks can achieve infinite resolution, meaning they can be sampled at any desired level of detail without the limitations of traditional discrete grids. Although, according to the Information Theory, it is not possible to add more details to the representation than those that were captured in the original sample.
 
 % Furthermore, INRs offer **efficient memory usage**. The memory required to store an implicit representation scales with the complexity of the signal rather than its spatial resolution. For complex datasets, this efficiency is crucial because traditional methods might demand excessive storage, especially when handling high-resolution data.
 
@@ -462,28 +440,25 @@ This is particularly useful for applications like **super-resolution imaging** o
 
 % Thus, coordinate-based neural networks and implicit neural representations represent a paradigm shift in how we approach and process spatial data. By conceptualizing signals as continuous functions instead of discrete samples, these models provide enhanced flexibility, efficiency, and power in representing complex datasets. As research in this area continues to advance, these approaches are likely to drive further innovations across a range of applications, from computer vision to graphics and beyond.
 
-% Recently, neural networks have been employed to represent signals directly as functions of spatial coordinates, bypassing traditional grid-based representations. These coordinate-based neural networks (Tancik et al., 2020; Sitzmann et al., 2020) are capable of representing continuous signals in a compact, implicit form, which contrasts with the discrete representations used in classical techniques. Neural Implicit Representations (NIRs), such as Neural Radiance Fields (NeRF) (Mildenhall et al., 2020) and Implicit Neural Representations (INRs), encode spatial information using neural networks where the input coordinates map directly to the desired signal value, such as pixel intensity or 3D occupancy.
-
-One limitation of these approaches, however, is their tendency to struggle with high-frequency signal components due to the MLPs spectral bias \citep{rahaman2018spectral}. Multiple works adopt the approach proposed by \cite{tancik2020fourfeat} to project the input coordinates into higher dimensional spaces using a basis of sines and cossines, what beacame known as Fourier Feature Mapping. Another approach useful in this context are the sinusoidal activation functions, as utilized by SIREN \cite{sitzmann2019siren}, that showed themselves able of capturing high-frequency details.
-
+One limitation of these approaches is their difficulty in handling high-frequency signal components, which arises from the spectral bias of MLPs \citep{rahaman2018spectral}. To address this, several works have adopted the method introduced by \cite{tancik2020fourfeat}, which projects input coordinates into higher-dimensional spaces using a basis of sines and cosines, a technique known as \textit{Fourier Feature Mapping}. Another effective approach in this context is the use of sinusoidal activation functions, as demonstrated by SIREN \citep{sitzmann2019siren}, which have proven capable of capturing fine high-frequency details.
 
 
 \subsection{Sinusoidal Neural Networks}
 
-Sinusoidal neural networks are examples of coordinate-based networks in which their activation function is the sine function. As such, they bridge the gap between the spatial and spectral domains, given the close relationship of the sine function with the Fourier~basis. However, these sinusoidal neural networks have been regarded as difficult to train~\cite{taming2017}. To overcome this problem, \citet{sitzmann2019siren} proposed a sinusoidal network for signal representation called SIREN. One of the key contributions of this work is the initialization scheme that guarantees stability and good convergence. 
+Sinusoidal neural networks are examples of coordinate-based networks in which their activation function is the sine function. As such, they bridge the gap between the spatial and spectral domains, given the close relationship of the sine function with the Fourier~basis. However, these sinusoidal neural networks have been regarded as difficult to train~\citep{taming2017}. To overcome this problem, \citet{sitzmann2019siren} proposed a sinusoidal network for signal representation called SIREN. One of the contributions of this work is an initialization scheme that guarantees stability and convergence. 
 
 % Furthermore, it also allows modeling fine details in accordance with the signal's frequency content.
 
-The continuous nature of the sine function is particularly useful in applications where smoothness and differentiability of the output are required, such as modeling surfaces or fields in 3D space. Also, since the derivative of the sine function is the cossine, which is a shifted sine in the domain, the network's derivative preserves its properties. This characteristic makes them suitable for solving boundary value problems, such as the Poisson equation or the Helmholtz equation, where precise control over spatial and temporal derivatives is necessary.
+The continuous nature of the sine function is particularly useful in applications where smoothness and differentiability of the output are required, such as modeling surfaces or fields in 3D space. Also, since the derivative of the sine function is the cossine, which is a shifted sine in the domain, the network's derivative preserves its properties. This characteristic makes them suitable for solving boundary value problems, such as the Poisson equation or the Helmholtz equation.
 
 
-The use of sine functions allows sinusoidal neural networks to represent signals in both the **spatial** and **frequency** domains. Signals, especially those in fields such as audio, image processing, and computer graphics, often contain fine structures that require high-frequency components for accurate representation. A sinusoidal activation function, defined as:
+% The use of sine functions allows sinusoidal neural networks to represent signals in both the **spatial** and **frequency** domains. Signals, especially those in fields such as audio, image processing, and computer graphics, often contain fine structures that require high-frequency components for accurate representation. A sinusoidal activation function, defined as:
 
-\[
-\sigma(x) = \sin(x)
-\]
+% \[
+% \sigma(x) = \sin(x)
+% \]
 
-is inherently capable of generating oscillations. These oscillations enable the network to capture fine variations in data, something that traditional activations might struggle with. This characteristic makes sinusoidal neural networks ideal for tasks where precision at smaller scales is critical, such as super-resolution, texture generation, or even physics simulations.
+% is inherently capable of generating oscillations. These oscillations enable the network to capture fine variations in data, something that traditional activations might struggle with. This characteristic makes sinusoidal neural networks ideal for tasks where precision at smaller scales is critical, such as super-resolution, texture generation, or even physics simulations.
 
 In the next chapter, we will see that the relationship between sinusoidal networks and the frequency domain is central to understanding their expressive power. 
 
