@@ -7,11 +7,9 @@ Imaging applications benefit greatly from multiresolution representations, which
 
 In this chapter, we explore the role of multiresolution techniques in imaging applications and present our proposed MR-Net architecture as a modern alternative to traditional methods. The following sections, based on \citet{paz2022} and \citet{paz2023mr}, detail the implementation and experimentation of MR-Net across various imaging tasks, such as multiresolution encoding, texture magnification and minification, and antialiasing.
 
-Additionally, we provide comprehensive experimental evaluations, comparing MR-Net to existing methods such as SIREN \citep{sitzmann2019siren}, BACON \citep{bacon2021}, and classical wavelet techniques. Through these comparisons, we illustrate how MR-Net can offer more efficient representations with fewer parameters, all while maintaining or surpassing the performance of traditional approaches. Moreover, we examine the differences between the various MR-Net subclasses, namely S-Net, L-Net, and M-Net.
+Additionally, we provide comprehensive experimental evaluations, comparing MR-Net to existing methods such as SIREN \citep{sitzmann2019siren} and BACON \citep{bacon2021}. Through these comparisons, we illustrate how MR-Net can offer more efficient representations with fewer parameters, all while maintaining or surpassing the performance of traditional approaches. Moreover, we examine the differences between the various MR-Net subclasses, namely S-Net, L-Net, and M-Net.
 
-Finally, the chapter addresses the current limitations of MR-Net and outlines potential future directions. While the architecture presents clear advantages in terms of flexibility and performance, challenges remain, particularly in optimizing frequency initialization and further reducing computational complexity. 
-
-% The key advantage of MR-Net lies in its ability to dynamically generate and control frequencies through the training process. Traditional methods such as wavelet transforms and Fourier-based techniques have fixed bases, meaning they predefine how frequency components are separated. MR-Net, on the other hand, learns the appropriate decomposition across scales directly from the data, offering more flexibility and adaptability, especially for complex, non-stationary signals like images.
+Finally, the chapter addresses the current limitations of MR-Net and outlines potential future directions. While the architecture presents clear advantages in terms of flexibility and performance, some challenges remain in optimizing frequency initialization and further reducing storage complexity.
 
 % This chapter builds on these foundations, demonstrating the use of our MR-Net architecture for imaging applications. Unlike traditional wavelet or Fourier-based approaches, MR-Net leverages sinusoidal activations to control frequency generation during training, providing detail control across resolutions.  
 
@@ -28,12 +26,12 @@ Finally, the chapter addresses the current limitations of MR-Net and outlines po
 
 \section{Related Works}
 
-The field of multiresolution imaging has a rich history, with methods that go from classical signal processing techniques to more recent neural network-based approaches. Understanding the evolution of these methods provides a context the contributions of MR-Net, the architecture introduced in this dissertation, in the area.
+The field of multiresolution imaging has a rich history, with methods that go from classical signal processing techniques to more recent neural network-based approaches. Understanding the evolution of these methods provides a context for the contributions of MR-Net.
 
-Traditional multiresolution methods, based on the Laplacian pyramid \citep{burt1987laplacian}, have been central in image compression by facilitating progressive data reduction. These methods focus on identifying and eliminating high-frequency components that contribute minimally to perceptual quality, while preserving essential low-frequency features. By efficiently discarding redundant information, they achieve significant data reduction while maintaining perceptual image integrity. Additionally, in rendering, multiresolution representations inherently support antialiasing, which has traditionally been implemented using image pyramids in methods like Mipmapping \citep{mipmap83}. Texture synthesis also benefits from these techniques, as multiresolution approaches aid not only in antialiasing but also in the creation of visual patterns from exemplar images \citep{thies19}.
+Traditional multiresolution methods, based on the Laplacian pyramid \citep{burt1987laplacian}, have been central in image compression by facilitating progressive data reduction. These methods focus on identifying and eliminating high-frequency components that contribute minimally to perceptual quality, while preserving essential low-frequency features. By efficiently discarding redundant information, they achieve significant data reduction while maintaining perceptual image integrity. Additionally, in rendering, multiresolution representations inherently support antialiasing, which has traditionally been implemented using image pyramids in methods like Mipmapping \citep{mipmap83}. Texture synthesis also benefits from these techniques, as multiresolution approaches also aid in the creation of visual patterns from exemplar images \citep{thies19}.
 
 
-Historically, multiresolution representations for images have been rooted in signal processing techniques derived from Fourier theory \citep{bracewell1986fourier}. The Discrete Cosine Transform (DCT) \citep{dct-og} became particularly useful in image compression, as it enabled efficient analysis of frequency content, prioritizing coefficients most relevant to perceptual quality. The wavelet transform, introduced by \citet{mallat1989theory}, later emerged as a powerful alternative, enabling a multiscale representation of images that could capture both frequency and spatial information at various levels of detail. This innovation led to the first generation of wavelet-based image codecs \citep{antonini1992image} and, subsequently, higher compression rates through more advanced wavelet-based coding methods \citep{mallat-2gen}.
+Historically, multiresolution representations for images have been rooted in signal processing techniques derived from the Fourier theory \citep{bracewell1986fourier}. The Discrete Cosine Transform (DCT) \citep{dct-og} became particularly useful in image compression, as it enabled efficient analysis of frequency content, prioritizing coefficients most relevant to perceptual quality. The wavelet transform, introduced by \citet{mallat1989theory}, later emerged as a powerful alternative, enabling a multiscale representation of images that could capture both frequency and spatial information at various levels of detail. This innovation led to the first generation of wavelet-based image codecs \citep{antonini1992image} and, subsequently, higher compression rates through more advanced wavelet-based coding methods \citep{mallat-2gen}.
 
 A key advantage of both wavelet and Fourier-based approaches lies in their ability to control and interpret the frequencies present in a signal, which is critical for avoiding artifacts like aliasing. Sinusoidal functions, fundamental to Fourier analysis, enable precise frequency decomposition and control, what emphasize their importance in multiresolution theory. These principles are extended in modern neural network architectures, including the one introduced in this dissertation.
 
@@ -50,13 +48,13 @@ In recent years, coordinate-based neural networks have emerged as powerful tools
 
 In the following experiments, we employ the M-Net subclass of our architecture, utilizing a level of detail scheme based on the Gaussian Pyramid in all examples. The image pyramid follows a dyadic structure, with resolutions scaling as \( 2^j \). The pyramid is constructed by filtering the image with a Gaussian kernel followed by downsampling (decimation) to achieve progressively coarser representations.
 
-We designed the MR-Module through empirical analysis of the network's capacity to represent typical photographic images. Each stage of the network, except the last one, comprises 96 neurons across all layers in the first, hidden, and output blocks. The last stage is wider, with 256 neurons per layer. The hidden block at each stage contains only one layer. This compact configuration is chosen to balance expressivity and computational efficiency. \red{Talvez colocar numa tabela junto com as frequencias de inicialização?} 
+We designed the MR-Module through empirical analysis of the network's capacity to represent typical photographic images. Each stage of the network, except the last one, comprises 96 neurons across all layers in the first, hidden, and output blocks. The last stage is wider, with 256 neurons per layer. The hidden block at each stage contains only one layer. This compact configuration is chosen to balance expressivity and computational efficiency.
 
 For the first stage, we define the base resolution of the input image as \( 2^3 = 8 \) pixels. The number of stages in the network is determined by the maximum resolution of the target image. Unless stated otherwise, the images used in our experiments have a resolution of \(512 \times 512\), resulting in a pyramid consisting of seven resolution levels: 8, 16, 32, 64, 128, 256, and 512. Consequently, the network comprises seven stages, with each stage tasked with refining the image at the corresponding level of detail.
 
-We train the network using an adaptive scheme with the following hyperparameters: the loss function is Mean Squared Error (MSE), with a convergence threshold of \(0.001\%\) (i.e., training for a given stage halts when the loss change is less than \(0.001\%\)). The maximum number of epochs per stage is set to 300, with each epoch processing all pixels exactly once. The mini-batch size is fixed at 65,536 to fit within the available GPU memory. The network is trained using the Adam optimizer with a learning rate of \(1 \times 10^{-4}\).
+We train the network using an adaptive scheme with the following hyperparameters: the loss function is the Mean Squared Error (MSE), with a convergence threshold of \(0.001\) (i.e., training for a given stage halts when the loss change between epochs is less than \(0.001\)). The maximum number of epochs per stage is set to 300, with each epoch processing all pixels exactly once. The mini-batch size is fixed at 65,536 to fit within the available GPU memory. The network is trained using the Adam optimizer with a learning rate of \(1 \times 10^{-4}\).
 
-The network initialization follows the scheme outlined in Section~\ref{sec:frequency-initialization}, where frequency bands are selected in alignment with the Gaussian/Laplacian pyramid LoD scheme described in Section~\ref{s:lod}. Specifically, the weights of the first layer in each stage are initialized to match the frequency range of the corresponding resolution level: \(\omega_0\) is uniformly distributed as \( \mathcal{U}(-B_i, B_i)\), where \( B_i = [4, 8, 16, 32, 64, 128, 256]_{i=1}^7 \) for a seven-stage network. For all stages, the weights of the hidden layers are initialized with \(\omega_h = 30\).
+The network initialization follows the scheme outlined in Section~\ref{sec:frequency-initialization}, where frequency bands are selected in alignment with the Gaussian/Laplacian pyramid LoD scheme described in Section~\ref{s:lod}. Specifically, \red{the weights of the first layer in each stage are initialized to match the frequency range of the corresponding resolution level}: \(\omega_0\) is uniformly distributed as \( \mathcal{U}(-B_i, B_i)\), where \( B_i = [4, 8, 16, 32, 64, 128, 256]_{i=1}^7 \) for a seven-stage network. For all stages, the weights of the hidden layers are initialized with \(\omega_h = 30\).
 
 
 \subsection{Level of Detail Example}
@@ -68,24 +66,24 @@ Figure~\ref{f:lod} shows the reconstructed image at resolution levels 1, 3, 5, a
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.20\linewidth]{img/ch5/1-cameraman.png}
-\includegraphics[width=0.20\linewidth]{img/ch5/3-cameraman.png}
-\includegraphics[width=0.20\linewidth]{img/ch5/5-cameraman.png}
-\includegraphics[width=0.20\linewidth]{img/ch5/7-cameraman.png} \\
+\includegraphics[width=0.22\linewidth]{img/ch5/1-cameraman.png}
+\includegraphics[width=0.22\linewidth]{img/ch5/3-cameraman.png}
+\includegraphics[width=0.22\linewidth]{img/ch5/5-cameraman.png}
+\includegraphics[width=0.22\linewidth]{img/ch5/7-cameraman.png} \\
 
-\includegraphics[width=0.20\linewidth]{img/ch5/1-fft.png}
-\includegraphics[width=0.20\linewidth]{img/ch5/3-fft.png}
-\includegraphics[width=0.20\linewidth]{img/ch5/5-fft.png}
-\includegraphics[width=0.20\linewidth]{img/ch5/7-fft.png}
+\includegraphics[width=0.22\linewidth]{img/ch5/1-fft.png}
+\includegraphics[width=0.22\linewidth]{img/ch5/3-fft.png}
+\includegraphics[width=0.22\linewidth]{img/ch5/5-fft.png}
+\includegraphics[width=0.22\linewidth]{img/ch5/7-fft.png}
 \caption{Cameraman: reconstructed multiresolution levels 1, 3, 5, and 7, along with their corresponding Fourier spectra.}
 \label{f:lod}
 \end{figure}
 
-The training times for each stage of the network were as follows: \red{5s, 4s, 3s, 11s, 17s, 29s, and 48s, with a total training time of 117s. These times were measured on a Windows 10 laptop with an NVIDIA RTX A5000 Laptop GPU}. The variability in training time reflects the adaptive training regime and the different sample sizes at each level of the Gaussian pyramid.
+The training times for each stage of the network were as follows: 5s, 4s, 3s, 11s, 17s, 29s, and 48s, with a total training time of 117s. These times were measured on a Windows 10 laptop with an NVIDIA RTX A5000 Laptop GPU. The variability in training time reflects the adaptive training regime and the different sample sizes at each level of the Gaussian pyramid.
 
 % The training evolution is depicted in the graph of Figure \ref{f:training-epochs} that shows the convergence of the MSE loss with the number of epochs for each multiresolution levels 1, 3, 5, and 7. It is worth pointing out the qualitative behavior of the network, in that the base level (stage 1) takes more than 200 epochs to reach the limit, while detail levels (stages 3, 5, 7) take less than 150 epochs to converge.  It is like, there are two different modes, one to fit the base level and the other for the detail levels.
 
-Figure~\ref{f:training-epochs} shows the training evolution for stages 1, 3, 5, and 7, plotting MSE loss against the number of epochs. Notably, the network exhibits two distinct convergence behaviors: the base stage (level 1) requires more than 200 epochs to converge, while the higher-resolution stages (levels 3, 5, and 7) converge in fewer than 150 epochs. This is consistent with the intuition that the base level captures coarse details, while subsequent stages focus on refining finer details. \red{Also, the error decreases for each level of detail.}
+Figure~\ref{f:training-epochs} shows the training evolution for stages 1, 3, 5, and 7, plotting MSE loss against the number of epochs. Notably, the network exhibits two distinct convergence behaviors: the base stage (level 1) requires more than 200 epochs to converge, while the higher-resolution stages (levels 3, 5, and 7) converge in fewer than 150 epochs. This is consistent with the intuition that the base level captures coarse details, while subsequent stages focus on refining finer details.
 
 \begin{figure}[!h]
 \centering
@@ -99,12 +97,9 @@ Finally, inference times for reconstructing the image range from 0.02 seconds on
 
 \subsection{Texture}
 
-In this second example, we apply the MR-Net architecture to model texture and visual patterns, which are central in many image-based applications ranging from photorealistic simulations to interactive gaming. Currently, more and more image rendering relies on some kind of graphics acceleration, including GPUs integrated with Neural Engines. In that context, compact and efficient neural image representations that support levels of detail may be a valuable resource.
+In this second example, we apply the MR-Net architecture to model texture and visual patterns, which are central in many image-based applications ranging from photorealistic simulations to interactive gaming. Currently, more and more image rendering relies on some kind of graphics acceleration, including GPUs integrated with neural engines. In that context, compact and efficient neural image representations that support levels of detail may be a valuable resource.
 
-For this experiment, we use an image of a woven fabric, which features distinct patterns that test the MR-Net's ability to capture intricate visual details across different resolutions. The original image has a resolution of \(1025 \times 1025\) pixels, and the MR-Net model operates with 5 levels of detail.
-
-
-In Fig~\ref{f:pattern} we show our experiments, where Fig.~\ref{f:pattern}(b) shows the image in the original resolution, while Fig.~\ref{f:pattern}(a) shows a zoom-in and Fig.~\ref{f:pattern}(c) shows a zoom-out.
+For this experiment, we use an image of a woven fabric, which features distinct patterns that test the MR-Net's ability to capture intricate visual details across different resolutions. The original image has a resolution of \(1025 \times 1025\) pixels, and the MR-Net model operates with 5 levels of detail. Figure~\ref{f:pattern} presents our experimental results. Figure~\ref{f:pattern}(B) shows the image in the original resolution, while Figures~\ref{f:pattern}(A) and (C) show zoomed-in and zoomed-out views respectively.
 
 \begin{figure}[!h]
 \centering
@@ -143,26 +138,44 @@ In the previous subsection, we demonstrated how the level of detail mechanism in
 
 We now illustrate how MR-Net handles this challenge through a simple anti-aliasing example. Let \(I\) be a checkerboard image, and \(T\) be a homography mapping pixel coordinates \(x = (x_1, x_2)\) on the screen to texture coordinates \(u = (u_1, u_2)\) on \(I\). Let \(f: \mathbb{R}^2 \times [0, N] \to \mathbb{R}\) represent an MR-Net with \(N\) stages, approximating a multiresolution representation of \(I\).
 
-In Figure \ref{f:alias}(a), we observe aliasing artifacts caused by applying the inverse of \(T\) to the checkerboard pattern without multiresolution control. This results in noticeable high-frequency noise, especially at larger distances from the camera. In contrast, Figure \ref{f:alias}(b) shows the result using MR-Net's multiresolution model, which eliminates the aliasing artifacts and produces a smooth, anti-aliased rendering.
+In Figure \ref{fig:alias-naive-checkerboard}, we observe aliasing artifacts caused by applying the inverse of \(T\) to the checkerboard pattern without multiresolution control. This results in noticeable high-frequency noise, especially at larger distances from the camera. In contrast, Figure \ref{fig:antialias-mnet-checkerboard} shows the result using MR-Net's multiresolution model, which eliminates the aliasing artifacts and produces a smooth, anti-aliased rendering.
+
+% \begin{figure}[!h]
+% \centering
+% \includegraphics[width=0.46\linewidth]{img/ch5/im_0_alias.png}
+% \includegraphics[width=0.46\linewidth]{img/ch5/im_0_anti_alias.png}
+% \centerline{(a)\hfil\hfil(b)}
+% \caption{Checkerboard in perspective: (A) aliasing from point sampling; (B) M-Net anti-aliased reconstruction.}
+% \label{f:alias}
+% \end{figure}
 
 \begin{figure}[!h]
-\centering
-\includegraphics[width=0.46\linewidth]{img/ch5/im_0_alias.png}
-\includegraphics[width=0.46\linewidth]{img/ch5/im_0_anti_alias.png}
-\centerline{(a)\hfil\hfil(b)}
-\caption{Checkerboard in perspective: (a) aliasing from point sampling; (b) M-Net anti-aliased reconstruction.}
-\label{f:alias}
+  \centering
+  \begin{subfigure}{0.46\linewidth}
+    \centering
+  \includegraphics[width=\linewidth]{img/ch5/im_0_alias.png}
+  \caption{}
+  \label{fig:alias-naive-checkerboard}
+  \end{subfigure}
+  \begin{subfigure}{0.46\linewidth}
+    \centering
+  \includegraphics[width=\linewidth]{img/ch5/im_0_anti_alias.png}
+  \caption{}
+  \label{fig:antialias-mnet-checkerboard}
+  \end{subfigure}
+  \caption{Checkerboard in perspective: (A) aliasing from point sampling; (B) M-Net anti-aliased reconstruction.}
+  \label{f:alias-checkerboard}
 \end{figure}
 
 
-The anti-aliasing effect is achieved by selecting the appropriate level of detail using the scale parameter \(\lambda(x)\), as defined by Heckbert's formula for texture mapping \cite{heckbert1983texture}:
+The anti-aliasing effect is achieved by selecting the appropriate level of detail using the scale parameter \(\lambda(x)\), as defined by Heckbert's formula for texture mapping~\citep{heckbert1983texture}:
 
 % The above procedure reduces aliasing at large distances. Specifically,
 % we define the scale parameter $\lambda(x)$ for $f$ at a pixel $x$ using the Heckbert 's formula~\cite{heckbert1983texture}:
 
-\begin{align*}
+\begin{align}
     \lambda(x)=\max\left\{\sqrt{\left(\frac{\partial u_1}{\partial x_1}\right)^2+\left(\frac{\partial u_2}{\partial x_1}\right)^2}, \sqrt{\left(\frac{\partial u_1}{\partial x_2}\right)^2+\left(\frac{\partial u_2}{\partial x_2}\right)^2}\right\}.
-\end{align*}
+\end{align}
 
 % Thus $\lambda(x)$ is the bigger length of the parallelogram generated by the vectors $\frac{\partial T}{\partial x_1}$ and $\frac{\partial T}{\partial x_2}$. 
 % We scale $\lambda$ such that $\lambda\big([-1,1]^2\big)\subset[0,N]$.
@@ -173,7 +186,7 @@ Here, \(\lambda(x)\) represents the maximum length of the parallelogram generate
 \section{Comparisons}
 \label{sec:comparison}
 
-In this section, we compare the performance of MR-Net with two other notable methods for image representation: SIREN \citep{sitzmann2019siren} and BACON \citep{bacon2021}. The evaluation focuses on three key aspects: (i) the quality of image fitting and model size, (ii) the frequency spectra of reconstructions at different levels of detail, and (iii) a broader quantitative evaluation using the "Kodak Lossless True Color Image Suite" \citep{KodakDataset}. We assess metrics such as Peak Signal-to-Noise Ratio (PSNR), model size, and training time for various configurations.
+In this section, we compare the performance of MR-Net with two other notable methods for neural image representation: SIREN \citep{sitzmann2019siren} and BACON \citep{bacon2021}. The evaluation focuses on three key aspects: (i) the quality of image fitting, (ii) the model size, and (iii) the frequency spectra of reconstructions at different levels of detail. In a broader quantitative evaluation using the "Kodak Lossless True Color Image Suite" \citep{KodakDataset}, we assess metrics such as Peak Signal-to-Noise Ratio (PSNR), model size, and training time for various configurations.
 
 \subsection{Image Fitting Evaluation}
 
@@ -197,28 +210,35 @@ MR-Net (Ours) & {\bf 196K} & 33.8 dB & 7  \\
 
 The M-Net parameters are: 1 hidden layer per stage; 96 hidden features per layer in the first 6 stages, and 256 hidden features in the last stage; $\omega \in [4, 256]$ and trained with a Gaussian Pyramid of 7 levels. The model size has 195648 parameters and the PSNR of the final image reconstruction is 33.8~dB. The model was trained for 300 epochs per stage.
 
-SIREN’s configuration is based on the authors' original experiments, utilizing 3 hidden layers with 256 units each, and $\omega_0 = 30$. This model comprises 198K parameters and is trained for 2000 epochs, achieving a PSNR of 34.1 dB. Although SIREN performs slightly better in terms of PSNR, the M-Net achieves comparable results while encoding 7 levels of detail in the same model. Fig~\ref{f:siren} shows a comparison between our M-Net and SIREN. Notice that, although M-Net presents a PSNR close to Siren's in this example, visually, it seems that it can better represent high frequency details.
+SIREN's configuration is based on the authors' original experiments, utilizing 3 hidden layers with 256 units each, and $\omega_0 = 30$. This model comprises 198K parameters and is trained for 2000 epochs, achieving a PSNR of 34.1 dB. Although SIREN performs slightly better in terms of PSNR, the M-Net achieves comparable results while encoding 7 levels of detail in the same model. Figure~\ref{f:siren} shows a comparison between our M-Net and SIREN. Notice that, although M-Net presents a PSNR close to Siren's in this example, visually, it seems that it can better represent high frequency details.
 
 \begin{figure}[!h]
-\centering
-\includegraphics[width=0.44\linewidth]{img/ch5/rec-MR-Net.png}
-\includegraphics[width=0.44\linewidth]{img/ch5/rec-SIREN.png} \\
-\centerline{M-Net \hfil SIREN}
-\caption{Comparison of image reconstructions for M-Net and SIREN.}
-\label{f:siren}
+  \centering
+  \begin{subfigure}{0.45\linewidth}
+    \centering
+  \includegraphics[width=\linewidth]{img/ch5/rec-MR-Net.png}
+  \caption{M-Net}
+  \end{subfigure}
+  \begin{subfigure}{0.45\linewidth}
+    \centering
+  \includegraphics[width=\linewidth]{img/ch5/rec-SIREN.png}
+  \caption{SIREN}
+  \end{subfigure}
+  \caption{Comparison of image reconstructions for M-Net and SIREN.}
+  \label{f:siren}
 \end{figure}
 
 
 For BACON we also based the configuration on their paper examples and code released by the authors, keeping 256 hidden features. However, we adjusted the number of hidden layers to 6 for it to output 7 levels of details as the M-Net in this setting. Accordingly, the total number of parameters is 398343. The PSNR of the original image level is 33.1 db.
 
-On this experiment, MR-Net outperforms BACON in terms of model size, achieving nearly 50\% fewer parameters while maintaining comparable PSNR. Compared to SIREN, MR-Net offers similar PSNR but with the advantage of multiresolution capabilities in a model of comparable size. The visual quality of MR-Net’s reconstructions also appears sharper, particularly for finer details.
+On this experiment, MR-Net outperforms BACON in terms of model size, achieving nearly 50\% fewer parameters while maintaining comparable PSNR. Compared to SIREN, MR-Net offers similar PSNR but with the advantage of multiresolution capabilities in a model of comparable size. The visual quality of MR-Net's reconstructions also appears sharper, particularly for finer details.
 
 \subsection{Frequency Spectra Evaluation}
 \label{sub:spectra-eval}
 
 Next, we analyze the frequency spectra of the image reconstructions produced by BACON and MR-Net at different levels of detail.
 
-Figures~\ref{f:bacon} and~\ref{f:mnet} show both the reconstructed images and their corresponding frequency spectra for three levels of detail in the BACON and M-Net models respectively (1, 2, 6) and (3, 5, 7). Note that, as Bacon is not trained with multiresolution data, we select these levels to better match the frequency spectra between the representations.
+Figures~\ref{f:bacon} and~\ref{f:mnet} show both the reconstructed images and their corresponding frequency spectra for three levels of detail in the BACON and M-Net models, respectively (1, 2, 6) and (3, 5, 7). Note that, as Bacon is not trained with multiresolution data, we select these levels to better match the frequency spectra between the representations.
 
 \begin{figure}[!h]
 \centering
@@ -237,7 +257,7 @@ Figures~\ref{f:bacon} and~\ref{f:mnet} show both the reconstructed images and th
 \end{figure}
 
 
-BACON controls the frequency band for Level of Detail by truncating the spectrum. Fig~\ref{f:bacon} shows that the center of the spectrum images of Levels 1, 2, 6 are all similar. This is analogous to applying a low-pass filter with non-ideal shape in the frequency domain, which results in an image with ringing effect (see the silhouettes propagating all over Fig~\ref{f:bacon} (left)). In contrast, MR-Net frequency spectra more closely resemble the expected result of applying Gaussian filters to high-resolution images in a multiresolution framework. Figure~\ref{f:mnet} shows that MR-Net achieves smoother transitions between levels, maintaining better control over the frequencies captured at each stage.
+BACON controls the frequency band for level of detail by truncating the signal's spectrum. Figure~\ref{f:bacon} shows that the center of the spectrum images of Levels 1, 2, 6 are all similar. This is analogous to applying a low-pass filter with non-ideal shape in the frequency domain, which results in an image with ringing effect (see the silhouettes propagating all over Figure~\ref{f:bacon} (left)). In contrast, MR-Net frequency spectra more closely resemble the expected result of applying Gaussian filters to high-resolution images in a multiresolution framework. Figure~\ref{f:mnet} shows that MR-Net achieves smoother transitions between levels, maintaining better control over the frequencies captured at each stage.
 
 
 
@@ -297,9 +317,9 @@ The advantage of this heterogeneous distribution is further demonstrated when co
 
 Each M-Net model is trained for 2000 epochs per stage, while the others are trained for 5000 epochs. Although we train M-Net for more epochs, notice that due to our scheduled training scheme, we only update the parameters of a single stage each 2000 epochs. Besides that, when training with multiresolution data, the coarsest stages are trained with fewer samples. This scheduling helps the M-Net models to train more quickly than their counterparts, even with a larger number of parameters or epochs. 
 
-For example, training MNet$_\text{6stg\_24\_288hf}$, with 197,182 parameters, takes 199 seconds for 12,000 epochs, which is comparable to the 211 seconds needed to train a SIREN model with 3 hidden layers and 198,401 parameters for 5000 epochs. Both are significantly faster than training a BACON model with fewer parameters (BACON$_\text{5hl\_128hf}$ takes 881 seconds). The highest quality M-Net model in this evaluation, a M-Net capacity based with 331523 parameters and 3 levels of details (MNetCap$_\text{3stg\_256hf}$), completes training in 278 seconds for 6000 epochs, which is only 15\% of the time required to train a BACON model of the same size (BACON$_\text{5hl\_256hf}$ takes 1842 seconds). Moreover, this M-Net model’s training time is comparable to that of a smaller SIREN model (SIREN$_\text{4hl\_256hf}$ with 264,001 parameters) trained for 5000 epochs, which takes 267 seconds.
+For example, training MNet$_\text{6stg\_24\_288hf}$, with 197,182 parameters, takes 199 seconds for 12,000 epochs, which is comparable to the 211 seconds needed to train a SIREN model with 3 hidden layers and 198,401 parameters for 5000 epochs. Both are significantly faster than training a BACON model with fewer parameters (BACON$_\text{5hl\_128hf}$ takes 881 seconds). The highest quality M-Net model in this evaluation, a M-Net capacity based with 331523 parameters and 3 levels of details (MNetCap$_\text{3stg\_256hf}$), completes training in 278 seconds for 6000 epochs, which is only 15\% of the time required to train a BACON model of the same size (BACON$_\text{5hl\_256hf}$ takes 1842 seconds). Moreover, this M-Net model's training time is comparable to that of a smaller SIREN model (SIREN$_\text{4hl\_256hf}$ with 264,001 parameters) trained for 5000 epochs, which takes 267 seconds.
 
-We conclude that M-Net offers not only competitive PSNR values but also significantly reduced training times compared to BACON, and in many cases, even outperforms SIREN in terms of training efficiency. This balance between model complexity, reconstruction quality, and training speed makes M-Net a highly practical solution for real-world image reconstruction tasks, particularly when multiresolution capabilities are essential.
+We conclude that M-Net offers not only competitive PSNR values but also significantly reduced training times compared to BACON, and in many cases, even outperforms SIREN in terms of training efficiency. This balance between model complexity, reconstruction quality, and training speed makes M-Net a highly practical solution for image reconstruction tasks, particularly when multiresolution capabilities are essential.
 
 \section{Considerations for Other MR-Net subclasses}\label{sec:considerations}
 
@@ -310,24 +330,22 @@ For S-Net, we define a configuration composed of 3 stages, with 1000, 2000, and 
 The training regimen for these models was adapted to their architectural characteristics: S-Net was trained for a maximum of 4000 epochs, while both L-Net and M-Net were trained for up to 2000 epochs. All models were evaluated on a set of 10 images with a resolution of $128 \times 128$. As we can see in Table \ref{t:comp-variants}, on average, considering the PSNR, the M-Net outperforms the other variants when reconstructing images.
 
 \begin{table}[!h]
-\centering
-\small
-\begin{tabular}{|l|r|r|r|}
-\hline
-Model & \# Params $(\downarrow)$ & PSNR $(\uparrow)$  \\
-\hline
-S-Net & 28000 & 42.1 dB  \\
-L-Net & 24280 & 47.8 dB \\
-M-Net & {\bf 23100} & {\bf 51.1} dB   \\
-\hline
-\end{tabular}
-\caption{\label{tab:comp-variants} Comparison of MR-Net Subclasses in Terms of Parameters and PSNR.}
-\label{t:comp_variantes}
+  \centering
+  \small
+  \begin{tabular}{|l|r|r|r|}
+  \hline
+  Model & \# Params $(\downarrow)$ & PSNR $(\uparrow)$  \\
+  \hline
+  S-Net & 28000 & 42.1 dB  \\
+  L-Net & 24280 & 47.8 dB \\
+  M-Net & {\bf 23100} & {\bf 51.1} dB   \\
+  \hline
+  \end{tabular}
+  \caption{Comparison of MR-Net subclasses in terms of parameters and PSNR.}
+  \label{t:comp-variants}
 \end{table}
 
-Nonetheless, here it is appropriate to make a few considerations about the S-Net and L-Net variants.
-
-The S-Net represents the image as a weighted sum of sine functions. In that sense, S-Net is equivalent to BACON and other Multiplicative Filter Networks based on sinusoidal atoms, providing a more straighforward control over the frequencies represented. Figure \ref{f:albert-snet} presents the gradient magnitude and frequency spectra from an image predicted by S-net, where it has three stages.
+Nonetheless, here it is appropriate to make a few considerations about the S-Net and L-Net variants. The S-Net represents the image as a weighted sum of sine functions. In that sense, S-Net is equivalent to BACON and other Multiplicative Filter Networks based on sinusoidal atoms, providing a more straighforward control over the frequencies represented. Figure \ref{f:albert-snet} presents the gradient magnitude and frequency spectra from an image predicted by S-net, where it has three stages.
 
 
 \begin{figure}[!h]
@@ -338,7 +356,7 @@ The S-Net represents the image as a weighted sum of sine functions. In that sens
 \end{figure}
 
 
-L-Net’s representation is inspired by level-of-detail techniques, where each stage is handled by independent MR-Modules. This design makes L-Net particularly well-suited for image processing tasks that involve operations in the gradient domain, akin to methods based on Laplacian pyramids. The capacity to decompose the image into finer details at different stages allows L-Net to capture both low- and high-frequency components effectively, offering a hierarchical reconstruction approach. Figure \ref{f:albert-lnet} displays the L-Net reconstruction of the same image used for S-Net and shows the frequency spectra for each of L-Net's stages.
+L-Net's representation is inspired by level-of-detail techniques, where each stage is handled by independent MR-Modules. This design makes L-Net particularly well-suited for image processing tasks that involve operations in the gradient domain, akin to methods based on Laplacian pyramids. The capacity to decompose the image into finer details at different stages allows L-Net to capture both low and high-frequency components effectively, offering a hierarchical reconstruction approach. Figure \ref{f:albert-lnet} displays the L-Net reconstruction of the same image used for S-Net and shows the frequency spectra for each of L-Net's stages.
 
 \begin{figure}[!h]
 \centering
@@ -355,7 +373,7 @@ L-Net’s representation is inspired by level-of-detail techniques, where each s
 
 \section{Limitations}
 
-One key challenge we identified is the importance of selecting appropriate values for the $\omega$ parameter, which defines the spatial frequency of the first layer of the network. The choice of $\omega$ significantly impacts the model's ability to reconstruct fine details, and may also introduce noise if it is too high.
+One key challenge we identified is the importance of selecting appropriate values for the $\omega$ parameter, which defines the spatial frequency of the first sinusoidal layer for each MR-Module of the network. The choice of $\omega$ significantly impacts the model's ability to reconstruct fine details, and may also introduce noise if it is too high.
 
 In the case of pure sine MR-Modules like S-Net, the Nyquist frequency serves as a reliable reference point for determining frequency intervals at each stage, ensuring that the model captures all relevant frequencies without introducing aliasing. However, for deeper networks such as M-Net, the situation is more complex. M-Net can learn higher frequencies during training, even those that were not explicitly introduced at initialization. This emergent behavior, while beneficial, introduces uncertainty, as it becomes harder to predict the exact frequency range the model will cover after training.
 
