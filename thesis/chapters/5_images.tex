@@ -135,10 +135,7 @@ In Figure \ref{f:patternA}, we zoom into a detail at \(562 \times 562\) pixels, 
 
 In contrast, Figure \ref{f:patternC} shows a zoom-out to \(118 \times 118\) pixels, enlarged to \(501 \times 501\) pixels for visualization purposes. The top sub-image depicts the MR-Net reconstruction at the appropriate level of detail (\red{approximately 0.92}), while the bottom sub-image shows a simple point-sampled nearest neighbor reduction. Notice that the MR-Net reconstruction preserves smooth transitions and avoids aliasing, while the point-sampled image displays visible aliasing artifacts.
 
-These two behaviors in the experiment are manifestations of ``magnification'' and ``minification'', classical resampling regimes for respectively scaling up and down the image~\cite{pixel}. In the first case, it is necessary to interpolate the pixel values, and in the second case, it is required to integrate pixel values corresponding to the reconstructed pixel. The M-Net model accomplishes these tasks automatically.
-Note that we have chosen a fractional scaling factors in both cases to demonstrate the continuous properties in space and scale of the M-Net~model.
-
-These behaviors, \textit{magnification} (zoom-in) and \textit{minification} (zoom-out), are classical resampling regimes used in image processing \cite{pixel} and computer graphics. Magnification requires pixel interpolation, whereas minification requires pixel integration over larger areas. MR-Net handles both operations automatically. Note that we chose fractional scaling factors in both cases to demonstrate the continuous properties in space and scale of our model.
+These two behaviors in the experiment, \textit{magnification} (zoom-in) and \textit{minification} (zoom-out), are classical resampling regimes used in image processing \citep{pixel} and computer graphics. Magnification requires pixel interpolation, whereas minification requires pixel integration over an area. MR-Net handles both operations automatically. Note that we chose fractional scaling factors in both cases to demonstrate the continuous properties in space and scale of our model.
 
 \subsection{Anti-aliasing}
 
