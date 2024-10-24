@@ -17,21 +17,15 @@ We also propose a frequency initialization strategy that significantly reduces t
 
 Generating high-quality textured materials is a longstanding challenge in computer graphics, requiring them to be visually realistic, seamlessly tileable, and efficient in memory usage. To meet the demands of compatibility with standard industry pipelines, it is desirable to have a material representation that is agnostic to specific rendering systems. One example of this is the Substance 3D Sampler by \citet{substance_sampler}, a widely used platform for creating material collections with various tools to achieve realistic results. Below, we review relevant works that connect to our method, particularly in the context of periodic texture synthesis and representation.
 
-% Traditionally, skilled artists create these materials manually to ensure high fidelity and performance. In this chapter, we demonstrate that Implicit Neural Representations (INRs) can be effectively used for such tasks, offering an automated, compact, and continuous representation of textures.
-
 % \subsection{Texture representations}
 
-Texture synthesis has evolved into a mature field with a variety of methods, including classic texture mapping~\citep{blinn76}, procedural textures~\citep{perlin-1985}, synthesis-by-example~\citep{efros99}, and user-guided texture generation~\citep{haeberli90}. \citet{pauly-2009} offers an extensive overview of example-based texture synthesis methods, while \citet{etal-2010} provides a detailed account of noise primitives for procedural texturing. More recently, \citet{rethinkngtex} discuss alternative methods for texture mapping, particularly in the context of overcoming traditional limitations.
+Texture synthesis has evolved into a mature field with a variety of methods, including classic texture mapping~\citep{blinn76}, procedural textures~\citep{perlin-1985}, synthesis-by-example~\citep{efros99}, and user-guided texture generation~\citep{haeberli90}. \citet{pauly-2009} offers an extensive overview of example-based texture synthesis methods, while \citet{etal-2010} provides a detailed account of noise primitives for procedural texturing. More recently, \citet{rethinkngtex} discuss alternative methods for texture mapping in the context of overcoming traditional limitations.
 
 Although many of these techniques focus on general texture patterns, there has been a growing interest in models tailored for specific materials. Such approaches provide higher fidelity by leveraging the unique properties of materials like wood, stone, or fabric. For instance, \citet{dorsey-2004} investigates aggregate materials formed by small particles, which are common in nature. These material-specific methods allow for more precise control, yet they often lack generalization across various domains.
 
 % \subsection{Tileable Textures}
 
-% While there is a large body of research devoted to texture mapping, little work has been dedicated to synthesizing seamless tileable textures, which are important for the creation of materials. These textures have the property that when laid out in a regular grid of tiles they form a homogeneous appearance suitable for use in memory-sensitive real-time graphics. \citet{tileinteractive} gives an overview of tile-based methods in computer graphics applications.
-
-
-% real-time graphics applications where memory is limited. 
-Despite significant advancements in texture mapping, relatively little research has focused on synthesizing seamless, tileable textures, which are important for the creation of materials. Tileable textures enable the creation of homogeneous surfaces by repeating a small tile across a plane without visible seams. In this context, \citet{tileinteractive} reviews tile-based methods, while \citet{tilehard} presents an algorithm for generating non-periodic virtual textures from a small set of stored tiles. \citet{Moritz2017Texture} introduces an approach to synthesizing tileable textures using the PatchMatch algorithm. However, these methods rely on specialized algorithms that must be integrated into the rendering pipeline. In contrast, our approach leverages neural networks to represent tileable textures that can be exported or evaluated directly on the graphics hardware, providing a more general and flexible solution.
+Despite significant advancements in texture mapping, relatively little research has focused on synthesizing seamless, tileable textures, which are important for the creation of materials. Tileable textures enable the creation of homogeneous surfaces by repeating a small tile across a plane without visible seams. In this context, \citet{tileinteractive} reviews tile-based methods, while \citet{tilehard} presents an algorithm for generating non-periodic virtual textures from a small set of stored tiles. \citet{Moritz2017Texture} introduces an approach for synthesizing tileable textures using the PatchMatch algorithm. However, these methods rely on specialized algorithms that must be integrated into the rendering pipeline. In contrast, our approach leverages neural networks to represent tileable textures that can be exported or evaluated directly on the graphics hardware, providing a more general and flexible solution.
 
 % \subsection{Neural Textures}
 
@@ -41,13 +35,12 @@ Alternatively, \citet{Gutierrez-2019} applied a deep learning framework for 3D t
 
 % \subsection{Implicit neural representations}
 
-Using a sinusoidal neural network, \citet{bacon2021} showed that BACON can extrapolate periodic tiles using integer frequencies. Since BACON is analyticaly equivalent to a shallow network, it is clear that the representation can be made periodic by initializing the first layer with frequencies that are integer multiples of a period $P$. However, for deep sinusoidal MLP such as Siren \cite{sitzmann2019siren} or MR-Net, this could not be true, since the composition of sines can generate much more frequencies, as illustrated in Figure \ref{f:generated-frequencies}. We prove that deep sinusoidal networks preserve this property and show applications based on it.
+Using a sinusoidal neural network, \citet{bacon2021} showed that BACON can extrapolate periodic tiles using integer frequencies. Since BACON is analyticaly equivalent to a shallow network, it is clear that the representation can be made periodic by initializing the network with frequencies that are integer multiples of a period $P$. However, for deep sinusoidal MLP such as Siren~\citep{sitzmann2019siren} or MR-Net, this could not be true, since the composition of sines generates much more frequencies, as illustrated in Figure \ref{f:generated-frequencies}. We prove that deep sinusoidal networks preserve this property and show applications based on it.
 
-% One of the most relevant works to our method is Bacon~\citep{bacon2021}, which builds on \emph{Multiplicative Filter Networks} (MFNs)~\citep{fathony2020multiplicative} to control frequencies at multiple scales. While Bacon's representation can be made periodic by initializing the first layer with integer multiples of a period $P$, this holds true primarily for shallow networks. For deeper networks, like our sinusoidal MLPs (Siren or MR-Net), the composition of sine layers generates a wider range of frequencies. As illustrated in Figure~\ref{f:generated-frequencies}, which shows the frequency magnitude from the Fourier transform of different combinations of sinusoidal functions, deeper architectures significantly expand the frequency space, resulting in a richer set of periodic representations.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.80\linewidth]{img/ch6/generated_frequencies.png}
+\includegraphics[width=0.84\linewidth]{img/ch6/generated_frequencies.png}
 \caption{Fast Fourier Transform (FFT) of different combinations of sinusoidal functions. Note the magnitude of the frequencies for signals generated by the sum of sines, product of sines, product of a sine by a sum of sines, and composition of sines. It is evident that the composition of sines produces a larger number of frequencies compared to the other options.}
 \label{f:generated-frequencies}
 \end{figure}
@@ -64,7 +57,7 @@ Finally, our seamless texture generation draws inspiration from \citet{perez2003
 % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Periodic Neural Networks}
 
-Throughout this section, we assume that the signal is a monochromatic image, though the results can easily extend to multi-channel images or any signal with an explicit representation in its natural domain as a function \( \gt{f}: \mathbb{R}^n \to \mathbb{R}^m \).
+Throughout this section, we assume that the signal is a monochromatic image, though the results can easily be extended to multi-channel images or any signal with an explicit representation in its natural domain as a function \( \gt{f}: \mathbb{R}^n \to \mathbb{R}^m \).
 
 A \textit{periodic image} $\gt{f}:\mathbb{R}^2\to \mathbb{R}$ is a function satisfying the property $\gt{f}(x) \!=\! \gt{f}(x + P)$ with $P=(P_1, P_2)\in \mathbb{R}^2$ giving the \textit{periods} along the axes $x_1$ and $x_2$.
 For instance, a \textit{harmonic function} $h(x_1, x_2)=a\sin(x_1\omega_1+x_2\omega_2+ \varphi)$ represents a simple periodic signal, where $\omega_i\!=\!k_i\frac{2\pi}{P_i}$, with \( k_i \in \mathbb{Z} \), are the \textit{frequencies}, $a$ is the \textit{amplitude}, and $\varphi$ is the \textit{phase shift}.
@@ -98,7 +91,7 @@ where the \textit{first layer} $S:\R^2\to \R^{n}$ projects the input coordinates
 
 where $\dot{\omega_i}{x}=\omega_{i1}x_1+\omega_{i2}x_2$. The matrix $(\omega_1, \ldots, \omega_{n})$ provides the \textit{frequencies}, and the bias vector $(\varphi_1, \ldots, \varphi_{n})$ gives the \textit{phase shifts}. The \textit{linear layer} $L$ combines the harmonics with the \textit{amplitudes} $c_i$ and adds a bias $c_0$.
 
-For the network $f$ to be periodic with periods $(P_1,P_2)$ we can set the frequencies $\omega_{ij}=k_{ij}\frac{2\pi}{P_i}$, with $k_{ij}$ being integers. In Section~\ref{s-initialization}, we discuss a initialization strategy for choosing $k_{ij}$ using ideas from Fourier series.
+For the network $f$ to be periodic with periods $(P_1,P_2)$ we can set the frequencies $\omega_{ij}=k_{ij}\frac{2\pi}{P_i}$, with $k_{ij}$ being integers. In Section~\ref{sec:integer-initialization}, we discuss a initialization strategy for choosing $k_{ij}$ using ideas from Fourier series.
 
 \subsection{Deep sinusoidal networks}\label{s-deep-networks}
 
@@ -118,6 +111,7 @@ The $i$th coordinate of $H$ can be expressed as a \textit{sinusoidal perceptron}
 %
 \begin{align}
 h_{i}\circ s(x)=\sin\left(\sum_{j=1}^{n} W_{ij} \sin\Big(\dot{\omega_j}{x}+\varphi_j\Big) + b_{i}\right).
+\label{eq:sinusoidal-neuron}
 \end{align}
 %
 Thus, $f$ consists of multiple sine compositions. Although  the activation function is periodic, the network $f$ may not keep this property. Even the sum of periodic functions can result in a non-periodic function: e.g. $\sin(x)+\sin\left(\sqrt{2}x\right)$. Furthermore, to accurately represent a periodic function, we must have control over the network's period.
@@ -125,7 +119,7 @@ Thus, $f$ consists of multiple sine compositions. Although  the activation funct
 We observe that by initializing the first layer $S$ of a sinusoidal MLP $f$ with integer frequencies $k_{ij}\in\Z$ where $\omega_{ij}=k_{ij}\frac{2\pi}{P_i}$, we can prove that $f$ will be periodic with period $P=(P_1,P_{2})$.
 In other words, $f(x_1, x_2)=f(x_1+P_1, x_2+P_2)$.
 
-Without loss of generality, consider the case where $f$ is a one-dimensional function, i.e. $f:\R\to\R$. Assuming the first layer is periodic with period \( P \), its frequencies are \( \omega_j = k_j \frac{2\pi}{P} \). Moreover, observe that if we prove that each sinusoidal neuron \red{$h(x)=\sin\left(\sum_{i=1}^n a_j\sin(\omega_j x + \varphi_i)\right)$} expands as a sum of harmonics with period $P$, then, the output of $h$ is periodic with period $P$. The proof of this fact follows from the following identity~\citep{novello2022understanding}:
+Without loss of generality, consider the case where $f$ is a one-dimensional function, i.e. $f:\R\to\R$. Assuming the first layer is periodic with period \( P \), its frequencies are \( \omega_j = k_j \frac{2\pi}{P} \). Moreover, observe that if we prove that each sinusoidal neuron, expressed as in Equation \ref{eq:sinusoidal-neuron}, expands as a sum of harmonics with period $P$, then, the output of $h$ is periodic with period $P$. The proof is based on this identity presented in~\citet{novello2022understanding}:
 
 
 \begin{align}\label{e-expansion}
@@ -151,29 +145,8 @@ For a sinusoidal MLP with two hidden layers, we use this conclusion to truncate 
 
 Theorem~\ref{t-periodic} allows us to use sinusoidal MLPs to represent periodic functions. We define a \textbf{periodic neural network} as a sinusoidal MLP where the first layer is initialized to be periodic. Because MR-Net architectures are equivalent to progressively growing sinusoidal MLPs in width and depth, Theorem~\ref{t-periodic} also holds for MR-Net. Consequently, if we initialize each stage \( g_i \) of an MR-Net \( f: \mathbb{R}^n \times [0, N] \to \mathbb{R}^m \), \( f(x, t) = c_0(t) g_0(x) + \cdots + c_{N-1}(t) g_{N-1}(x) \), using integer frequencies, each level of detail maintains periodicity and the network remains periodic with respect to \( x \).
 
-% In a more general sense, a \textit{sinusoidal network} is a function constructed by combining sinusoidal perceptrons.
-% % %
-% Furthermore, by adding more hidden layers to $f$, we obtain a sinusoidal \textit{multilayer perceptron} (MLP). Training such networks can be challenging because using the sine as an activation function may lead to instability in deep architectures~\cite{taming2017}. \citet{sitzmann2019siren} overcome this by proposing SIREN, which gives a special initialization scheme for sinusoidal MLPs, providing stability during training
-
-% \subsection{Multiresolution sinusoidal networks}\label{s-mr-networks}
-% \label{s-multiresolution}
-
-% To represent textures using INRs we need to represent them in multiresolution. For this, we adopt the \textit{multiresolution network} (MRnet)~\cite{paz2022,paz2023mr} as a representation. Here, a MRnet is a network $f\!:\!\R^2\!\times\! [0,N]\!\to\! \R$ defined as a sum of $N$ periodic INR $g_i:\R^2\to\R$:
-% \begin{align}
-% f(x,t) = c_0(t)g_0(x) + \cdots + c_{N-1}(t)g_{N-1}(x),
-% \end{align}
-% The contribution of each \textit{stage} $g_i$ in Equation~\ref{e-mrnet} is controlled by $
-% c_i(t)\!=\!\max\big\{0, \min\big\{1, t-i\big\}\big\}.$
-% This allows us to navigate in the multiresolution using a parameter $t\!=\!k+\delta$ with $k\in\mathbb{N}$ and $0\leq\delta\leq 1$:
-% \begin{align}\label{e-mrnet2}
-% f(x,t)=g_0(x)+\dots + g_k(x)+\delta g_{k+1}(x).
-% \end{align}
-
-% The \textit{level of details} $f(\cdot, t)$ evolve continuously.
-% We set the first layer of each periodic INR $g_i$ with integer frequencies, since Theorem~\ref{t-periodic} says that in this case $f$ will \textit{periodic} with respect to $x$.
-
 \section{Frequency initialization for Tilable Materials}
-\label{s-initialization}
+\label{sec:integer-initialization}
 
 In this section, we introduce an initialization scheme for periodic neural networks based on a Fourier series interpretation. Let $\gt{f}$ represent a ground-truth periodic image defined on a rectangular domain $[0, P_1] \times [0, P_2]$ with periods $(P_1, P_2)$. Our goal is to approximate $\gt{f}$ using an periodic neural network, denoted by $f$, that exhibits periodic behavior with the same periods $(P_1, P_2)$, ensuring seamless tiling. To achieve this, we define the weights $\omega_{ij}$ of the first layer of $f$ as $k_{ij}\frac{2\pi}{P_i}$, where $k_{ij}\in \mathbb{Z}^2$, and freeze this first sinusoidal layer. This way, we ensure the periodicity of the network as established by Theorem~\ref{t-periodic}.
 
@@ -186,9 +159,14 @@ To choose $k_{ij}$, we note that, according to the Fourier theorem, $\gt{f}$, ca
 
 where $c_{\textbf{k}}$ are the Fourier coefficients, and $\omega_{\textbf{k}} = 2\pi\left(\frac{k_1}{P_1}, \frac{k_2}{P_2}\right)$ with $\textbf{k} = (k_1, k_2)$. In practice, we truncate this series by summing over $\textbf{k} \in [-B, B]^2$, where $B$ is a bandlimit based on the frequencies in the ground truth signal. 
 
-\sloppy Since an input neuron can be rewritten as $\sin(\omega_i x + \varphi_i) = \cos(\varphi_i) \sin(\omega_i x) - \sin(\varphi_i)\sin\left(-\omega_i x + \frac{\pi}{2}\right)$, both $\omega_i$ and $-\omega_i$ are present in the signal. Therefore, we only need to sample the integer values $k_j$ from the half-square $\textbf{K} = [0, B] \times [-B, B]$ (Figure \ref{fig:1a}). The hidden layers are initialized using the scheme from~\cite{sitzmann2019siren}. 
+We note that, using trigonometric identities, an input neuron can be rewritten as: 
+\begin{align}
+  \sin(\omega_i x + \varphi_i) = \cos(\varphi_i) \sin(\omega_i x) - \sin(\varphi_i)\sin\left(-\omega_i x + \frac{\pi}{2}\right)  
+\end{align}
+ 
+Consequently, both $\omega_i$ and $-\omega_i$ are present in the signal, and we only need to sample the integer values $k_j$ from the half-square $\textbf{K} = [0, B] \times [-B, B]$ (Figure \ref{fig:1a}). The hidden layers are initialized using the scheme from~\cite{sitzmann2019siren}. 
 
-Although we initialize the first layer of $f$ with a finite and small number of frequencies from the set $\textbf{K}$, the composition of multiple layers generates additional frequencies through non-linear interactions (Figure \ref{fig:1b}). This provides greater expressive power for the model, allowing it to represent a wide range of details.
+Even though we initialize the first layer of $f$ with a finite and small number of frequencies from the set $\textbf{K}$ (Figure \ref{fig:1a}), the composition of multiple layers generates additional frequencies through non-linear interactions (Figure \ref{fig:1b}). This provides greater expressive power for the model, allowing it to represent a wide range of details.
 
 Furthermore, a periodic neural network enables the representation of any tileable image across the entire space. As demonstrated in Figure \ref{fig:1c}, after training our network on the image in Figure \ref{fig:1d} within the domain \( [-1, 1]^2 \), we can seamlessly reconstruct the image in the domain \( [-2, 2]^2 \). The network consists of three hidden layers, each with 256 neurons, and was trained for 1000 epochs with a learning rate of $1 \times 10^{-4}$.
 
@@ -215,39 +193,26 @@ Furthermore, a periodic neural network enables the representation of any tileabl
 \label{f:tileable_leopard_comparison_siren}
 \end{figure}
 
-% % The first layer of a sinusoidal INR projects the input coordinates into a list of sines (Eq.~\ref{e-firstlayer}). Next, we show that in a shallow network, this gives the frequencies of the signal represented by a Fourier series. Thus, the initialization of the first layer is important for network performance.
-% Following the conclusions of Theorem~\ref{t-periodic}, we define the first layer's frequencies to be integer multiples of a period.
 
-
-% On the other hand, assuming $f$ to be a network with a single layer (Eq~\eqref{e-fourier_series}) and adding $\frac{\pi}{2}$ to the biases, we obtain:
-% \begin{align}\small
-%     f(x) &=  \frac{a_0}{2} + \sum_{k=1}^{n} a_k  \cos\big(\dot{\omega_k}{ x}+ \varphi_k\big)\\
-%     &=  c_0 + \sum_{k=1}^{n} c_k  \text{e}^{i\dot{\omega_{{k}}}{ x}}+ \sum_{k=-n}^{-1} c_k  \text{e}^{i\dot{-\omega_{\abs{k}}}{ x}},\label{e-mlp2complex}
-% \end{align}
-% where $c_k=\frac{a_{\abs{k}}}{2}\text{e}^{\text{sign}(k)i\varphi_{\abs{k}}}$ with $\varphi_0=0$, and $\omega_{j}=2\pi\left(\frac{k_{j,1}}{P_1}, \frac{k_{j,2}}{P_2}\right)$. 
-% %
-% % . Frequency initialization
-% Thus, for $f$ to approximate the truncated series in Eq.~\eqref{e-fourier-expansion}, we can set
-% the integers $k_{j}$ in a set $\textbf{K}\subset [-B,B]^n$ such that $-\textbf{K} = [-B,B]^n\setminus \textbf{K}$.
-
-
-An interesting fact is that using our method, a single sample from the equivalence class defined by the periodicity suffices to reconstruct the image without additional regularization. To illustrate this, we use an image with a fundamental period smaller than the sample size, that is the periodic pattern repeats multiple times within the sample, and we selectively remove points from the training data encouraging a sparse representation of the pattern. We construct a mask by randomly selecting a pixel and then excluding all pixels corresponding to it based on the pattern's period. This process repeats until no further pixels can be sampled, resulting in a mask covering $1/4$ of the total pixels. 
-
-In this experiment, we still train the image in the interval $[-1, 1]$ but we set the period $P$ to $1$. Figure \ref{f:masked_recontruction} presents the training data, where the black pixels were removed from training, and the learned texture in $[2, 6]^2$. Even under these conditions, our method captures the underlying periodicity.
+An interesting fact is that using our method, a single sample from the equivalence class defined by the periodicity suffices to reconstruct the image without additional regularization. To illustrate this, we use an image with a fundamental period smaller than the sample size, that is the periodic pattern repeats multiple times within the sample, and we selectively remove points from the training data encouraging a sparse representation of the pattern. Even under these conditions, our method captures the underlying periodicity as shown in Figure \ref{f:masked_recontruction}.
 
 \begin{figure}[!ht]
-    \centering
-      \begin{subfigure}{0.40\textwidth}
-        \includegraphics[width=\linewidth]{img/ch6/stochastic_mask.png}
-        \caption{}
-      \end{subfigure}
-      \begin{subfigure}{0.40\textwidth}
-        \includegraphics[width=\linewidth]{img/ch6/extrapolation_randommask.png}
-        \caption{}
-      \end{subfigure}
-      \caption{(A) The masked input data, where the black pixels were removed from training. (B) The network reconstruction.}
-    \label{f:masked_recontruction}
+  \centering
+    \begin{subfigure}{0.40\textwidth}
+      \includegraphics[width=\linewidth]{img/ch6/stochastic_mask.png}
+      \caption{}
+      \label{fig:random-mask-data}
+    \end{subfigure}
+    \begin{subfigure}{0.40\textwidth}
+      \includegraphics[width=\linewidth]{img/ch6/extrapolation_randommask.png}
+      \caption{}
+      \label{fig:random-mask-prediction}
+    \end{subfigure}
+    \caption{(A) The masked input data, where the black pixels were removed from training. (B) The network reconstruction extrapolated in $[2, 6]^2$.}
+  \label{f:masked_recontruction}
 \end{figure}
+
+In this experiment, we constructed a mask by randomly selecting a pixel and then excluding all pixels corresponding to it based on the pattern's period. This process was repeated until no further pixels could be sampled, resulting in a mask that covered $1/4$ of the total pixels. We continued to train the image in the interval $[-1, 1]$ but we set the period $P$ to $1$. Figure \ref{fig:random-mask-data} presents the training data, where the black pixels were removed from training, and Figure \ref{fig:random-mask-prediction} shows the learned texture in $[2, 6]^2$.
 
 
 \section{Multiresolution Periodic Representation}
@@ -256,9 +221,9 @@ For the initialization of a MR-Net, we split the frequency set $\textbf{K}$ into
 
 % This periodic behavior is also observed across levels of details of a multiresolution INR. Regarding the frequency initialization of each multiresolution stage, 
 % when using a multistage network such as MR-Net \cite{paz2022, paz2023mr}. 
-Figure \ref{f:mr-periodic} showcases 5 levels of detail of an M-Net model trained with 6 stages in $[-1, 1]^2$ and sampled in $[-2, 2]^2$. The input image has a resolution of $1024^2$ pixels and $8$ bits per color channel in RGB space. The results were produced by training a $6$ stage M-Net architecture \cite{paz2022} using a Gaussian pyramid representation of the data. 
+Figure \ref{f:mr-periodic} showcases 5 levels of detail of an M-Net model with 6 stages trained using a Gaussian pyramid of the data in $[-1, 1]^2$ and sampled in $[-2, 2]^2$. The input image has a resolution of $1024^2$ pixels and $8$ bits per color channel in RGB space. 
 
-We explored network stages with a single hidden layer, and heterogeneous width, as experiments have indicated that we need fewer parameters to fit an image of lower resolution and low frequency details. The initialization follows the method described in the Section \ref{sec:frequency-initialization}. Table \ref{tab:mnet-architecture} details the band limits of the first layer, the architecture of the hidden layer (number of values received and number of values produced), and the maximum number of epochs that each stage was trained. We used the Adam optimizer with a learning rate of $10^{-3}$.
+We explored network stages with a single hidden layer, and heterogeneous width, as experiments have indicated that we need fewer parameters to fit an image of lower resolution and low-frequency details. The initialization follows the strategy described in the Section \ref{sec:integer-initialization}. Table \ref{tab:mnet-architecture} details the band limits of the first layer, the architecture of the hidden layer (number of values received and number of values produced), and the maximum number of epochs that each stage was trained. We used the Adam optimizer with a learning rate of $10^{-3}$.
 
 \begin{figure}[!ht]
     \centering
@@ -285,19 +250,19 @@ We explored network stages with a single hidden layer, and heterogeneous width, 
 \end{table}\label{tab:mnet-architecture}
 
 
-Additionaly, on Figure \ref{f:rec_gt} we present a qualitative comparison between the original image and the reconstructed image at the finest level using our method. On visual inspection, the images exhibit a high degree of similarity, closely resembling each other at the original resolution. To provide a quantitative assessment, we computed the Peak Signal-to-Noise Ratio (PSNR), which yielded a value of 31.8 dB for this specific example. Note that our model achieves this level of fidelity using 855,572 parameters, which is fewer than the total number of pixels in the image, which amounts to 1,048,576. Additionally, the model demonstrates the ability to encode information at multiple scales.
+Additionaly, on Figure \ref{f:rec_gt} we present a qualitative comparison between the original image and the reconstructed image at the finest level of detail using our method. On visual inspection, the images exhibit a high degree of similarity, closely resembling each other at the original resolution. To provide a quantitative assessment, we computed the Peak Signal-to-Noise Ratio (PSNR), which yielded a value of 31.8 dB for this specific example. Note that our model achieves this level of fidelity using 855,572 parameters, which is fewer than the total number of pixels in the image, which amounts to 1,048,576. Additionally, the model demonstrates the ability to encode information at multiple scales.
 
 \begin{figure}[!ht]
     \centering
       \begin{subfigure}{0.40\textwidth}
         \includegraphics[width=\linewidth]{img/ch6/dirty/gt6.png}
-        \caption{}
+        \caption{Original image}
       \end{subfigure}
       \begin{subfigure}{0.40\textwidth}
         \includegraphics[width=\linewidth]{img/ch6/dirty/detail6.png}
-        \caption{}
+        \caption{M-Net reconstruction}
       \end{subfigure}
-      \caption{(A) Original image; (B) reconstruction of the network.}
+      \caption{Qualitative comparison between the periodic M-Net reconstruction and the ground image.}
       \label{f:rec_gt}
 \end{figure}
 
@@ -342,7 +307,7 @@ Figure \ref{f:dirty-extra} shows the 6 levels of detail reconstructed and additi
 \includegraphics[width=0.16\textwidth]{img/ch6/dirty/freq6.png}
 
 \includegraphics[width=0.325\textwidth]{img/ch6/dirty/ext4.png}
-\includegraphics[width=0.324\textwidth]{img/ch6/dirty/ext5.png}
+\includegraphics[width=0.325\textwidth]{img/ch6/dirty/ext5.png}
 \includegraphics[width=0.325\textwidth]{img/ch6/dirty/ext6.png}
 \caption{Dirty metal. 1st row: train data, the levels of the Gaussian pyramid from coarse to fine. 2nd row: Fast Fourier Transform (FFT) of the expanded pyramid level to the original resolution. 3rd row: all levels of a multiresolution model for the copper texture. 4th row: network inference Fourier spectra. 5th row: the cumulative selected frequencies for initialization of the first layer of each stage. 6th row: extrapolation of the periodic pattern at levels 4, 5, and 6.}
 \label{f:dirty-extra}
@@ -418,18 +383,18 @@ When obtaining a sample for a material, the inherent irregulatiry in the pattern
 
 We design a loss function grounded in a variational Poisson problem to enforce seamlessness at the boundary $\partial \Omega$. Specifically, we use the Jacobian, $\jac{\gt{f}}$, of the ground-truth image to train the periodic network $f$. We introduce a matrix field $U$ such that its primitive approximates a seamless texture at $\partial \Omega$. This is achieved by solving the following constrained minimization problem:
 
-\begin{align}\label{e-gradient-interpolant}\small
+\begin{align}\label{e-gradient-interpolant}%\small
 \min \int_{\Omega} \lambda\norm{{\jac{f}-U}}^2dx \text{ subject to } (1-\lambda)(\gt{f}-f)=0 \text{ in } \Omega,
 \end{align}
 
 where $\lambda: \Omega \to [0,1]$ is a weight function. When $\lambda \approx 1$, the Jacobian of $f$ should match $U$, while for $\lambda \approx 0$, the condition $\gt{f} = f$ is enforced. Based on this, we propose the following loss function to train the parameters $\theta$ of $f$:
 
-\begin{align}\label{e-blending-no-grad}\small
+\begin{align}\label{e-blending-no-grad}
 \mathscr{L}(\theta)={\int_{\Omega} \lambda\norm{{\jac{f}-U}}^2dx} + {\int_{\Omega} (1-\lambda)\big(\gt{f}-f\big)^2dx}.
 \end{align}
 
 
-This loss function effectively trains $f$ to "seamlessly clone" the primitive of $U$ within the domain $\Omega$ like in \citep{perez2003}. However, since $f$ is periodic, we train it on the torus obtained by identifying opposite edges of $\Omega$. This way, we can "invert the notion of boundary condition", giving the value of the function, the color values, primarily at the interior of the image domain while the boundary is primarily supervised with the gradients. In particular, the mask $\lambda$ depends on the position $x$ and typically takes higher values near the boundary $\partial \Omega$, ensuring that the Jacobian matching occurs near the edges while the interior enforces color matching. Classical methods do not offer such flexibility.
+This loss function effectively trains $f$ to "seamlessly clone" the primitive of $U$ within the domain $\Omega$ like in \citep{perez2003}. However, since $f$ is periodic, we train it on the torus obtained by identifying opposite edges of $\Omega$. This way, we can "invert the notion of boundary condition", giving the value of the function, the color values, primarily at the interior of the image domain while the boundary is primarily supervised with the gradients. In particular, the mask $\lambda$ depends on the position $x$ and takes higher values near the boundary $\partial \Omega$, ensuring that the Jacobian matching occurs near the edges while the interior enforces color matching. Classical methods do not offer such flexibility.
 
 % we employ masks $\lambda$ to delineate the supervision of gradients at the border, while the color values are supervised within the interior of the region. 
 % This allows for seamless tiling without the need for manual pixel adjustments, a key limitation of traditional approaches.
@@ -536,7 +501,7 @@ In Figure~\ref{f:seamless_examples}, we demonstrate the effectiveness of our met
 
 % \subsection{Seamless Tileable Materials}\label{s-multires-2d}
 
-% We start with a single tile, matching the fundamental period of a texture, with a resolution of $512^2$ pixels and $8$ bits per color channel in \texttt{RGB} space. The network is trained in the domain $[-1, 1] \times [-1, 1]$ and, thus, we set its period as $2$. The initialization uses the scheme described in Sec~\ref{s-initialization} \red{with the maximum frequency} $\omega=32$. \red{Table XXX} displays the architecture of the network used in this experiment, while Figure \ref{f:periodic-reconstruction} shows the ground truth image, the result of the reconstruction in the training domain and the exptrapolation in the domain [-2, 2]. Observe that the ground truth image and the reconstructed image exhibit a high degree of similarity with a \red{PSNR of XX.X dB}.
+% We start with a single tile, matching the fundamental period of a texture, with a resolution of $512^2$ pixels and $8$ bits per color channel in \texttt{RGB} space. The network is trained in the domain $[-1, 1] \times [-1, 1]$ and, thus, we set its period as $2$. The initialization uses the scheme described in Sec~\ref{sec:integer-initialization} \red{with the maximum frequency} $\omega=32$. \red{Table XXX} displays the architecture of the network used in this experiment, while Figure \ref{f:periodic-reconstruction} shows the ground truth image, the result of the reconstruction in the training domain and the exptrapolation in the domain [-2, 2]. Observe that the ground truth image and the reconstructed image exhibit a high degree of similarity with a \red{PSNR of XX.X dB}.
 
 
 % \begin{figure}
@@ -790,9 +755,9 @@ In Figure~\ref{f:seamless_examples}, we demonstrate the effectiveness of our met
 
 % Here we show that employing periodic activation functions is insufficient for learning periodic images with supervision in a restricted domain. Figure \ref{f:siren-comparison} shows a comparison between image reconstruction/extrapolation using Siren's initialization and our periodic initialization. In this comparison, we use an identical architecture to SIREN: periodic INR with 3 hidden layers, of the form $\R^{256}\to \R^{256}$. The key difference lies in the initialization: we randomly selected 256 pairs of integer frequencies from the range $[0, 30]\times[-30, 30]$, whereas SIREN follows the initialization given in \cite{sitzmann2019siren} with $\omega_0=30$. The images were trained on a $512\times512$ grid within the region $[-1, 1]$ for 500 epochs. The extrapolations are displayed in the interval $[-2, 2]$.
 
-First, we demonstrate that employing periodic activation functions alone is insufficient for learning periodic images with supervision over a restricted domain. Figure \ref{f:siren-comparison} compares image reconstruction and extrapolation results using SIREN’s initialization versus our periodic initialization. Both models utilize an identical architecture: three hidden layers of size 256. The key difference lies in the initialization strategy. We randomly select 256 integer frequency pairs from the range $[0, 30] \times [-30, 30]$, whereas SIREN follows the initialization described in \cite{sitzmann2019siren}, with $\omega_0 = 30$. \red{hertz?}
+First, we demonstrate that employing periodic activation functions alone is insufficient for learning periodic images with supervision over a restricted domain. Figure \ref{f:siren-comparison} compares image reconstruction and extrapolation results using SIREN's initialization versus our periodic initialization. 
 
-In this experiment, the images were trained on a $512 \times 512$ grid within the region $[-1, 1]^2$ for 500 epochs, and the extrapolations are displayed in the region $[-2, 2]^2$.
+In this experiment, the images were trained on a $512 \times 512$ grid within the region $[-1, 1]^2$ for 500 epochs, and the extrapolations are displayed in the region $[-2, 2]^2$. Both models utilize an identical architecture: three hidden layers of size 256. The key difference lies in the initialization strategy. We randomly select 256 integer pairs of values from the range $[0, 30] \times [-30, 30]$, which were then multiplied by $\frac{2\pi}{P}$, where $P=2$ since the training occurs in $[-1, 1]^2$. In contrast, SIREN follows the initialization described in \cite{sitzmann2019siren}, with $\omega_0 = 30$.
 
 
 \begin{figure}[!ht]
@@ -817,20 +782,20 @@ In this experiment, the images were trained on a $512 \times 512$ grid within th
     \label{f:siren-comparison}
 \end{figure}
 
-Even though the sample image is perfectly tileable, SIREN's reconstruction looks like noise outside the supervised domain. In contrast, our approach successfully captures the underlying periodic pattern. We also applied our Poisson regularization to reconstruct non-tileable patterns with both SIREN and our periodic initialization. Again, Figure \ref{f:comparison_siren_nontileable} shows that, while SIREN's reconstruction results in noise outside the supervised domain, our periodic initialization achieves seamless texture reconstruction.
+Even though the sample image is perfectly tileable, SIREN's reconstruction looks like noise outside the supervised domain. By comparison, our approach successfully captures the underlying periodic pattern. We also applied our Poisson regularization to reconstruct non-tileable patterns with both SIREN and our periodic initialization. Again, Figure \ref{f:comparison_siren_nontileable} shows that, while SIREN's reconstruction results in noise outside the supervised domain, our periodic initialization achieves seamless texture reconstruction.
 
 
 \begin{figure}[!h]
     \centering
-      \begin{subfigure}{0.30\textwidth}
+      \begin{subfigure}{0.35\textwidth}
         \includegraphics[width=\linewidth]{img/ch6/comparisons/mnet_grad_border.png}
-        \caption{}
+        \caption{Our periodic \\initialization.}
       \end{subfigure}
-      \begin{subfigure}{0.30\textwidth}
+      \begin{subfigure}{0.35\textwidth}
         \includegraphics[width=\linewidth]{img/ch6/comparisons/siren_grad_border.png}
-        \caption{}
+        \caption{SIREN's initialization. \\}
       \end{subfigure}
-    \caption{Non-tileable pattern comparison. (A) Our periodic initialization vs (B)SIREN's.} 
+    \caption{Non-tileable pattern extrapolation comparison.} 
     \label{f:comparison_siren_nontileable}
 \end{figure}
 
@@ -855,32 +820,6 @@ hl1\_hf512\_w64 & 29.29 & 0.81 & 26.47          & 265730      & hl1\_hf512\_w64 
 
 Our method consistently outperforms SIREN across all tested configurations, both in terms of faster convergence, which may be a consequence of freezing the first layer, and higher reconstruction quality, as evidenced by the PSNR and SSIM metrics. Moreover, considering the tileable nature of the images, a representation based on the Fourier series may offer a more suitable approach for capturing periodic patterns. Note that when provided with increased capacity and an adjusted bandlimit of frequencies, our method showcases significantly higher quality results.
 
-% % % Additionally, we have assessed the effect of our approach on the representation quality of the images and network compactness, regardless of periodicity. To measure this impact, we compute the PSNR for the textures used in Figure~\ref{f:surface_texture_mapping} for sinusoidal models using both Siren's and our periodic initialization. We also compare the reconstruction in multiresolution against \cite{paz2023mr}.
-% % % % Siren models with 2 hidden layers 256x256, and M-Net models. The M-Net models share the same architecture as ours, as described in section \ref{s-multires-2d}, differing on initialization and training schemes. 
-% % % Our proposal demonstrated improved representation quality across all examples, as summarized in Table \ref{t:comparison}.
-
-% % % \begin{table}[!h]
-% % % \centering
-% % % \small
-% % % \begin{tabular}{|l|r|r|r|}
-% % % \hline
-% % % Model & \# Params $(\downarrow)$ & Avg PSNR $(\uparrow)$ \\
-% % % \hline
-% % % SIREN 1lvl ~\cite{sitzmann2019siren} & XXX & XXXX dB \\
-% % % Ours 1lvl & XXX & {\bf XXX} dB  \\
-% % % M-Net~\cite{paz2022} & 856K & 31.13 dB \\
-% % % Ours & 856K & {\bf 36.51} dB  \\
-
-% % % \hline
-% % % \end{tabular}
-% % % % \vspace{-0.1cm}
-% % % \caption{ Total number of parameters in the models and average PSNR.
-% % % {\color{red}R3: Table 2 is not conclusive, since SIREN and the proposed approach have nearly 2x difference in parameters.The correct comparison would be one with same number of parameters, like M-Net, and the proposed approach.}
-% % % }.
-% % % \label{t:comparison} 
-% % % \end{table}
-
-% % % \vspace{-0.2cm}
 
 To reconstruct seamless tiles using Poisson equation, \citet{perez2003} suggests to manipulate the pixels intensities at the borders so that left = right and top = bottom, which can be achieved by averaging these values. These intensities should be given as boundary conditions while the gradients should be given at all other positions. In Figure \ref{f:average_border},  we compare this strategy with the one presented in Section \ref{s:poisson-regularization}, and conclude that our approach gives a more uniform result, better reducing the photometric differences present in the pattern.
 
@@ -928,12 +867,9 @@ To reconstruct seamless tiles using Poisson equation, \citet{perez2003} suggests
 
 % % % Another drawback of Bacon, specially for multiresolution is that this model builds representations by truncating the image frequency spectra. This approach often introduces ringing artifacts in the image. MR-Net multiresolution more faithfully represents what is expected of successively applying a low-pass filter to an image, and we can leverage it in multiresolution with our initialization, resulting in superior representation quality.
 
-% % %     - [ ]  Blending de bordo X Poisson OpenCV
-% % %     - [ ]  Bordo aberto - falha da Siren? - falha do OpenCV?
-
 \section{Surface Texture Mapping}
 
-This section presents an application of our periodic neural network in mapping textures to surfaces. We modified a simple renderer to directly evaluate the network value at the $uv$-coordinates of each fragment in the rendering pipeline. We map the $uv$-coordinates from the range $[0, 1]$ to  $[-1, 1]$; then, for the torus, we apply a factor of 2 in the $u$ coordinate for a better aspect to the rendering (Fig.\ref{f:surface_texture_mapping}). 
+This section presents an application of our periodic neural network in mapping textures to surfaces. We modified a simple renderer to directly evaluate the network value at the $uv$-coordinates of each fragment in the rendering pipeline. We map the $uv$-coordinates from the range $[0, 1]$ to  $[-1, 1]$; then, for the torus, we apply a factor of 2 in the $u$ coordinate for a better aspect to the rendering (Figure\ref{f:surface_texture_mapping}). 
 
 We can also transform the coordinates to, for example, invert the texture orientation or scale it so that it spans multiple periods of the texture on the surface.
 
@@ -948,21 +884,19 @@ We can also transform the coordinates to, for example, invert the texture orient
 \end{figure}
  
 
-In Chapter \ref{ch:imaging}, we showcased MRNet's capabilities in encoding mip-mapping \cite{mipmap83} and presenting an anti-aliased version of an image, adapted to the required resolution. Consequently, we can use our method to evaluate a multiresolution network at any coordinate and achieve similar anti-aliasing effects. Figure \ref{f:alias} shows the texture mapping results with and without anti-aliasing treatment utilizing a periodic M-Net \cite{paz2023mr} with 5 stages.
+In Chapter \ref{ch:imaging}, we showcased MRNet's capabilities in encoding mip-mapping~\citep{mipmap83} and presenting an anti-aliased version of an image, adapted to the required resolution. Consequently, we can use this method to evaluate a multiresolution network at any coordinate and achieve similar anti-aliasing effects. Figure \ref{f:alias} shows the texture mapping results with and without anti-aliasing treatment utilizing a periodic M-Net with 5 stages.
 
 \begin{figure}[!h]
     \centering
-    % \includegraphics[width=0.2\linewidth]{img/ch6/alias0.png}
-    % \includegraphics[width=0.2\linewidth]{img/ch6/anti_alias0.png}
       \begin{subfigure}{0.40\textwidth}
         \includegraphics[width=\linewidth]{img/ch6/alias2.png}
-        \caption{}
+        \caption{No antialiasing; point sampling at the original resolution.}
       \end{subfigure}
       \begin{subfigure}{0.40\textwidth}
         \includegraphics[width=\linewidth]{img/ch6/anti_alias2.png}
-        \caption{}
+        \caption{Antialiasing by sampling the right level of detail.}
       \end{subfigure}
-      \caption{Antialiasing in texture mapping using a periodic sinusoidal network. In each example, the image on the left has no antialiasing in contrast with the one on the right.}
+      \caption{Antialiasing in texture mapping using a periodic sinusoidal network.}
     \label{f:alias}
 \end{figure}
 
@@ -1008,27 +942,16 @@ In Chapter \ref{ch:imaging}, we showcased MRNet's capabilities in encoding mip-m
 
 % % % \lnote{red}{falar tambem sobre deformaçoes no UV usando o iFlow e se possivel colocar exemplo / figura}
 
-
-
 \section{Conclusion and Future Work}
 
-In this chapter, we introduced a unified framework for modeling seamless textures by integrating Fourier series principles into neural network architectures. Specifically, we demonstrated that a deep sinusoidal network can be made periodic by initializing its first sinusoidal layer with integer frequencies that are integer multiples of a given period.
+In this chapter, we introduced a unified framework for modeling seamless textures by integrating Fourier series principles into neural network architectures. Specifically, we demonstrated that a deep sinusoidal network can be made periodic by initializing its first sinusoidal layer with frequencies that are integer multiples of a given period.
 
 While we have made substantial progress in understanding how sinusoidal network initialization affects representational capacity, several open paths for research remain. In our approach, we limited the possible frequency choices by constraining them to integer values and partitioning the frequency space, yet determining the optimal band limit remains an empirical challenge. Currently, frequencies are selected randomly within a range determined heuristically, based on a fraction of the Nyquist limit. Future work could benefit from methods such as those in \cite{tamingFactory}, which explore the harmonic expansion of frequencies in sinusoidal networks and provide strategies for systematically bounding these frequencies.
 
-Our current method freezes the weights of the first layer to maintain constant frequencies during training, working similarly to a Fourier Feature Mapping using only sine functions. An intriguing direction for future research is to make these weights learnable while preserving periodicity, maybe a form of quantized optimization, potentially resulting in more adaptable and higher-performing models.
-
-% Periodic networks have high-capacity representation. They seem to compress the Fourier series through higher order composition of sines. However, investigating compression techniques tailored for sinusoidal networks is essential for achieving compact storage and efficient transmission over computer networks. Exploring the distribution of signal frequencies to inform network initialization is a promising direction in this regard.
+Our current method freezes the weights of the first layer to maintain the period constant during training, working similarly to a Fourier Feature Mapping using only sine functions. An intriguing direction for future research is to make these weights learnable while preserving periodicity, maybe a form of quantized optimization, potentially resulting in more adaptable and higher-performing models.
 
 Periodic networks exhibit high representational capacity, seemingly compressing Fourier series through the higher-order composition of sinusoidal functions. However, investigating compression techniques specifically designed for sinusoidal networks could be critical for reducing memory overhead and improving transmission efficiency across networks. Further research into the distribution of signal frequencies and meta-learning to guide network initialization may also enhance model performance and storage efficiency.
 
-A promising research direction involves the representation and synthesis of quasi-periodic patterns \red{[CITE]} or progressively variant textures, as explored in \cite{variantTextures}. Although the networks we developed are periodic, we believe they can be combined with warping techniques or advanced sampling strategies to generate more complex and diverse patterns.
+A promising research direction involves the representation and synthesis of quasi-periodic patterns~\citep{quasiRegularTiling} or progressively variant textures, as explored in \cite{variantTextures}. Although the networks we developed are periodic, we believe they can be combined with warping techniques or advanced sampling strategies to generate more complex and diverse patterns.
 
 In terms of materials representation, our work has so far focused on modeling the albedo component. However, this approach can be extended to other material properties, such as roughness or the bidirectional reflectance distribution function (BRDF). A compelling future direction would be to learn these additional properties from image data, potentially through the use of differentiable rendering techniques.
-
-% % % \lnote{red}{falar que usamos so' o albedo mas que se aplica naturalmente aos outros canais da definicao de materiais - citar metodos que aprendem os canais a partir de imagens - Substance Image to Materials e Delight - Ref: https://helpx.adobe.com/substance-3d-sampler/filters/tools.html}.
-
-% % % \lnote{red}{falar do iFlow - nao exploramos, pois o ponto e' a integracao com o rendering e parametrizacao - talvez citar - "Synthesis of Progressively Variant Textures on Arbitrary Surfaces". ACM Transactions on Graphics, 22(3):295–302, July 2003}
-
-
-% % % \lnote{red}{naturalmente compacta mas compressao e' trabalho futuro}
