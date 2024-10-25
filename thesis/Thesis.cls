@@ -176,7 +176,7 @@
                 {IMPA (IN BLOCK CAPITALS)}}
 \addresses   {}
 \subject     {}
-\keywords    {}
+\keywords    {neural media, sinusoidal neural networks, multiresolution analysis}
 \renewcommand\maketitle{
   \btypeout{Title Page}
   \hypersetup{pdftitle={\@title}}
@@ -240,16 +240,20 @@
     \setlength{\parskip}{0pt}
     {\normalsize \UNIVNAME \par}
     \bigskip
+    {\normalsize Dissertation by \authornames \par}
+    \medskip
+    {\normalsize Advised by \supname \par}
+    \bigskip
     {\huge{\textit{Abstract}} \par}
-    \bigskip
-    {\normalsize \facname \par}
-    {\normalsize \deptname \par}
-    \bigskip
-    {\normalsize Doctor of Philosophy\par}
+    % \bigskip
+    % {\normalsize \facname \par}
+    % {\normalsize \deptname \par}
+    % \bigskip
+    % {\normalsize Doctor of Philosophy\par}
     \bigskip
     {\normalsize\bf \@title \par}
     \medskip
-    {\normalsize by \authornames \par}
+    % {\normalsize by \authornames \par}
     \bigskip
   \end{center}
 }

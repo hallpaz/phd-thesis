@@ -69,12 +69,12 @@ Discrete representations are easy to store and map to data structures; however, 
 \begin{figure}[!h]
   \centering
   \includegraphics[width=0.85\linewidth]{img/ch2/sampling-reconstruction.png}
-  \caption{Illustration of sampling and reconstruction processes (\cite{ipcgVelho2014}).}
+  \caption{Illustration of sampling and reconstruction processes~\citep{ipcgVelho2014}.}
   \label{f:sampling-reconstuction}
 \end{figure}
 
 
-One of the fundamental results in this area is the \textbf{Shannon-Nyquist Sampling Theorem} (\cite{Shannon1949}). This theorem asserts that a continuous-time, band-limited signal can be perfectly reconstructed from its samples, provided that the sampling rate is at least twice the highest frequency present in the signal. Formally, for a continuous-time signal \( f(t) \) with a maximum frequency component of \( B \) Hz, perfect reconstruction is possible if the sampling frequency \( F_s \) satisfies:
+One of the fundamental results in this area is the \textbf{Shannon-Nyquist Sampling Theorem}~\citep{Shannon1949}. This theorem asserts that a continuous-time, band-limited signal can be perfectly reconstructed from its samples, provided that the sampling rate is at least twice the highest frequency present in the signal. Formally, for a continuous-time signal \( f(t) \) with a maximum frequency component of \( B \) Hz, perfect reconstruction is possible if the sampling frequency \( F_s \) satisfies:
 \[
 F_s \geq 2B
 \]
@@ -316,7 +316,7 @@ Artificial Neural networks are computational models inspired by the biological n
 
 In Equation \ref{eq:nn-compute}, \(\mathbf{y}\) is the output vector; \(w_i\) are the weights; \(x_i\) are the coordinates of the input vector; \(\mathbf{b}\) is the bias vector; and \(\sigma\) is a non-linear function called \textit{activation function}.
 
-This architecture makes it possible for neural networks to learn complex patterns and relationships within data, making them particularly effective for tasks such as image recognition and natural language processing. In fact, neural networks are universal approximators (\cite{HORNIK1989359,cybenko89}).
+This architecture makes it possible for neural networks to learn complex patterns and relationships within data, making them particularly effective for tasks such as image recognition and natural language processing. In fact, neural networks are universal approximators~\citep{HORNIK1989359,cybenko89}.
 
 Weights and biases are parameters of a neural network that are updated through optimization algorithms during the training process to minimize prediction error Activation functions introduce non-linearity into the network and their choice can impact the network performance and convergence during training. Common activation functions include:
 

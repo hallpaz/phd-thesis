@@ -17,9 +17,6 @@ The revolution caused by deep neural networks reached the media industry and mot
 
 As deep learning becomes increasingly prevalent in modern computation, specialized hardware such as Google's Tensor Processing Unit (TPU)~\citep{googleTPU}, Apple's Neural Engine~\citep{appleNeural}, and Tesla's Full Self-Driving Chip~\citep{Talpes2020Tesla} have been developed to accelerate neural network computations across various devices. In this context, we envision a future where media objects—whether audio, images, videos, or 3D models—are encoded directly into neural networks for storage, processing, and new forms of media manipulation. This paradigm shift could revolutionize how media is represented and handled in computing.
 
-% In both cases, analysis or generation, deep neural network models have been used as a tool to process large datasets. In analysis tasks, they are a model to recognize patterns in the data, extract features from the data and classify or regress some information. In the generative case, they are used to approximate the data probability distribution or implicity sample from this distribution, so that we can have new examples with similar properties to the dataset. We will call these kinds of networks \textit{data-based networks}. 
-
-% Given the non-structured nature of the data and the challenges on identifying and engineering features in images, video and other visual representations, neural networks have been employed as the predominant model in vision tasks. This way, deep learning gained a lot of popularity within the computer vision community.
 
 \section{Motivation}
 
@@ -50,16 +47,12 @@ The transition from the physical universe to the mathematical universe involves 
 
 In this work, our goal is to derive a \textit{multiresolution representation of media objects using neural networks}, a concept we will refer to as \textbf{neural media}. 
 
-% We already have good mathematical models for a variety of media content \red{CITE??}. However, the traditional standards used in industry today are built on top of discrete representations, following the pipeline we described using the paradigm of the four universes. Neural networks can be used to approximate the underlying continuous mathematical model of the media content, bringing the Mathematical Universe and the Implementation Universe closer. One of the advantages of this approach is that from a finite set of samples, it is possible to train a neural network to reconstruct the continuous function and, thus, be ressampled in an arbitrary resolution without the need of interpolation methods, which is more compute efficient.
 
 While mathematical models for a variety of media content are well-established~\citep{ ipcgVelho2014, wenger2013isosurfaces}, traditional media encoding standards today rely on discrete representations. Neural networks, however, approximate the underlying continuous mathematical models of media content, bridging the Mathematical Universe and the Implementation Universe. A key advantage of using neural networks is their ability to reconstruct continuous functions from a finite set of samples, enabling resampling at arbitrary resolutions without the need for computationally expensive interpolation methods.
-
-% In this dissertation, we explore how the multiresolution theory can be applied within this framework, developing neural network architectures capable of encoding signals at multiple levels of resolution. Besides helping to solve problems such as zooming and anti-aliasing, a multiresolution representation may be useful for streaming technologies as differrent levels of details can be transferred depending on the speed of the connection and the band capacity. Also exploring multiresolution can be useful for compression, leading to more compact media formats. We also hope that new ways of operating with these neural media will be developing enabling a variaty of applications and we will demonstrante one example of that focused in material textures.
 
 In this dissertation, we explore how multiresolution theory can be integrated into this framework by developing neural network architectures capable of encoding signals at multiple levels of resolution. A multiresolution representation can address challenges such as zooming and anti-aliasing, while also offering practical benefits for real-world applications. For instance, multiresolution techniques could enhance streaming technologies, allowing media to be transmitted at varying levels of detail, depending on bandwidth limitations. Additionally, they are likely to be effective for media compression, potentially leading to more compact and efficient formats. We also envision that this approach will pave the way for new operations and applications involving neural media, as exemplified by the optimization of seamless material textures in Chapter \ref{chap:seamless-textures}. 
 
 % A coordinate-based network represents the image \emph{indirectly} using a fully connected \textit{multi-layer perceptron} (MLP) that takes as input a pixel coordinate and outputs a RGB color. These~networks provide a continuous implicit representation for images~\cite{chen2021learning}, and allow for various applications, from Neural Signed Distance Functions~(NeuralSDFs)~\cite{park2019deepsdf} to Neural Radiance Fields~(NeRFs)~\cite{2020nerf}. Since the coordinates are continuous, images can be presented in arbitrary resolution.
-
 
 
 \subsection{Research Questions}
@@ -98,46 +91,19 @@ Moreover, chapters \ref{chap:mr_snn} to \ref{chap:seamless-textures} of this dis
     \item Hallison Paz, Tiago Novello, and Luiz Velho. 2024. Spectral Periodic Networks for Neural Rendering. In ACM SIGGRAPH 2024 Posters (SIGGRAPH '24). Association for Computing Machinery, New York, NY, USA, Article 47, 1-2. https://doi.org/10.1145/3641234.3671087
 \end{itemize}
 
-% - **A comprehensive study on sinusoidal neural network initialization for multiresolution and periodic signal representation.**  
-%   We analyze how initialization strategies impact the network’s ability to capture signals across multiple resolutions, laying the groundwork for efficient frequency learning.
-
-% - **Design of a family of neural network architectures for encoding media objects in multiresolution using sinusoidal neural networks.**  
-%   This novel approach enables flexible and hierarchical representation of media objects, making it suitable for a wide range of applications that require multiscale encoding.
-
-% - **Development of a flexible framework for training multi-stage neural networks on diverse types of multiresolution data.**  
-%   The framework supports different data modalities, allowing for adaptability in training across multiple stages, which is crucial for progressive signal representation.
-
-% - **Application of our architecture to multiresolution image representation and continuous interpolation in space and scale to address anti-aliasing.**  
-%   We demonstrate how our model achieves smooth transitions between resolutions, providing a powerful tool for overcoming challenges like aliasing in image processing and rendering tasks.
-
-% - **Introduction of a novel initialization strategy for sinusoidal networks based on the Fourier series to represent periodic signals.**  
-%   This ensures that the network remains constrained to the space of periodic functions, despite the complex composition of sines, providing theoretical guarantees for periodic signal encoding.
-
-% - **Efficient encoding of periodic textures using our periodic neural networks and development of a technique based on the Poisson equation to create seamless material textures.**  
-%   This contribution addresses a significant challenge in texture generation, enabling seamless transitions and efficient storage, with practical applications in gaming and virtual reality.
-
 
 \section{Dissertation Outline}
 
-% This dissertation starts by giving context to the reader, positioning this research in the field, and providing elementary concepts for better understanding of our work. After that, we have a couple of chapter where we discuss how sinusoidal neural networks learn, with particular attention to the relationship betweeen their initialization and the frequencies that they can represent. We use this knowlegde to derive our own architecture, connected with concepts of the multiresolution analysis. Finaly, we present applications of our proposal in multiresolution imaging and material textures representation. These applications motivated new improvements in our approach. 
-
 This dissertation is structured to guide the reader through the theoretical foundations, development, and applications of sinusoidal neural networks in multiresolution media representation. We begin by setting the context of the research, introducing essential concepts and positioning our contributions within the broader field. Following this, we look over the mechanics of sinusoidal neural networks, with particular attention to how their initialization influences the frequencies they can effectively represent. Building on this knowledge, we present our custom architecture, which integrates principles from multiresolution analysis. Finally, we showcase the practical applications of our approach, particularly in multiresolution imaging and material texture representation, which in turn prompted further refinements.
-
-% In Chapter 2, we provide a theoretical framework to help the reader with the terminology we use in this dissertation and give a basic understanding about the foundational topics we are buildng on top. We discuss established knowledge about signal processing, multiresolution analysis and neural networks, particularly sinusoidal neural networks and coordinate-based neural networks.
 
 In \textbf{Chapter 2}, we lay the theoretical foundation necessary for understanding the key concepts discussed in this dissertation. This includes an overview of signal processing theory, multiresolution analysis, and an introduction to neural networks, with a specific focus on coordinate-based and sinusoidal neural networks. This chapter provides the terminology and background knowledge required to comprehend the subsequent chapters.
 
-% In Chapter 3, we present an investigation on how sinusoidal neural networks initialization is related to the frequencies and signal representations learned by the model. Following a perspective that we could call \textit{experimental mathematics}, we generate hypothesis and questions grounded in the classical signal processing theory, then we verify how does it apply in sinusoidal neural networks and present the conclusions we can draw after systematic experimentation.
-
 In \textbf{Chapter 3}, we investigate the relationship between the initialization of sinusoidal neural networks and the frequencies they are capable of representing. Following a perspective that we could call "experimental mathematics", we generate hypotheses rooted in classical signal processing theory and verify them through systematic computational experimentation. This investigation leads to important insights about how these networks learn frequency representations, which inform the design of our subsequent architectures.
-
-% In Chapter 4, we present the Multiresolution [Sinusoidal] Neural Networks (MR-Net), a family of architectures to encode media objects in multiple scales. We discuss how we utilized the findinds about the frequency dynamics in sinusoidal neural networks, and the theory o multiresolution analysis to design MR-Net as a multi-stage architecture, and how we can train such networks in a flexible multiresolution training approach.
 
 In \textbf{Chapter 4}, we introduce the Multiresolution [Sinusoidal] Neural Networks (MR-Net), a novel family of architectures designed for encoding media objects across multiple scales. We explain how MR-Net uses the findings from Chapter 3 regarding the frequency dynamics of sinusoidal neural networks and incorporates principles from multiresolution analysis. We also detail the flexible, multistage training approach used to optimize MR-Net for handling multiresolution data effectively.
 
 In \textbf{Chapter 5}, we focus on the application of MR-Net in imaging tasks. We discuss how imaging applications benefit of multiresolution representations, and we show how to use MR-Net for multiresolution encoding of images, for texture magnification and minification and for antialiasing treatment. Additionally, we provide a comparative analysis of MR-Net's performance against existing methods, highlighting its advantages in these applications.
 
 In \textbf{Chapter 6}, we present another initialization scheme for sinusoidal networks, resulting in the development of periodic neural networks. Inspired by the Fourier Series, this initialization constrains the network's learning space to periodic functions, making it particularly effective for encoding periodic patterns such as material textures. We also present a Poisson Equation-based loss function that optimizes non-tileable texture patches into seamless material textures, further showcasing the advantages of this approach.
-
 
 Finally, in \textbf{Chapter 7}, we explore potential future research directions stemming from MR-Net and related representational networks. We also discuss the limitations of the current work and provide concluding thoughts on its contributions and impact.

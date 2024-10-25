@@ -263,15 +263,25 @@ Unlike the S-Net and L-Net, in which the stages are independent of each other, t
     
 Specifically, $H_i\circ  S_i$ is composed both with the linear layer $L_i$, producing the stage $g_i\! =\! L_i\!\circ\! H_i\!\circ\!  S_i$, and the hidden block $H_{i+1}$ resulting in $g_{i+1}\! =\! L_{i+1}\!\circ H_{i+1}\!\circ\left(S_{i+1}, H_i\circ  S_i\right)$. This way, the the hidden block has the form $H_{i+1}\!:\!\R^{m_{i+1} + m_i}\!\to\! \R^{m_{i+1}}$; $m_i$ is the dimension of the output of the last hidden layer of stage $i$. 
 
-This sequential linkage creates a hierarchical representation in which each stage can build upon and refine the features captured by previous stages. The overall M-Net can thus be viewed as a deep sinusoidal MLP with \( N \) hidden blocks:
+This sequential linkage creates a hierarchical representation in which each stage can build upon and refine the features captured by previous stages. Considering the following notation:
 
 \begin{align}
-    % g_0 = L_0 \circ H_0 \circ S_0 \\
-    % g_1 = L_1 \circ H_1 \circ (H_0 \circ S_0, S_1) \\
-    f = L_{N-1} \circ \overline{H_{N-1}} \circ \cdots \circ \overline{H_1} \circ H_0 \circ S_0,
+    \overline{H_k} = H_k \circ (\overline{H_{k-1}}, S_{k}), \\
+    \overline{H_0} = H_0 \circ S_0
 \end{align}
 
-where \( \overline{H_i} \) represents the part of \( H_i \) that connects to stage \( g_{i+1} \).
+Each stage $g_i$ of the M-Net can thus be viewed as a deep sinusoidal MLP like:
+
+\begin{align}
+    g_0 = L_0 \circ H_0 \circ S_0 \\
+    g_1 = L_1 \circ H_1 \circ (H_0 \circ S_0, S_1) = L_1 \circ H_1 \circ (\overline{H_0}, S_1)\\
+    &\vdots\\
+    g_{N-1} = L_{N-1} \circ H_{N-1} \circ (\overline{H_{N-2}}, S_{N-1}),
+\end{align}
+
+where the overall M-Net is obtained by adding the stages according to Equation \ref{e-mrnet}.
+
+% where \( \overline{H_i} \) represents the part of \( H_i \) that connects to stage \( g_{i+1} \).
 
 This architecture provides a controllable way to increase the effective \textit{depth} of the sinusoidal MLP during training, making the M-Net particularly suitable for applications requiring compact multiresolution representations (see Section \ref{sec:considerations}).
 
@@ -377,7 +387,7 @@ We slighly abuse the notation by denoting $\gt{f}_i(k,l)$ as the function $\gt{f
     \label{f:filter}
 \end{figure}
 
-\pagebreak
+% \pagebreak
 
 \subsection{Level of Detail Schemes}
 \label{s:lod}
