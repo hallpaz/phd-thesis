@@ -687,3 +687,5 @@ $$\mathscr{L}(\theta)= {\int_{\Omega} \lambda\big(\mathscr{f}-f\big)^2dx} + {\in
 ---
 
 # Thanks
+
+### Reach out: hallpaz@impa.br
