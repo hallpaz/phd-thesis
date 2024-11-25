@@ -415,6 +415,8 @@ $$\mathcal{L}_i(\theta_i)=\frac{1}{K_i}\sum ||f_i(x_j)-y_j||^2.$$
 
 ---
 
+<!-- _class: invert -->
+
 # Contributions
 
 - Comprehensive study on the initialization of sinusoidal neural networks
@@ -528,7 +530,7 @@ $\mathscr{f}:\mathbb{R}^2\to \mathbb{R}$,  $\mathscr{f}(x) \!=\! \mathscr{f}(x +
 
 $$f(x) = L\circ S(x) =  c_0 + \sum_{i=1}^{n} c_i  \sin\Big(\langle{\omega_i}, { x}\rangle+ \varphi_i\Big)$$
 
-- if $\omega_i = \frac{2\pi}{P}$ then a shallow network is periodic. 
+- if $\omega_i = \frac{2k\pi}{P}$, $k \in \mathbb{Z}$, then a shallow network is periodic. 
 
 ###### What about a deep sinusoidal network?
 
