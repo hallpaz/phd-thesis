@@ -30,9 +30,6 @@ img[alt~="center"] {
 
 <!-- _footer: from "Motivation" section. -->
 <!-- _paginate: false -->
----
-
-# Neural Media
 
 ---
 
@@ -90,25 +87,13 @@ img[alt~="center"] {
 
 # Multiresolution
 
----
-
-# Why?
+![](assets/multires-copper.png)
 
 ---
+
+<!-- _class: invert -->
 
 # Contributions
-
-<!-- <style>
-  p {
-    opacity: 10%;
-  }
-  li {
-    opacity: 10%;
-  }
-  li.strong {
-    opacity: 100%;
-  }
-</style> -->
 
 - **Comprehensive study on the initialization of sinusoidal neural networks**
 <!-- - Family of neural architectures for encoding media objects at multiple resolutions
@@ -224,28 +209,41 @@ $f(x) = a_0 + \sum_{j=1}^m a_j \sin\left(\omega_j x + \varphi_j\right)$
 
 ![](assets/smoothed-noise-1hl.png)
 
-<!-- _footer: Figure 3.12: Smoothed reconstruction with 1 hidden layer -->
+<!-- _footer: Figure 3.12: Smoothed reconstruction with 1 hidden layer; initialization: 10Hz. -->
 
 ---
 
-# By the way...
+## By the way...
 
-![height:500px drop-shadow:rgba(1,1,1,.8)](assets/foto-perlin.jpg)
+![height:500px drop-shadow center](assets/foto-perlin.jpg)
 
-<!-- _class: invert -->
 <!-- _paginate: false -->
 
 <!-- _footer: Met professor Ken Perlin at SIGGRAPH'24 -->
 
 ---
 
-<!-- _backgroundColor: #003463-->
-<!-- _class: invert -->
-<!-- _paginate: false -->
+![h:600 center](assets/varying-frequencies.png)
 
-# Multiresolution Sinusoidal Neural Networks
+<!-- _footer: 32 neurons per layer; 1 hidden layer. -->
 
 ---
+
+![h:600 center](assets/varying-width.png)
+
+<!-- _footer: 2Hz initialization; 1 hidden layer. -->
+
+---
+
+### Training, generalization and representation
+
+![h:500 center](assets/generalization.png)
+
+<!-- _footer: From figure 3.20. -->
+
+---
+
+<!-- _class: invert -->
 
 # Contributions
 
@@ -258,6 +256,14 @@ $f(x) = a_0 + \sum_{j=1}^m a_j \sin\left(\omega_j x + \varphi_j\right)$
 - our architecture can be integrated into the rendering pipeline of textured objects. -->
 
 <!-- _footer: Based on dissertation's page 5 -->
+
+---
+
+<!-- _backgroundColor: #003463-->
+<!-- _class: invert -->
+<!-- _paginate: false -->
+
+# Multiresolution Sinusoidal Neural Networks
 
 ---
 
@@ -478,16 +484,9 @@ $$\mathcal{L}_i(\theta_i)=\frac{1}{K_i}\sum ||f_i(x_j)-y_j||^2.$$
 
 ![h:500px center](assets/mr-antialiasing.png)
 
-
 ---
 
-<!-- _backgroundColor: #003463-->
 <!-- _class: invert -->
-<!-- _paginate: false -->
-
-# Periodic Textures
-
----
 
 # Contributions
 
@@ -496,8 +495,16 @@ $$\mathcal{L}_i(\theta_i)=\frac{1}{K_i}\sum ||f_i(x_j)-y_j||^2.$$
 - Flexible framework for training multi-stage neural networks
 - Application of our architecture in multiresolution imaging.
 - **Fourier Series-based initialization strategy for periodic functions**
-- **Demo of architecture integration into the rendering pipeline of textured objects.**
+<!-- - **Demo of architecture integration into the rendering pipeline of textured objects.** -->
 <!-- - Technique based on the Poisson Equation to generate seamless material textures. -->
+
+---
+
+<!-- _backgroundColor: #003463-->
+<!-- _class: invert -->
+<!-- _paginate: false -->
+
+# Periodic Textures
 
 ---
 
@@ -579,11 +586,21 @@ $$\sin(\omega_i x + \varphi_i) = \cos(\varphi_i) \sin(\omega_i x) - \sin(\varphi
 
 ---
 
-# Periodic Textures
+<!-- _backgroundColor: #000000 -->
+<video width="1200" height="700" controls>
+  <source src="assets/periodicbrown.mov" type="video/mp4">
+</video>
 
 ---
 
-# Sample can be given anywhere
+<!-- _backgroundColor: #000000 -->
+<video width="1200" height="700" controls>
+  <source src="assets/periodicmoss.mov" type="video/mp4">
+</video>
+
+---
+
+# Samples can be given anywhere
 
 ![height:500px center](assets/tile-equivalence.png)
 
@@ -595,28 +612,26 @@ $$\sin(\omega_i x + \varphi_i) = \cos(\varphi_i) \sin(\omega_i x) - \sin(\varphi
 
 ---
 
-# Surface Texture Mapping
+<!-- _class: invert -->
+
+# Contributions
+
+- Comprehensive study on the initialization of sinusoidal neural networks
+- Family of neural architectures for encoding media objects at multiple resolutions
+- Flexible framework for training multi-stage neural networks
+- Application of our architecture in multiresolution imaging.
+- Fourier Series-based initialization strategy for periodic functions
+- **Demo of architecture integration into the rendering pipeline of textured objects.**
+<!-- - **Technique based on the Poisson Equation to generate seamless material textures.** -->
 
 ---
-
-<video width="1200" height="700" controls>
-  <source src="assets/periodicbrown.mov" type="video/mp4">
-</video>
-
----
-
-<video width="1200" height="700" controls>
-  <source src="assets/periodicmoss.mov" type="video/mp4">
-</video>
-
----
-
+<!-- _backgroundColor: #000000 -->
 <video width="1200" height="700" controls>
   <source src="assets/torus_dirty.mov" type="video/mp4">
 </video>
 
 ---
-
+<!-- _backgroundColor: #000000 -->
 <video width="1200" height="700" controls>
   <source src="assets/toro-marrow.mov" type="video/mp4">
 </video>
@@ -643,9 +658,13 @@ $$\sin(\omega_i x + \varphi_i) = \cos(\varphi_i) \sin(\omega_i x) - \sin(\varphi
 
 ---
 
-$$\mathscr{L}(\theta)={\int_{\Omega} \lambda||{{J}({f})-U}||^2dx} + {\int_{\Omega} (1-\lambda)\big(\gt{f}-f\big)^2dx}$$
+# Poisson regularization
+
+$$\mathscr{L}(\theta)= {\int_{\Omega} \lambda\big(\mathscr{f}-f\big)^2dx} + {\int_{\Omega} (1-\lambda)||{{J}({f})-U}||^2dx}$$
 
 ![height:320 center](../thesis/img/ch6/gradients-merged.png)
+
+<!-- _footer: should correct at page 92. -->
 
 ---
 
