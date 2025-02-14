@@ -114,16 +114,16 @@ The sinc function provides the theoretical basis for perfect interpolation, but 
 
 Any signal can be represented in both its natural domain (such as time or space) and the frequency domain, also known as the spectral domain. The frequency domain provides a powerful framework for analyzing signals by decomposing them into their constituent frequencies. This perspective explicits some information about the signal's structure, such as its bandwidth, periodicity, and the contribution of different frequencies to the overall signal.
 
-The \textbf{Fourier transform} is the mathematical operation that connects the time or space domain with the frequency domain. It decomposes a signal into a series of sine and cosine waves, each with a specific frequency, amplitude, and phase. For a continuous-time signal \( f(t) \), the Fourier transform \( F(f) \) is defined as:
+The \textbf{Fourier transform} is the mathematical operation that connects the time or space domain with the frequency domain. It decomposes a signal into a set of sine and cosine waves, each with a specific frequency, amplitude, and phase. For a continuous-time signal \( f(t) \), the Fourier transform \( F(f) \) is defined as:
 
 \begin{align}
-  F(f)(s) = \hat{f}(s) = \int_{-\infty}^{\infty} f(s) e^{-2\pi i t s} dt
+  F(f)(s) = \hat{f}(s) = \int_{-\infty}^{\infty} f(t) e^{-2\pi i t s} dt
 \end{align}
 where:
 
 \begin{itemize}
   \item \( f(t) \) is the time-domain signal.
-  \item \( F(f) \) is the frequency-domain representation.
+  \item \( F(f)(s) \) is the frequency-domain representation.
   \item \( s \) is the frequency.
   \item \( i \) is the imaginary unit.
 \end{itemize}
@@ -134,7 +134,7 @@ This Fourier transform extracts both the amplitude and phase of each frequency c
 
 % % This approach is invaluable in many applications, from audio processing to image analysis and medical imaging, where understanding a signal's frequency content is essential.
 
-The Fourier transform has several forms depending on the nature of the signal. The \textit{continuous Fourier transform} (CFT) is used for continuous-time signals, while the \textit{discrete Fourier transform} (DFT) applies to sampled or discrete signals. The \textbf{fast Fourier transform (FFT)} is an efficient algorithm for computing the DFT, enabling real-time signal processing in practical applications.
+The Fourier transform has multiple forms depending on the nature of the signal. The \textit{continuous Fourier transform} (CFT) is used for continuous-time signals, decomposing them into their frequency components. In contrast, the \textit{discrete Fourier transform} (DFT) applies to discrete or sampled signals, enabling frequency-domain analysis in digital systems. Computing the DFT directly is computationally expensive, but the \textit{fast Fourier transform} (FFT) provides an efficient algorithm that significantly reduces complexity, making real-time signal processing feasible in practical applications \citep{oppenheim-schafer2009}.
 
 In the previous section, we discussed how signals are sampled and reconstructed, with particular emphasis on the Shannon-Nyquist sampling theorem and the role of the sinc function in ideal signal reconstruction. The Fourier transform of the sinc function is a rectangular function, also called box function (Figure \ref{f:sinc-and-rect}). Therefore, in the frequency domain it acts as an ideal low-pass filter, passing frequencies within a certain range (the band-limited signal) while cutting off higher frequencies that could lead to aliasing.
 
@@ -172,12 +172,12 @@ This operation restores the original signal by integrating over all its frequenc
 
 % The inverse Fourier transform provides the foundation for reconstructing signals, just as the sinc function is used in the time domain for ideal interpolation.
 
-When signals are sampled, we effectively multiply the original continuous signal by a sequence of Dirac delta functions (impulses). In the frequency domain, this multiplication corresponds to a convolution with a train of impulses, which leads to periodic replicas of the signal's frequency spectrum. This relationship emphasizes the importance of the Nyquist criterion: if the sampling rate is too low (below twice the highest frequency in the signal), these spectral replicas overlap, resulting in aliasing. 
+When signals are sampled, we effectively multiply the original continuous signal by a sequence of Dirac delta functions (impulses). In the frequency domain, this multiplication corresponds to a convolution with a train of impulses, which leads to periodic replicas of the signal's frequency spectrum. This relationship emphasizes the importance of the Nyquist criterion: if the sampling rate is too low (below twice the highest frequency in the signal), these spectral replicas overlap, resulting in aliasing. For more informaion on signal processing fundamentals, please, refer to \cite{diniz2014processamento}, \cite{oppenheim-signals} and \cite{oppenheim-schafer2009}.
 % The Fourier transform enables us to clearly visualize this aliasing effect by showing how undersampling distorts the signal's frequency content.
 
 \section{Multiresolution Analysis}
 
-Multiresolution analysis (MRA) offers a hierarchical approach to understanding signals at different levels of detail. By breaking down signals into components that represent varying scales of resolution, MRA helps to capture both global trends and fine details. This technique leverages the way we naturally process visual information, focusing on broader patterns while also perceiving intricate details as needed.
+Multiresolution analysis (MRA) offers a hierarchical approach to understanding signals at different levels of detail. By decomposing signals into components that represent varying scales of resolution, MRA enables the simultaneous capture of both global trends and fine details. This framework, formally introduced by \cite{mallat1989theory}, is particularly powerful in signal processing and computer vision, as it aligns with the way we naturally perceive visual information—focusing on broader structures while also resolving intricate details when needed \citep{marr82}.
 
 % In MRA, signals are decomposed into a coarse approximation, which retains the broader features, and a series of detail coefficients, representing finer, localized features. 
 
@@ -193,7 +193,7 @@ This approach facilitates efficient representation and processing of signals, re
 
 \subsection{Pyramids: Gaussian and Laplacian}
 
-One of the simplest and most common techniques in MRA is the use of \textit{Gaussian and Laplacian pyramids}. These pyramids represent signals at multiple resolutions, enabling efficient manipulation and analysis across scales.
+One of the simplest and most common techniques in MRA is the use of \textit{Gaussian and Laplacian pyramids}. These pyramids decompose signals into a series of increasingly coarse approximations, representing the signal at multiple resolutions. This multiscale representation enables efficient manipulation and analysis across different levels of detail. The concept of pyramidal representations was introduced by \cite{Burt1981FastFT} and further developed by \cite{burt1983laplacian}, who demonstrated their effectiveness in image processing tasks such as compression and multi-scale analysis.
 
 A \textbf{Gaussian pyramid} is built by repeatedly downsampling a signal, after applying a low-pass filter to avoid aliasing. At each level, the signal is smoothed using a Gaussian (or other low-pass) kernel and then reduced in size by subsampling. This creates a pyramid where each level contains a coarser version of the signal, with less spatial detail than the previous level. The general formulation for constructing a Gaussian pyramid in dimension \(d\) is:
 
@@ -239,8 +239,7 @@ By progressively adding the finer details back to the lower-resolution versions,
 
 \subsection{Wavelet Transforms}
 
-While pyramid structures provide a basic form of multiresolution analysis, \textbf{wavelet transforms} offer a more sophisticated and flexible framework. Wavelets differ from pyramids in that they allow for localized multiresolution analysis in both natural and frequency domains. This makes them especially useful for signals with transient or localized features.
-
+While pyramid structures provide a basic form of multiresolution analysis, \textbf{wavelet transforms} offer a more sophisticated and flexible framework. Wavelets differ from pyramids in that they allow for localized multiresolution analysis in both natural and frequency domains. This makes them especially useful for signals with transient or localized features. The foundational theory of wavelets transforms was developed by \cite{mallat1989theory}.
 
 The key idea behind wavelets is to decompose a signal into a series of \textit{scaled} and \textit{shifted} versions of a fundamental waveform, known as the \textit{mother wavelet}. This process captures both the frequency and location information of the signal components, providing a time-frequency representation that is more adaptive than Fourier-based methods.
 
@@ -284,7 +283,7 @@ The wavelet transform operates within a hierarchy of scale spaces \( V_j \), whe
 
 Each \( V_j \) is associated with a scaling function \( \phi \), while the detail spaces \( W_j \) are spanned by a corresponding wavelet function \( \psi \), which captures the differences between successive approximations.
 
-For more details on Wavelets and multiresolution analysis, please refer to \cite{mallat1989theory} and \cite{GomesVelho2015FromFA}.
+For more details on wavelets and multiresolution analysis, please refer to \cite{mallat1989theory}, \cite{daubechies92} and \cite{GomesVelho2015FromFA}.
 
 
 % \subsection{Practical Applications of Wavelets}
@@ -307,7 +306,7 @@ For more details on Wavelets and multiresolution analysis, please refer to \cite
 
 \section{Neural Networks}
 
-Artificial Neural networks are computational models inspired by the biological neural networks found in animal brains. These networks consist of interconnected units known as \textbf{artificial neurons} or \textbf{perceptrons}. Each neuron receives inputs, processes them through weighted connections, and produces an output that can be transmitted to other neurons. The output of a neuron is calculated as the weighted sum of its inputs plus a bias term, composed with a non-linear function, expressed as:
+Artificial Neural networks are computational models inspired by the biological neural networks found in animal brains. These networks consist of interconnected units known as \textbf{artificial neurons} or \textbf{perceptrons}, introduced by \cite{rosenblatt1957}. Each neuron receives inputs, processes them through weighted connections, and produces an output that can be transmitted to other neurons. The output of a neuron is calculated as the weighted sum of its inputs plus a bias term, composed with a non-linear function, expressed as:
 
 \begin{align}
   \mathbf{y} = \sigma\left(\sum_{i=1}^{n} w_i x_i + \mathbf{b}\right)
@@ -318,7 +317,7 @@ In Equation \ref{eq:nn-compute}, \(\mathbf{y}\) is the output vector; \(w_i\) ar
 
 This architecture makes it possible for neural networks to learn complex patterns and relationships within data, making them particularly effective for tasks such as image recognition and natural language processing. In fact, neural networks are universal approximators~\citep{HORNIK1989359,cybenko89}.
 
-Weights and biases are parameters of a neural network that are updated through optimization algorithms during the training process to minimize prediction error Activation functions introduce non-linearity into the network and their choice can impact the network performance and convergence during training. Common activation functions include:
+Weights and biases are parameters of a neural network that are updated through optimization algorithms during the training process to minimize prediction error. Activation functions introduce non-linearity into the network and their choice can impact the network performance and convergence during training. Common activation functions include:
 
 \begin{itemize}
     \item \textbf{Sigmoid}: Maps outputs to a range between 0 and 1.
@@ -337,7 +336,7 @@ Weights and biases are parameters of a neural network that are updated through o
     \]
 \end{itemize}
 
-Neural networks learn through a process called \textbf{backpropagation}, which efficiently computes gradients needed for optimization. The learning, or training, process involves two main steps: 
+Neural networks learn through a process called \textbf{backpropagation} \citep{Rumelhart1986}, which efficiently computes gradients needed for optimization. The learning, or training, process involves two main steps: 
 
 \begin{enumerate}
     \item \textbf{Forward Pass}: Inputs are passed through the network to obtain predictions.
@@ -352,7 +351,7 @@ The weights are then updated using an optimization algorithm like \textbf{gradie
 
 where \(\mathbf{w}\) represents weights; \(\eta\) is the learning rate; and \(\nabla L(\mathbf{w})\) is the gradient of the loss function with respect to weights.
 
-Perceptrons can be connected in a variety of ways, defining different neural networks architectures. A \textbf{Multilayer Perceptron} (MLP) is a class of artificial neural networks composed of multiple layers of perceptrons, where each layer is fully connected to the next. An MLP typically consists of an input layer, one or more hidden layers, and an output layer. Each layer applies a series of weighted transformations to its inputs, followed by a non-linear activation function.
+Perceptrons can be connected in a variety of ways, defining different neural networks architectures. A \textbf{Multilayer Perceptron} (MLP) is a class of artificial neural networks composed of multiple layers of perceptrons, where each layer is fully connected to the next \citep{Rumelhart1986MLP}. An MLP typically consists of an input layer, one or more hidden layers, and an output layer. Each layer applies a series of weighted transformations to its inputs, followed by a non-linear activation function.
 
 \subsection{Depth and Capacity}
 

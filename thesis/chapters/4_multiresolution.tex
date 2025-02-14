@@ -129,7 +129,7 @@ Each stage function \( f_t := f(\cdot, t) : \mathcal{D} \to \mathcal{C} \) defin
 
 To train this architecture, we fit \( f \) to the ground-truth signal \( \gt{f} = \gt{g}_0 + \cdots + \gt{g}_{N-1} \) by initializing and training each stage \( g_i \) to approximate the corresponding stage of the ground-truth decomposition. In Section \ref{s:training}, we provide more details on training.
 
-This structure aligns with the concept of Multiresolution Analysis~\citep{mallat-mr89}, where a function is decomposed into a sequence of approximations and detail spaces, each stage refining the approximation of the original signal. The MR-Net enables a continuous traversal through these stages using the scale parameter \(t\), allowing seamless navigation across multiple resolutions. Fig.~\ref{f:mrnet-arch} shows the general architecture of an MR-Net having \(N\) stages.
+This structure aligns with the concept of Multiresolution Analysis~\citep{mallat1989theory}, where a function is decomposed into a sequence of approximations and detail spaces, each stage refining the approximation of the original signal. The MR-Net enables a continuous traversal through these stages using the scale parameter \(t\), allowing seamless navigation across multiple resolutions. Fig.~\ref{f:mrnet-arch} shows the general architecture of an MR-Net having \(N\) stages.
 
 \begin{figure}[!h]
 \centering
